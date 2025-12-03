@@ -1,0 +1,112 @@
+{
+  "header": {
+    "welcome_text": "Welcome to our store",
+    "phone_text": "Call us: +1 234 567 8900",
+    "show_welcome": true,
+    "show_phone": true
+  },
+  "hero": {
+    "badge_text": "New Collection",
+    "title": "Transform Your Space",
+    "subtitle": "Discover our collection of beautiful home accessories to elevate your living space.",
+    "button_text": "Shop Now",
+    "button_link": "#",
+    "secondary_button_text": "View Collections",
+    "secondary_button_link": "#",
+    "image": "/storage/default-hero.jpg",
+    "info_boxes": [
+      {
+        "icon": "truck",
+        "title": "Free Shipping",
+        "description": "On orders over $50"
+      },
+      {
+        "icon": "refresh-cw",
+        "title": "Easy Returns",
+        "description": "30-day return policy"
+      },
+      {
+        "icon": "shield-check",
+        "title": "Secure Checkout",
+        "description": "100% protected"
+      }
+    ]
+  },
+  "categories": {
+    "title": "Shop by Category",
+    "description": "Explore our wide range of categories to find exactly what you need for your home."
+  },
+  "featured_products": {
+    "title": "Featured Products",
+    "description": "Discover our handpicked selection of premium products that our customers love most."
+  },
+  "newsletter": {
+    "title": "Stay Updated",
+    "subtitle": "Subscribe to our newsletter for the latest updates and exclusive offers.",
+    "placeholder_text": "Enter your email address",
+    "button_text": "Subscribe",
+    "privacy_text": "We respect your privacy. Unsubscribe at any time."
+  },
+  "cta_boxes": [
+    {
+      "icon": "home",
+      "title": "Home Decor",
+      "subtitle": "Transform your living space"
+    },
+    {
+      "icon": "star",
+      "title": "Premium Quality",
+      "subtitle": "Handpicked products for you"
+    },
+    {
+      "icon": "truck",
+      "title": "Fast Delivery",
+      "subtitle": "Quick and reliable shipping"
+    },
+    {
+      "icon": "shield-check",
+      "title": "Secure Shopping",
+      "subtitle": "100% protected checkout"
+    }
+  ],
+  "trending_products": {
+    "title": "Trending Now",
+    "description": "Check out what's popular right now and see what everyone is talking about."
+  },
+  "brand_logos": {
+    "title": "Trusted by Leading Brands",
+    "show_title": true,
+    "logos": [
+      {"name": "Brand 1", "image": "/storage/brands/brand1.png"},
+      {"name": "Brand 2", "image": "/storage/brands/brand2.png"},
+      {"name": "Brand 3", "image": "/storage/brands/brand3.png"}
+    ]
+  },
+  "blog": {
+    "title": "Latest from Our Blog",
+    "description": "Stay informed with our latest articles, tips, and insights about home decoration."
+  },
+  "footer": {
+    "description": "Your trusted partner for quality home accessories and exceptional customer service.",
+    "menu": {
+      "title": "Quick Links",
+      "links": [
+        {"name": "About Us", "href": "#"},
+        {"name": "Contact Us", "href": "#"},
+        {"name": "FAQ", "href": "#"},
+        {"name": "Privacy Policy", "href": "#"}
+      ]
+    },
+    "contact": {
+      "address": "123 Main Street, City, State 12345",
+      "phone": "+1 (555) 123-4567",
+      "email": "info@example.com"
+    },
+    "social_links": [
+      {"platform": "facebook", "url": ""},
+      {"platform": "twitter", "url": ""},
+      {"platform": "instagram", "url": ""}
+    ],
+    "copyright_text": "© {year} {store_name}. All rights reserved."
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "header": {
+    "welcome_text": { "value": "Free shipping on orders over $99", "type": "text" },
+    "phone_text": { "value": "Tech Support: +1 555 GADGETS", "type": "text" },
+    "show_welcome": { "value": true, "type": "boolean" },
+    "show_phone": { "value": true, "type": "boolean" }
+  },
+  "hero": {
+    "badge_text": { "value": "Latest Tech 2024", "type": "text" },
+    "title": { "value": "Power Your Digital Life", "type": "text" },
+    "subtitle": { "value": "Discover cutting-edge electronics and innovative gadgets that enhance your productivity and entertainment experience.", "type": "textarea" },
+    "button_text": { "value": "Shop Tech", "type": "text" },
+    "button_link": { "value": "#", "type": "text" },
+    "secondary_button_text": { "value": "View Catalog", "type": "text" },
+    "secondary_button_link": { "value": "#", "type": "text" },
+    "image": { "value": "/storage/media/79/home-banner-electronics.png", "type": "image" },
+    "info_boxes": [
+      { "icon": "zap", "title": "Fast Charging", "description": "Quick power solutions" },
+      { "icon": "shield", "title": "2-Year Warranty", "description": "Extended protection" },
+      { "icon": "cpu", "title": "Latest Tech", "description": "Cutting-edge innovation" }
+    ]
+  },
+  "categories": {
+    "title": { "value": "Explore Our Categories", "type": "text" },
+    "description": { "value": "Discover the perfect electronics and gadgets for every aspect of your digital lifestyle", "type": "textarea" }
+  },
+  "featured_products": {
+    "title": { "value": "Featured Electronics", "type": "text" },
+    "description": { "value": "Handpicked premium electronics and gadgets that deliver exceptional performance and value.", "type": "textarea" }
+  },
+  "newsletter": {
+    "title": { "value": "Tech Updates", "type": "text" },
+    "subtitle": { "value": "Stay ahead with the latest tech news, product launches, and exclusive deals delivered to your inbox.", "type": "textarea" },
+    "placeholder_text": { "value": "Enter your email for tech updates", "type": "text" },
+    "button_text": { "value": "Subscribe", "type": "text" },
+    "privacy_text": { "value": "Unsubscribe anytime. Your privacy matters.", "type": "text" },
+    "features": {
+      "value": [
+        { "title": "Latest Releases", "description": "Be first to know about new gadgets" },
+        { "title": "Exclusive Deals", "description": "Special discounts for subscribers" },
+        { "title": "Expert Reviews", "description": "In-depth product analysis" }
+      ],
+      "type": "array"
+    }
+  },
+  "info_boxes": {
+    "value": [
+      { "icon": "shield-check", "title": "2-Year Warranty Coverage", "description": "Extended protection on all electronics" },
+      { "icon": "headphones", "title": "24/7 Tech Support", "description": "Expert help when you need it" },
+      { "icon": "truck", "title": "Free Fast Shipping", "description": "Quick delivery on all orders" },
+      { "icon": "star", "title": "Latest Technology", "description": "Cutting-edge innovation" }
+    ],
+    "type": "array"
+  },
+  "cta_section": {
+    "title": { "value": "Need Help Choosing?", "type": "text" },
+    "description": { "value": "Our tech experts are here to help you find the perfect electronics and gadgets for your needs", "type": "textarea" },
+    "button_text": { "value": "Get Expert Advice", "type": "text" },
+    "button_link": { "value": "/contact", "type": "text" }
+  },
+  "cta_boxes": {
+    "value": [
+      { "icon": "smartphone", "title": "Mobile Accessories", "subtitle": "Cases, chargers & more" },
+      { "icon": "headphones", "title": "Audio Gear", "subtitle": "Premium sound experience" },
+      { "icon": "monitor", "title": "Gaming Setup", "subtitle": "Level up your gaming" },
+      { "icon": "wifi", "title": "Smart Home", "subtitle": "Connected living solutions" }
+    ],
+    "type": "array"
+  },
+  "trending_products": {
+    "title": { "value": "Trending Gadgets", "type": "text" },
+    "description": { "value": "The hottest electronics and gadgets that tech enthusiasts are talking about right now.", "type": "textarea" }
+  },
+  "brand_logos": {
+    "logos": {
+      "value": [
+        {"image": "/storage/media/80/brand-logo-electronics-1.png"},
+        {"image": "/storage/media/81/brand-logo-electronics-3.png"},
+        {"image": "/storage/media/82/brand-logo-electronics-4.png"},
+        {"image": "/storage/media/83/brand-logo-electronics-5.png"},
+        {"image": "/storage/media/84/brand-logo-electronics-6.png"},
+        {"image": "/storage/media/85/brand-logo-electronics-7.png"},
+        {"image": "/storage/media/86/brand-logo-electronics-8.png"}
+      ],
+      "type": "array"
+    }
+  },
+  "blog": {
+    "title": { "value": "Tech Blog", "type": "text" },
+    "description": { "value": "Latest tech reviews, buying guides, and industry insights from our electronics experts.", "type": "textarea" }
+  },
+  "footer": {
+    "description": { "value": "Your trusted destination for premium electronics and innovative gadgets with expert support and warranty.", "type": "textarea" },
+    "menu1": {
+      "title": { "value": "Support", "type": "text" },
+      "links": {
+        "value": [
+          {"name": "Tech Support", "href": "#"},
+          {"name": "Warranty", "href": "#"},
+          {"name": "Returns", "href": "#"},
+          {"name": "Setup Guide", "href": "#"}
+        ],
+        "type": "array"
+      }
+    },
+    "menu2": {
+      "title": { "value": "Company", "type": "text" },
+      "links": {
+        "value": [
+          {"name": "About Us", "href": "#"},
+          {"name": "Careers", "href": "#"},
+          {"name": "Press", "href": "#"},
+          {"name": "Privacy Policy", "href": "#"}
+        ],
+        "type": "array"
+      }
+    },
+    "contact": {
+      "address": { "value": "456 Tech Avenue, Innovation District, CA 94105", "type": "textarea" },
+      "phone": { "value": "+1 (555) 123-TECH", "type": "text" },
+      "email": { "value": "support@electronicsstore.com", "type": "email" }
+    },
+    "social_links": {
+      "value": [
+        {"platform": "youtube", "url": ""},
+        {"platform": "twitter", "url": ""},
+        {"platform": "instagram", "url": ""},
+        {"platform": "linkedin", "url": ""}
+      ],
+      "type": "array"
+    },
+    "copyright_text": { "value": "© {year} {store_name}. All rights reserved.", "type": "text" }
+  }
+}

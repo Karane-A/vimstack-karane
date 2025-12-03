@@ -1,0 +1,10 @@
+export { default as FurnitureHeroSection } from './FurnitureHeroSection';
+export { default as FurnitureCategorySection } from './FurnitureCategorySection';
+export { default as FurnitureFeaturedProductsSection } from './FurnitureFeaturedProductsSection';
+export { default as FurnitureTrendingProductsSection } from './FurnitureTrendingProductsSection';
+export { default as FurnitureCTASection } from './FurnitureCTASection';
+export { default as FurnitureNewsletterSection } from './FurnitureNewsletterSection';
+export { default as FurnitureBlogSection } from './FurnitureBlogSection';
+export { default as FurnitureBrandLogoSlider } from './FurnitureBrandLogoSlider';
+export { default as FurnitureFooter } from './FurnitureFooter';
+export { default as FurnitureProductCard } from './FurnitureProductCard';

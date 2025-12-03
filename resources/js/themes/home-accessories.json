@@ -1,0 +1,100 @@
+{
+  "header": {
+    "welcome_text": { "value": "Welcome to our store", "type": "text" },
+    "phone_text": { "value": "Call us: +1 234 567 8900", "type": "text" },
+    "show_welcome": { "value": true, "type": "boolean" },
+    "show_phone": { "value": true, "type": "boolean" }
+  },
+  "hero": {
+    "badge_text": { "value": "New Collection", "type": "text" },
+    "title": { "value": "Beautiful Home Accessories", "type": "text" },
+    "subtitle": { "value": "Transform your living space with our curated collection of premium home decor and accessories.", "type": "textarea" },
+    "button_text": { "value": "Shop Collection", "type": "text" },
+    "button_link": { "value": "#", "type": "text" },
+    "secondary_button_text": { "value": "View Catalog", "type": "text" },
+    "secondary_button_link": { "value": "#", "type": "text" },
+    "image": { "value": "/storage/media/43/home-banner-home-accessories.png", "type": "image" },
+    "info_boxes": [
+      { "icon": "truck", "title": "Free Shipping", "description": "On orders over $50" },
+      { "icon": "refresh-cw", "title": "Easy Returns", "description": "30-day return policy" },
+      { "icon": "shield-check", "title": "Secure Checkout", "description": "100% protected" }
+    ]
+  },
+  "categories": {
+    "title": { "value": "Browse Categories", "type": "text" },
+    "description": { "value": "Find the perfect accessories for every room in your home with our organized categories.", "type": "textarea" }
+  },
+  "featured_products": {
+    "title": { "value": "Featured Home Decor", "type": "text" },
+    "description": { "value": "Handpicked accessories that bring style and functionality to your living space.", "type": "textarea" }
+  },
+  "newsletter": {
+    "title": { "value": "Home Decor Updates", "type": "text" },
+    "subtitle": { "value": "Get the latest home styling tips and exclusive product launches delivered to your inbox.", "type": "textarea" },
+    "placeholder_text": { "value": "Your email address", "type": "text" },
+    "button_text": { "value": "Subscribe Now", "type": "text" },
+    "privacy_text": { "value": "No spam, only beautiful home inspiration.", "type": "text" }
+  },
+  "cta_boxes": {
+    "value": [
+      { "icon": "home", "title": "Interior Design", "subtitle": "Professional home styling" },
+      { "icon": "palette", "title": "Custom Colors", "subtitle": "Match your perfect style" },
+      { "icon": "award", "title": "Award Winning", "subtitle": "Recognized quality products" },
+      { "icon": "users", "title": "Expert Support", "subtitle": "Dedicated customer service" }
+    ],
+    "type": "array"
+  },
+  "trending_products": {
+    "title": { "value": "Trending Home Decor", "type": "text" },
+    "description": { "value": "Discover the most popular home accessories that are trending this season.", "type": "textarea" }
+  },
+  "brand_logos": {
+    "logos": {
+      "value": [
+        {"image": "/storage/media/44/brand-logo-home-accessories-1.png"},
+        {"image": "/storage/media/45/brand-logo-home-accessories-2.png"},
+        {"image": "/storage/media/46/brand-logo-home-accessories-3.png"},
+        {"image": "/storage/media/47/brand-logo-home-accessories-4.png"},
+        {"image": "/storage/media/48/brand-logo-home-accessories-5.png"},
+        {"image": "/storage/media/49/brand-logo-home-accessories-6.png"}
+      ],
+      "type": "array"
+    }
+  },
+  "blog": {
+    "title": { "value": "Home Styling Blog", "type": "text" },
+    "description": { "value": "Expert tips, trends, and inspiration for creating your perfect home environment.", "type": "textarea" }
+  },
+  "footer": {
+    "description": { "value": "Your premier destination for quality home accessories and interior design solutions.", "type": "textarea" },
+    "menu": {
+      "value": {
+        "title": "Quick Links",
+        "links": [
+          {"name": "About Us", "href": "#"},
+          {"name": "Contact Us", "href": "#"},
+          {"name": "Privacy Policy", "href": "#"},
+          {"name": "Terms & Conditions", "href": "#"}
+        ]
+      },
+      "type": "object"
+    },
+    "contact": {
+      "value": {
+        "address": "456 Design Avenue, Creative District, NY 10001",
+        "phone": "+1 (555) 987-6543",
+        "email": "hello@homeaccessories.com"
+      },
+      "type": "object"
+    },
+    "social_links": {
+      "value": [
+        {"platform": "facebook", "url": ""},
+        {"platform": "instagram", "url": ""},
+        {"platform": "pinterest", "url": ""}
+      ],
+      "type": "array"
+    },
+    "copyright_text": { "value": "© {year} {store_name}. All rights reserved.", "type": "text" }
+  }
+}

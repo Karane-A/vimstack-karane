@@ -1,0 +1,145 @@
+{
+  "header": {
+    "welcome_text": { "value": "Free shipping on orders over $75", "type": "text" },
+    "phone_text": { "value": "Fragrance Concierge: +1 555 SCENT", "type": "text" },
+    "show_welcome": { "value": true, "type": "boolean" },
+    "show_phone": { "value": true, "type": "boolean" }
+  },
+  "hero": {
+    "badge_text": { "value": "Signature Collection 2024", "type": "text" },
+    "title": { "value": "Discover Your Signature Scent", "type": "text" },
+    "subtitle": { "value": "Immerse yourself in our curated collection of luxury fragrances, where each bottle tells a unique story of elegance, passion, and timeless sophistication.", "type": "textarea" },
+    "button_text": { "value": "Explore Fragrances", "type": "text" },
+    "button_link": { "value": "#", "type": "text" },
+    "secondary_button_text": { "value": "Fragrance Guide", "type": "text" },
+    "secondary_button_link": { "value": "#", "type": "text" },
+    "image": { "value": "/storage/media/28/home-banner-perfume-fragrances.png", "type": "image" }
+  },
+  "categories": {
+    "title": { "value": "Fragrance Families", "type": "text" },
+    "description": { "value": "Explore our carefully curated fragrance categories, from fresh citrus to warm oriental blends, each crafted to complement your unique personality.", "type": "textarea" }
+  },
+  "featured_products": {
+    "title": { "value": "Signature Selections", "type": "text" },
+    "description": { "value": "Handpicked by our fragrance experts - the most coveted scents that define luxury and sophistication in the world of perfumery.", "type": "textarea" }
+  },
+  "newsletter": {
+    "title": { "value": "Scent Society", "type": "text" },
+    "subtitle": { "value": "Join our exclusive community and be the first to discover new arrivals, limited editions, and receive personalized fragrance recommendations.", "type": "textarea" },
+    "placeholder_text": { "value": "Enter your email for fragrance updates", "type": "text" },
+    "button_text": { "value": "Join Society", "type": "text" },
+    "privacy_text": { "value": "Unsubscribe anytime. Your privacy is our priority.", "type": "text" },
+    "stats": {
+      "value": [
+        { "number": "500+", "label": "Premium Scents" },
+        { "number": "50+", "label": "Luxury Brands" }
+      ],
+      "type": "array"
+    },
+    "benefits_title": { "value": "Member Benefits", "type": "text" },
+    "benefits": {
+      "value": [
+        { "text": "Early access to new releases" },
+        { "text": "Exclusive member discounts" },
+        { "text": "Personalized recommendations" }
+      ],
+      "type": "array"
+    }
+  },
+  "cta_section": {
+    "badge_text": { "value": "Premium Services", "type": "text" },
+    "title": { "value": "Luxury Experience", "type": "text" },
+    "description": { "value": "Discover our exclusive services designed to elevate your fragrance journey with personalized attention and premium care.", "type": "textarea" },
+    "bottom_title": { "value": "Ready to Find Your Signature Scent?", "type": "text" },
+    "bottom_description": { "value": "Book a complimentary consultation with our fragrance experts and discover the perfect scent that tells your unique story.", "type": "textarea" },
+    "primary_button_text": { "value": "Book Consultation", "type": "text" },
+    "primary_button_link": { "value": "#", "type": "text" },
+    "secondary_button_text": { "value": "Take Fragrance Quiz", "type": "text" },
+    "secondary_button_link": { "value": "/fragrance-quiz", "type": "text" }
+  },
+  "cta_boxes": {
+    "value": [
+      { "icon": "nose", "title": "Scent Profiling", "subtitle": "Discover your fragrance personality", "link": "#" },
+      { "icon": "star", "title": "VIP Rewards", "subtitle": "Exclusive member benefits", "link": "#" },
+      { "icon": "truck", "title": "White Glove Delivery", "subtitle": "Premium packaging & delivery", "link": "#" },
+      { "icon": "users", "title": "Fragrance Concierge", "subtitle": "Personal shopping service", "link": "#" }
+    ],
+    "type": "array"
+  },
+  "trending_products": {
+    "title": { "value": "Trending Scents", "type": "text" },
+    "description": { "value": "The most sought-after fragrances of the season - from timeless classics to contemporary masterpieces that capture the essence of modern luxury.", "type": "textarea" }
+  },
+  "brand_logos": {
+    "title": { "value": "Prestigious Houses", "type": "text" },
+    "description": { "value": "We partner with the world's most renowned perfume houses and emerging artisan creators", "type": "textarea" },
+    "bottom_title": { "value": "Looking for a Specific Brand?", "type": "text" },
+    "bottom_description": { "value": "We work with hundreds of fragrance brands. Contact us for special requests.", "type": "textarea" },
+    "bottom_button_text": { "value": "Contact Us", "type": "text" },
+    "bottom_button_link": { "value": "/contact", "type": "text" },
+    "logos": {
+      "value": [
+        {"image": "/storage/media/29/brand-logo-perfume-1.png"},
+        {"image": "/storage/media/30/brand-logo-perfume-2.png"},
+        {"image": "/storage/media/31/brand-logo-perfume-4.png"},
+        {"image": "/storage/media/32/brand-logo-perfume-5.png"},
+        {"image": "/storage/media/33/brand-logo-perfume-6.png"}
+      ],
+      "type": "array"
+    }
+  },
+  "blog": {
+    "title": { "value": "Fragrance Journal", "type": "text" },
+    "description": { "value": "Dive into the art of perfumery with expert insights, fragrance histories, and styling tips from renowned perfumers and scent connoisseurs.", "type": "textarea" },
+    "categories": {
+      "value": [
+        { "icon": "sparkles", "title": "Fragrance Reviews", "description": "In-depth reviews of the latest and classic scents" },
+        { "icon": "heart", "title": "Scent Stories", "description": "The inspiration and history behind iconic fragrances" },
+        { "icon": "star", "title": "Style Tips", "description": "How to choose and wear fragrances for every occasion" }
+      ],
+      "type": "array"
+    }
+  },
+  "footer": {
+    "description": { "value": "Your premier destination for luxury fragrances and perfumes. Curating the world's finest scents from prestigious houses and emerging artisan perfumers.", "type": "textarea" },
+    "menu1": {
+      "title": { "value": "Fragrance Services", "type": "text" },
+      "links": {
+        "value": [
+          {"name": "Scent Consultation", "href": "#"},
+          {"name": "Fragrance Samples", "href": "#"},
+          {"name": "Gift Services", "href": "#"},
+          {"name": "Fragrance Care", "href": "#"}
+        ],
+        "type": "array"
+      }
+    },
+    "menu2": {
+      "title": { "value": "Company", "type": "text" },
+      "links": {
+        "value": [
+          {"name": "Our Story", "href": "#"},
+          {"name": "Perfumers", "href": "#"},
+          {"name": "Sustainability", "href": "#"},
+          {"name": "Privacy Policy", "href": "#"}
+        ],
+        "type": "array"
+      }
+    },
+    "contact": {
+      "address": { "value": "456 Perfume Boulevard, Scent District, NY 10019", "type": "textarea" },
+      "phone": { "value": "+1 (555) 372-3687", "type": "text" },
+      "email": { "value": "hello@fragrancehouse.com", "type": "email" }
+    },
+    "social_links": {
+      "value": [
+        {"platform": "instagram", "url": ""},
+        {"platform": "youtube", "url": ""},
+        {"platform": "pinterest", "url": ""},
+        {"platform": "tiktok", "url": ""}
+      ],
+      "type": "array"
+    },
+    "copyright_text": { "value": "© {year} {store_name}. All rights reserved.", "type": "text" }
+  }
+}

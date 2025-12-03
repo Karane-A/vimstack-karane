@@ -1,0 +1,417 @@
+{
+    "header": {
+        "welcome_text": {
+            "value": "Free shipping on orders over $500",
+            "type": "text"
+        },
+        "phone_text": {
+            "value": "Auto Parts Hotline: +1 555 AUTOPARTS",
+            "type": "text"
+        },
+        "show_welcome": {
+            "value": true,
+            "type": "boolean"
+        },
+        "show_phone": {
+            "value": true,
+            "type": "boolean"
+        }
+    },
+    "hero": {
+        "badge_text": {
+            "value": "Performance Collection 2024",
+            "type": "text"
+        },
+        "title": {
+            "value": "Drive Your Passion",
+            "type": "text"
+        },
+        "subtitle": {
+            "value": "Discover premium automotive parts, accessories, and performance upgrades that enhance your driving experience and unleash your vehicle's true potential.",
+            "type": "textarea"
+        },
+        "button_text": {
+            "value": "Shop Parts",
+            "type": "text"
+        },
+        "button_link": {
+            "value": "#",
+            "type": "text"
+        },
+        "secondary_button_text": {
+            "value": "View Catalog",
+            "type": "text"
+        },
+        "secondary_button_link": {
+            "value": "#",
+            "type": "text"
+        },
+        "image": {
+            "value": "/storage/media/3/home-banner-cars-automotive.png",
+            "type": "image"
+        },
+        "info_boxes": {
+            "value": [
+                {
+                    "icon": "zap",
+                    "title": "Performance Boost",
+                    "description": "High-quality performance parts"
+                },
+                {
+                    "icon": "shield-check",
+                    "title": "Warranty Protected",
+                    "description": "2-year comprehensive warranty"
+                },
+                {
+                    "icon": "wrench",
+                    "title": "Expert Installation",
+                    "description": "Professional installation service"
+                }
+            ],
+            "type": "array"
+        }
+    },
+    "categories": {
+        "title": {
+            "value": "Shop by Category",
+            "type": "text"
+        },
+        "description": {
+            "value": "Find the perfect parts and accessories for your vehicle, from performance upgrades to essential maintenance components.",
+            "type": "textarea"
+        }
+    },
+    "featured_products": {
+        "title": {
+            "value": "Performance Picks",
+            "type": "text"
+        },
+        "description": {
+            "value": "Hand-selected by our automotive experts - the top-rated parts that deliver maximum performance and reliability.",
+            "type": "textarea"
+        }
+    },
+    "newsletter": {
+        "title": {
+            "value": "Auto Insider",
+            "type": "text"
+        },
+        "subtitle": {
+            "value": "Get the latest updates on new arrivals, exclusive deals, and expert automotive tips delivered straight to your inbox.",
+            "type": "textarea"
+        },
+        "placeholder_text": {
+            "value": "Enter your email for auto updates",
+            "type": "text"
+        },
+        "button_text": {
+            "value": "Subscribe",
+            "type": "text"
+        },
+        "privacy_text": {
+            "value": "Unsubscribe anytime. Your privacy matters.",
+            "type": "text"
+        },
+        "features": {
+            "value": [
+                {
+                    "number": "1",
+                    "title": "New Arrivals",
+                    "description": "Be first to know about latest automotive parts and accessories"
+                },
+                {
+                    "number": "2",
+                    "title": "Exclusive Deals",
+                    "description": "Get access to subscriber-only discounts and promotions"
+                },
+                {
+                    "number": "3",
+                    "title": "Expert Tips",
+                    "description": "Receive installation guides and maintenance advice from pros"
+                }
+            ],
+            "type": "array"
+        }
+    },
+    "cta_section": {
+        "badge_text": {
+            "value": "AUTOMOTIVE SERVICES",
+            "type": "text"
+        },
+        "title": {
+            "value": "Performance Excellence",
+            "type": "text"
+        },
+        "description": {
+            "value": "Professional automotive services designed for enthusiasts who demand the best",
+            "type": "textarea"
+        },
+        "bottom_title": {
+            "value": "Ready to Boost Your Performance?",
+            "type": "text"
+        },
+        "bottom_description": {
+            "value": "Join thousands of automotive enthusiasts who trust our expertise for their performance needs",
+            "type": "textarea"
+        },
+        "primary_button_text": {
+            "value": "Shop Performance Parts",
+            "type": "text"
+        },
+        "primary_button_link": {
+            "value": "/products",
+            "type": "text"
+        },
+        "secondary_button_text": {
+            "value": "Get Expert Consultation",
+            "type": "text"
+        },
+        "secondary_button_link": {
+            "value": "/contact",
+            "type": "text"
+        }
+    },
+    "cta_boxes": {
+        "value": [
+            {
+                "icon": "settings",
+                "title": "Custom Builds",
+                "subtitle": "Personalized performance packages"
+            },
+            {
+                "icon": "phone",
+                "title": "Expert Support",
+                "subtitle": "Technical assistance available"
+            },
+            {
+                "icon": "truck",
+                "title": "Fast Shipping",
+                "subtitle": "Same-day shipping on most orders"
+            },
+            {
+                "icon": "award",
+                "title": "Pro Installation",
+                "subtitle": "Certified mechanic network"
+            }
+        ],
+        "type": "array"
+    },
+    "trending_products": {
+        "title": {
+            "value": "Hot Sellers",
+            "type": "text"
+        },
+        "description": {
+            "value": "The most popular automotive parts and accessories that enthusiasts are buying right now.",
+            "type": "textarea"
+        }
+    },
+    "brand_logos": {
+        "title": {
+            "value": "Trusted Brands",
+            "type": "text"
+        },
+        "description": {
+            "value": "We partner with the world's leading automotive manufacturers and performance brands",
+            "type": "textarea"
+        },
+        "bottom_title": {
+            "value": "Can't Find Your Brand?",
+            "type": "text"
+        },
+        "bottom_description": {
+            "value": "We work with hundreds of automotive brands. Contact us for special orders.",
+            "type": "textarea"
+        },
+        "bottom_button_text": {
+            "value": "Contact Us",
+            "type": "text"
+        },
+        "bottom_button_link": {
+            "value": "/contact",
+            "type": "text"
+        },
+        "logos": {
+            "value": [
+                {
+                    "image": "/storage/media/4/brand-logo-cars-1.png"
+                },
+                {
+                    "image": "/storage/media/5/brand-logo-cars-2.png"
+                },
+                {
+                    "image": "/storage/media/6/brand-logo-cars-3.png"
+                },
+                {
+                    "image": "/storage/media/7/brand-logo-cars-4.png"
+                },
+                {
+                    "image": "/storage/media/8/brand-logo-cars-5.png"
+                },
+                {
+                    "image": "/storage/media/9/brand-logo-cars-6.png"
+                }
+            ],
+            "type": "array"
+        }
+    },
+    "blog": {
+        "title": {
+            "value": "Auto Journal",
+            "type": "text"
+        },
+        "description": {
+            "value": "Expert insights, installation guides, and the latest automotive trends from industry professionals and enthusiasts.",
+            "type": "textarea"
+        },
+        "categories": {
+            "value": [
+                {
+                    "icon": "wrench",
+                    "title": "Installation Guides",
+                    "description": "Step-by-step tutorials for DIY enthusiasts"
+                },
+                {
+                    "icon": "zap",
+                    "title": "Performance Tips",
+                    "description": "Expert advice on maximizing your vehicle's potential"
+                },
+                {
+                    "icon": "settings",
+                    "title": "Industry News",
+                    "description": "Latest trends and innovations in automotive"
+                }
+            ],
+            "type": "array"
+        }
+    },
+    "footer": {
+        "description": {
+            "value": "Your trusted source for premium automotive parts and performance upgrades. Serving car enthusiasts and professionals with quality components since day one.",
+            "type": "textarea"
+        },
+        "menu1": {
+            "title": {
+                "value": "Customer Support",
+                "type": "text"
+            },
+            "links": {
+                "value": [
+                    {
+                        "name": "Installation Guide",
+                        "href": "#"
+                    },
+                    {
+                        "name": "Shipping & Returns",
+                        "href": "#"
+                    },
+                    {
+                        "name": "Contact Support",
+                        "href": "#"
+                    },
+                    {
+                        "name": "Technical Help",
+                        "href": "#"
+                    }
+                ],
+                "type": "array"
+            }
+        },
+        "menu2": {
+            "title": {
+                "value": "Company",
+                "type": "text"
+            },
+            "links": {
+                "value": [
+                    {
+                        "name": "About Us",
+                        "href": "#"
+                    },
+                    {
+                        "name": "Careers",
+                        "href": "#"
+                    },
+                    {
+                        "name": "Press",
+                        "href": "#"
+                    },
+                    {
+                        "name": "Privacy Policy",
+                        "href": "#"
+                    }
+                ],
+                "type": "array"
+            }
+        },
+        "contact": {
+            "title": {
+                "value": "Get In Touch",
+                "type": "text"
+            },
+            "address": {
+                "value": "456 Performance Drive, Auto District, TX 75201",
+                "type": "textarea"
+            },
+            "phone": {
+                "value": "+1 (555) AUTO-PARTS",
+                "type": "text"
+            },
+            "email": {
+                "value": "support@autostore.com",
+                "type": "email"
+            }
+        },
+        "business_hours": {
+            "title": {
+                "value": "Service Hours",
+                "type": "text"
+            },
+            "hours": {
+                "value": [
+                    {
+                        "days": "Mon - Fri",
+                        "time": "8:00 AM - 6:00 PM",
+                        "status": "open"
+                    },
+                    {
+                        "days": "Saturday",
+                        "time": "9:00 AM - 4:00 PM",
+                        "status": "open"
+                    },
+                    {
+                        "days": "Sunday",
+                        "time": "Closed",
+                        "status": "closed"
+                    }
+                ],
+                "type": "array"
+            }
+        },
+        "social_links": {
+            "value": [
+                {
+                    "platform": "youtube",
+                    "url": "https://youtube.com"
+                },
+                {
+                    "platform": "instagram",
+                    "url": "https://instagram.com"
+                },
+                {
+                    "platform": "facebook",
+                    "url": "https://facebook.com"
+                },
+                {
+                    "platform": "twitter",
+                    "url": "https://twitter.com"
+                }
+            ],
+            "type": "array"
+        },
+        "copyright_text": {
+            "value": "\u00a9 {year} {store_name}. All rights reserved.",
+            "type": "text"
+        }
+    }
+}

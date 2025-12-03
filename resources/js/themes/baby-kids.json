@@ -1,0 +1,144 @@
+{
+    "header": {
+    "welcome_text": { "value": "Free shipping on orders over $75", "type": "text" },
+    "phone_text": { "value": "Kids Helpline: +1 555 KIDCARE", "type": "text" },
+    "show_welcome": { "value": true, "type": "boolean" },
+    "show_phone": { "value": true, "type": "boolean" }
+  },
+  "hero": {
+    "badge_text": { "value": "New Arrivals 2024", "type": "text" },
+    "title": { "value": "Little Ones, Big Dreams", "type": "text" },
+    "subtitle": { "value": "Discover adorable, comfortable, and safe clothing designed for your precious little ones. From newborns to toddlers, we have everything to keep them happy and stylish.", "type": "textarea" },
+    "button_text": { "value": "Shop Now", "type": "text" },
+    "button_link": { "value": "#", "type": "text" },
+    "image": { "value": "/storage/media/52/home-banner-baby-kids.png", "type": "image" },
+    "overlay_badge_text": { "value": "Premium Quality", "type": "text" },
+    "trust_badges": {
+      "value": [
+        { "title": "Premium Quality", "subtitle": "Safety First" },
+        { "title": "50K+ Families", "subtitle": "Love our products" },
+        { "title": "4.9 Star Rating", "subtitle": "Trusted by parents" }
+      ],
+      "type": "array"
+    }
+  },
+  "categories": {
+    "title": { "value": "Shop by Age", "type": "text" },
+    "description": { "value": "Find the perfect fit for every stage of your child's growth with our age-appropriate collections.", "type": "textarea" },
+    "view_all_text": { "value": "View All Categories", "type": "text" }
+  },
+  "featured_products": {
+    "title": { "value": "Parent Favorites", "type": "text" },
+    "description": { "value": "Loved by parents and kids alike - these bestsellers combine comfort, durability, and adorable designs.", "type": "textarea" }
+  },
+  "newsletter": {
+    "title": { "value": "Join Our Family!", "type": "text" },
+    "subtitle": { "value": "Get exclusive deals, parenting tips, and first access to new arrivals for your little ones!", "type": "textarea" },
+    "placeholder_text": { "value": "Enter your email", "type": "text" },
+    "button_text": { "value": "Subscribe", "type": "text" },
+    "benefits": {
+      "value": [
+        { "title": "New Arrivals", "subtitle": "First to know" },
+        { "title": "Special Offers", "subtitle": "Exclusive deals" },
+        { "title": "Parenting Tips", "subtitle": "Expert advice" }
+      ],
+      "type": "array"
+    }
+  },
+  "cta_section": {
+    "title": { "value": "Why Parents Choose Us", "type": "text" },
+    "description": { "value": "We're committed to making your parenting journey easier with quality products and exceptional service.", "type": "textarea" },
+    "bottom_title": { "value": "Ready to Shop for Your Little One?", "type": "text" },
+    "bottom_description": { "value": "Join thousands of happy parents who trust us for their children's clothing needs.", "type": "textarea" },
+    "primary_button_text": { "value": "Start Shopping", "type": "text" },
+    "secondary_button_text": { "value": "Size Guide", "type": "text" },
+    "cta_boxes": {
+      "value": [
+        { "icon": "gift", "title": "Gift Cards", "subtitle": "Perfect for baby showers" },
+        { "icon": "star", "title": "Size Exchange", "subtitle": "Easy returns & exchanges" },
+        { "icon": "users", "title": "Parent Community", "subtitle": "Join our parenting tips group" },
+        { "icon": "truck", "title": "Fast Delivery", "subtitle": "Same-day delivery available" }
+      ],
+      "type": "array"
+    }
+  },
+  "trending_products": {
+    "title": { "value": "Trending Now", "type": "text" },
+    "description": { "value": "The cutest styles that parents are loving right now - from playtime essentials to special occasion outfits.", "type": "textarea" }
+  },
+  "brand_logos": {
+    "title": { "value": "Trusted by Parents Everywhere", "type": "text" },
+    "description": { "value": "Join our growing community of parents who choose quality and comfort for their little ones.", "type": "textarea" },
+    "brands_title": { "value": "Featured Brands", "type": "text" },
+    "stats": {
+      "value": [
+        { "number": "50K+", "label": "Happy Families" },
+        { "number": "100K+", "label": "Products Sold" },
+        { "number": "99%", "label": "Parent Satisfaction" },
+        { "number": "24/7", "label": "Customer Support" }
+      ],
+      "type": "array"
+    },
+    "logos": {
+      "value": [
+        { "image": "/storage/media/53/brand-logo-baby-kids-1.png" },
+        { "image": "/storage/media/54/brand-logo-baby-kids-2.png" },
+        { "image": "/storage/media/55/brand-logo-baby-kids-3.png" },
+        { "image": "/storage/media/56/brand-logo-baby-kids-4.png" },
+        { "image": "/storage/media/57/brand-logo-baby-kids-5.png" },
+        { "image": "/storage/media/58/brand-logo-baby-kids-6.png" }
+      ],
+      "type": "array"
+    }
+  },
+  "blog": {
+    "title": { "value": "Parenting Corner", "type": "text" },
+    "description": { "value": "Tips, advice, and inspiration for raising happy, healthy children with style and comfort.", "type": "textarea" },
+    "view_all_text": { "value": "View All Articles", "type": "text" },
+    "read_more_text": { "value": "Read More", "type": "text" },
+    "read_text": { "value": "Read", "type": "text" }
+  },
+  "footer": {
+    "description": { "value": "Your trusted partner in dressing your little ones with love, care, and style. Safe, comfortable, and adorable clothing for every precious moment.", "type": "textarea" },
+    "menu1": {
+      "title": { "value": "Customer Care", "type": "text" },
+      "links": {
+        "value": [
+          { "name": "Size Guide", "href": "#" },
+          { "name": "Care Instructions", "href": "#" },
+          { "name": "Contact Us", "href": "#" },
+          { "name": "Safety Info", "href": "#" }
+        ],
+        "type": "array"
+      }
+    },
+    "menu2": {
+      "title": { "value": "Company", "type": "text" },
+      "links": {
+        "value": [
+          { "name": "About Us", "href": "#" },
+          { "name": "Our Mission", "href": "#" },
+          { "name": "Sustainability", "href": "#" },
+          { "name": "Privacy Policy", "href": "#" }
+        ],
+        "type": "array"
+      }
+    },
+    "contact_title": { "value": "Contact Us", "type": "text" },
+    "contact": {
+      "address": { "value": "123 Kids Avenue, Family District, NY 10019", "type": "textarea" },
+      "phone": { "value": "+1 (555) 123-KIDS", "type": "text" },
+      "email": { "value": "hello@babykidsstore.com", "type": "email" }
+    },
+    "social_links": {
+      "value": [
+        { "platform": "instagram", "url": "" },
+        { "platform": "facebook", "url": "" },
+        { "platform": "pinterest", "url": "" },
+        { "platform": "youtube", "url": "" }
+      ],
+      "type": "array"
+    },
+    "copyright_text": { "value": "© {year} {store_name}. All rights reserved.", "type": "text" }
+  }
+}

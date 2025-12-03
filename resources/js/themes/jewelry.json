@@ -1,0 +1,109 @@
+{
+  "header": {
+    "welcome_text": { "value": "Complimentary shipping on orders over $500", "type": "text" },
+    "phone_text": { "value": "Luxury Concierge: +1 555 LUXURY", "type": "text" },
+    "show_welcome": { "value": true, "type": "boolean" },
+    "show_phone": { "value": true, "type": "boolean" }
+  },
+  "hero": {
+    "badge_text": { "value": "Exclusive Collection 2024", "type": "text" },
+    "title": { "value": "Timeless Elegance", "type": "text" },
+    "subtitle": { "value": "Discover exquisite jewelry crafted with precision and passion. Each piece tells a story of heritage and artistry.", "type": "textarea" },
+    "button_text": { "value": "Explore Collection", "type": "text" },
+    "button_link": { "value": "#", "type": "text" },
+    "secondary_button_text": { "value": "Book Consultation", "type": "text" },
+    "secondary_button_link": { "value": "#", "type": "text" },
+    "image": { "value": "/storage/media/21/home-banner-jewelry.png", "type": "image" },
+    "info_boxes": [
+      { "icon": "shield", "title": "Lifetime Warranty", "description": "Protected" },
+      { "icon": "gem", "title": "Certified", "description": "Authentic" },
+      { "icon": "crown", "title": "Bespoke", "description": "Custom Made" }
+    ]
+  },
+  "categories": {
+    "title": { "value": "Curated Collections", "type": "text" },
+    "description": { "value": "Explore our collections of fine jewelry and luxury accessories.", "type": "textarea" }
+  },
+  "featured_products": {
+    "title": { "value": "Signature Pieces", "type": "text" },
+    "description": { "value": "Handpicked masterpieces that embody our commitment to exceptional craftsmanship and timeless beauty.", "type": "textarea" }
+  },
+  "newsletter": {
+    "title": { "value": "Luxury Insider", "type": "text" },
+    "subtitle": { "value": "Be the first to discover new collections and exclusive events.", "type": "textarea" },
+    "placeholder_text": { "value": "Enter your email", "type": "text" },
+    "button_text": { "value": "Join Elite Circle", "type": "text" },
+    "privacy_text": { "value": "Unsubscribe anytime. Privacy guaranteed.", "type": "text" },
+    "features": {
+      "value": [
+        { "title": "Exclusive collection previews" },
+        { "title": "VIP event invitations" },
+        { "title": "Personal styling consultations" }
+      ],
+      "type": "array"
+    }
+  },
+  "cta_boxes": {
+    "value": [
+      { "icon": "diamond", "title": "Custom Design", "subtitle": "Bring your vision to life" },
+      { "icon": "clock", "title": "Watch Services", "subtitle": "Expert maintenance & repair" },
+      { "icon": "gift", "title": "Gift Concierge", "subtitle": "Personalized gift selection" },
+      { "icon": "star", "title": "VIP Membership", "subtitle": "Exclusive privileges & events" }
+    ],
+    "type": "array"
+  },
+  "cta_bottom_section": {
+    "title": { "value": "Experience Luxury Service", "type": "text" },
+    "description": { "value": "Our dedicated team of jewelry experts is here to provide personalized service and ensure your complete satisfaction.", "type": "textarea" },
+    "button_text": { "value": "Contact Our Experts", "type": "text" },
+    "button_link": { "value": "#", "type": "text" }
+  },
+  "trending_products": {
+    "title": { "value": "Coveted Now", "type": "text" },
+    "description": { "value": "The most sought-after pieces from our collection - timeless designs that capture the essence of luxury.", "type": "textarea" }
+  },
+  "trending_stats": {
+    "stat1_value": { "value": "95%", "type": "text" },
+    "stat1_label": { "value": "Customer Satisfaction", "type": "text" },
+    "stat2_value": { "value": "24/7", "type": "text" },
+    "stat2_label": { "value": "Concierge Service", "type": "text" },
+    "stat3_value": { "value": "∞", "type": "text" },
+    "stat3_label": { "value": "Lifetime Warranty", "type": "text" }
+  },
+  "brand_logos": {
+    "logos": {
+      "value": [
+        {"image": "/storage/media/22/brand-logo-jewelry-1.png"},
+        {"image": "/storage/media/23/brand-logo-jewelry-2.png"},
+        {"image": "/storage/media/24/brand-logo-jewelry-3.png"},
+        {"image": "/storage/media/25/brand-logo-jewelry-4.png"}
+      ],
+      "type": "array"
+    }
+  },
+  "blog": {
+    "title": { "value": "Luxury Journal", "type": "text" },
+    "description": { "value": "Insights into the world of fine jewelry, luxury trends, and the artistry behind each exquisite piece.", "type": "textarea" }
+  },
+  "footer": {
+    "description": { "value": "Fine jewelry and luxury goods since our founding.", "type": "textarea" },
+    "menu": {
+      "links": {
+        "value": [
+          {"name": "Jewelry Care", "href": "#"},
+          {"name": "Sizing Guide", "href": "#"},
+          {"name": "Heritage", "href": "#"},
+          {"name": "Contact", "href": "#"}
+        ],
+        "type": "array"
+      }
+    },
+    "social_links": [
+      {"platform": "instagram", "url": "#"},
+      {"platform": "pinterest", "url": "#"},
+      {"platform": "youtube", "url": "#"},
+      {"platform": "facebook", "url": "#"}
+    ],
+    "copyright_text": { "value": "© {year} {store_name}. All rights reserved.", "type": "text" }
+  }
+}

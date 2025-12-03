@@ -1,0 +1,10 @@
+export { default as PerfumeHeroSection } from './PerfumeHeroSection';
+export { default as PerfumeCategorySection } from './PerfumeCategorySection';
+export { default as PerfumeProductCard } from './PerfumeProductCard';
+export { default as PerfumeNewsletterSection } from './PerfumeNewsletterSection';
+export { default as PerfumeFeaturedProductsSection } from './PerfumeFeaturedProductsSection';
+export { default as PerfumeTrendingProductsSection } from './PerfumeTrendingProductsSection';
+export { default as PerfumeCTASection } from './PerfumeCTASection';
+export { default as PerfumeBrandLogoSlider } from './PerfumeBrandLogoSlider';
+export { default as PerfumeBlogSection } from './PerfumeBlogSection';
+export { default as PerfumeFooter } from './PerfumeFooter';

@@ -1,0 +1,12 @@
+export { default as WatchesHeroSection } from './WatchesHeroSection';
+export { default as WatchesCategorySection } from './WatchesCategorySection';
+export { default as WatchesFeaturedProductsSection } from './WatchesFeaturedProductsSection';
+export { default as WatchesNewsletterSection } from './WatchesNewsletterSection';
+export { default as WatchesTrendingProductsSection } from './WatchesTrendingProductsSection';
+export { default as WatchesCTASection } from './WatchesCTASection';
+export { default as WatchesBrandLogoSlider } from './WatchesBrandLogoSlider';
+export { default as WatchesBlogSection } from './WatchesBlogSection';
+export { default as WatchesFooter } from './WatchesFooter';
+export { default as WatchesProductCard } from './WatchesProductCard';
+export { default as WatchesImageGallery } from './WatchesImageGallery';
+export { default as WatchesRelatedProducts } from './WatchesRelatedProducts';

@@ -1,0 +1,182 @@
+{
+  "header": {
+    "welcome_text": { "value": "Free design consultation with every purchase", "type": "text" },
+    "phone_text": { "value": "Design Help: +1 555 DESIGN", "type": "text" },
+    "show_welcome": { "value": true, "type": "boolean" },
+    "show_phone": { "value": true, "type": "boolean" }
+  },
+  "hero": {
+    "badge_text": { "value": "Handcrafted Furniture", "type": "text" },
+    "title": { "value": "Beautiful Spaces Start Here", "type": "text" },
+    "subtitle": { "value": "Discover thoughtfully designed furniture that brings warmth and character to every room in your home.", "type": "textarea" },
+    "button_text": { "value": "Shop Collection", "type": "text" },
+    "button_link": { "value": "#", "type": "text" },
+    "secondary_button_text": { "value": "Design Services", "type": "text" },
+    "secondary_button_link": { "value": "/design-services", "type": "text" },
+    "image": { "value": "/storage/media/70/home-banner-furniture-interior.png", "type": "image" },
+    "stats": {
+      "value": [
+        { "number": "4.9★", "label": "Rating" },
+        { "number": "25+", "label": "Years" }
+      ],
+      "type": "array"
+    },
+    "room_section": {
+      "title": { "value": "Shop by Room", "type": "text" },
+      "rooms": {
+        "value": [
+          { "name": "Living Room" },
+          { "name": "Bedroom" },
+          { "name": "Dining Room" },
+          { "name": "Office" }
+        ],
+        "type": "array"
+      }
+    },
+    "catalog_info": {
+      "title": { "value": "Furniture Catalog 2024", "type": "text" },
+      "description": { "value": "Premium handcrafted collection", "type": "text" },
+      "button_text": { "value": "Browse All", "type": "text" },
+      "button_link": { "value": "#", "type": "text" },
+      "stats": {
+        "value": [
+          { "number": "150+", "label": "Products" },
+          { "number": "12", "label": "Categories" },
+          { "number": "4.9★", "label": "Rating" }
+        ],
+        "type": "array"
+      }
+    },
+    "floating_badge": { "value": "NEW 2024", "type": "text" }
+  },
+  "categories": {
+    "title": { "value": "Shop by Room", "type": "text" },
+    "description": { "value": "Find the perfect pieces for every space in your home.", "type": "textarea" }
+  },
+  "featured_products": {
+    "title": { "value": "Featured Collection", "type": "text" },
+    "description": { "value": "Carefully selected pieces that bring style and comfort to your home.", "type": "textarea" }
+  },
+  "newsletter": {
+    "title": { "value": "Wooden Craft Stories", "type": "text" },
+    "subtitle": { "value": "Join our community of furniture lovers and get exclusive access to new collections, design tips, and artisan stories.", "type": "textarea" },
+    "placeholder_text": { "value": "your@email.com", "type": "text" },
+    "button_text": { "value": "Join Community", "type": "text" },
+    "privacy_text": { "value": "Unsubscribe anytime. Your privacy is protected.", "type": "text" },
+    "benefits": {
+      "value": [
+        { "text": "New handcrafted arrivals" },
+        { "text": "Design tips & inspiration" },
+        { "text": "Exclusive member offers" }
+      ],
+      "type": "array"
+    }
+  },
+  "cta_boxes": {
+    "value": [
+      { "icon": "palette", "title": "Interior Design", "subtitle": "Professional consultation" },
+      { "icon": "ruler", "title": "Custom Pieces", "subtitle": "Made to your specifications" },
+      { "icon": "home", "title": "Room Planning", "subtitle": "3D design service" },
+      { "icon": "award", "title": "Quality Materials", "subtitle": "Sustainable & durable" }
+    ],
+    "type": "array"
+  },
+  "cta_bottom": {
+    "title": { "value": "Ready to Transform Your Space?", "type": "text" },
+    "description": { "value": "Schedule a free consultation with our wooden furniture experts and discover how we can bring your vision to life.", "type": "textarea" },
+    "primary_button_text": { "value": "Book Free Consultation", "type": "text" },
+    "primary_button_link": { "value": "/consultation", "type": "text" },
+    "secondary_button_text": { "value": "View Portfolio", "type": "text" },
+    "secondary_button_link": { "value": "/portfolio", "type": "text" }
+  },
+  "trending_products": {
+    "title": { "value": "Popular Right Now", "type": "text" },
+    "description": { "value": "See what other customers are loving in their homes.", "type": "textarea" }
+  },
+  "design_process": {
+    "title": { "value": "Our Design Process", "type": "text" },
+    "description": { "value": "From concept to completion, we guide you through every step of creating your perfect wooden furniture space.", "type": "textarea" },
+    "steps": {
+      "value": [
+        { "step": "01", "title": "Consultation", "description": "Understanding your vision and needs" },
+        { "step": "02", "title": "Design", "description": "3D visualization and planning" },
+        { "step": "03", "title": "Selection", "description": "Curating the perfect pieces" },
+        { "step": "04", "title": "Installation", "description": "Professional setup and styling" }
+      ],
+      "type": "array"
+    }
+  },
+  "stats_section": {
+    "title": { "value": "Trusted by Thousands", "type": "text" },
+    "stats": {
+      "value": [
+        { "number": "50+", "label": "Premium Brands" },
+        { "number": "25+", "label": "Years Experience" },
+        { "number": "10K+", "label": "Happy Customers" },
+        { "number": "99%", "label": "Satisfaction Rate" }
+      ],
+      "type": "array"
+    }
+  },
+  "brand_logos": {
+    "title": { "value": "Trusted Partners", "type": "text" },
+    "description": { "value": "We work with premium material suppliers and craftsmen worldwide.", "type": "textarea" },
+    "logos": {
+      "value": [
+        {"image": "/storage/media/71/brand-logo-furniture-interior-1.png", "name": "Premium Woods"},
+        {"image": "/storage/media/72/brand-logo-furniture-interior-2.png", "name": "Eco Materials"},
+        {"image": "/storage/media/73/brand-logo-furniture-interior-3.png", "name": "Luxury Finishes"},
+        {"image": "/storage/media/74/brand-logo-furniture-interior-4.png", "name": "Sustainable Sources"},
+        {"image": "/storage/media/75/brand-logo-furniture-interior-5.png", "name": "Artisan Craft"},
+        {"image": "/storage/media/76/brand-logo-furniture-interior-6.png", "name": "Quality Design"}
+      ],
+      "type": "array"
+    }
+  },
+  "blog": {
+    "title": { "value": "Design Inspiration", "type": "text" },
+    "description": { "value": "Ideas and tips to help you create the perfect space.", "type": "textarea" }
+  },
+  "footer": {
+    "description": { "value": "Creating beautiful, comfortable homes with thoughtfully designed furniture and expert design services.", "type": "textarea" },
+    "menu1": {
+      "title": { "value": "Customer Care", "type": "text" },
+      "links": {
+        "value": [
+          {"name": "Design Help", "href": "#"},
+          {"name": "Delivery Info", "href": "#"},
+          {"name": "Care Guide", "href": "#"},
+          {"name": "Contact Us", "href": "#"}
+        ],
+        "type": "array"
+      }
+    },
+    "menu2": {
+      "title": { "value": "Company", "type": "text" },
+      "links": {
+        "value": [
+          {"name": "About Us", "href": "#"},
+          {"name": "Our Story", "href": "#"},
+          {"name": "Showrooms", "href": "#"},
+          {"name": "Privacy", "href": "#"}
+        ],
+        "type": "array"
+      }
+    },
+    "contact": {
+      "address": { "value": "123 Design Street, Furniture District, NY 10001", "type": "textarea" },
+      "phone": { "value": "+1 (555) 123-4567", "type": "text" },
+      "email": { "value": "hello@furniturestore.com", "type": "email" }
+    },
+    "social_links": {
+      "value": [
+        {"platform": "instagram", "url": ""},
+        {"platform": "pinterest", "url": ""},
+        {"platform": "facebook", "url": ""},
+        {"platform": "youtube", "url": ""}
+      ],
+      "type": "array"
+    },
+    "copyright_text": { "value": "© {year} {store_name}. All rights reserved.", "type": "text" }
+  }
+}

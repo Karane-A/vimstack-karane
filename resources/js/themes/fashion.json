@@ -1,0 +1,108 @@
+{
+  "header": {
+    "welcome_text": { "value": "Free shipping on orders over $100", "type": "text" },
+    "phone_text": { "value": "Style Hotline: +1 555 FASHION", "type": "text" },
+    "show_welcome": { "value": true, "type": "boolean" },
+    "show_phone": { "value": true, "type": "boolean" }
+  },
+  "hero": {
+    "badge_text": { "value": "Spring Collection 2024", "type": "text" },
+    "title": { "value": "Define Your Style", "type": "text" },
+    "subtitle": { "value": "Discover the latest trends and timeless pieces that express your unique personality and elevate your wardrobe.", "type": "textarea" },
+    "button_text": { "value": "Shop Now", "type": "text" },
+    "button_link": { "value": "#", "type": "text" },
+    "secondary_button_text": { "value": "View Lookbook", "type": "text" },
+    "secondary_button_link": { "value": "#", "type": "text" },
+    "image": { "value": "/storage/media/36/home-banner-fashion.png", "type": "image" },
+    "info_boxes": [
+      { "icon": "truck", "title": "Express Delivery", "description": "Next-day delivery available" },
+      { "icon": "refresh-cw", "title": "Easy Exchanges", "description": "60-day exchange policy" },
+      { "icon": "award", "title": "Premium Quality", "description": "Curated designer pieces" }
+    ]
+  },
+  "categories": {
+    "title": { "value": "Shop by Style", "type": "text" },
+    "description": { "value": "Explore our curated collections designed for every occasion and personal style preference.", "type": "textarea" }
+  },
+  "featured_products": {
+    "title": { "value": "Editor's Picks", "type": "text" },
+    "description": { "value": "Handpicked by our style experts - the must-have pieces that define this season's trends.", "type": "textarea" }
+  },
+  "newsletter": {
+    "title": { "value": "Style Insider", "type": "text" },
+    "subtitle": { "value": "Be the first to know about new arrivals, exclusive sales, and styling tips from our fashion experts.", "type": "textarea" },
+    "placeholder_text": { "value": "Enter your email for style updates", "type": "text" },
+    "button_text": { "value": "Join Now", "type": "text" },
+    "privacy_text": { "value": "Unsubscribe anytime. Your style, your choice.", "type": "text" }
+  },
+  "cta_boxes": {
+    "value": [
+      { "icon": "sparkles", "title": "Personal Styling", "subtitle": "Free styling consultation" },
+      { "icon": "heart", "title": "Wishlist Alerts", "subtitle": "Get notified when items go on sale" },
+      { "icon": "gift", "title": "Gift Cards", "subtitle": "Perfect for fashion lovers" },
+      { "icon": "users", "title": "VIP Membership", "subtitle": "Exclusive access & rewards" }
+    ],
+    "type": "array"
+  },
+  "trending_products": {
+    "title": { "value": "Trending Now", "type": "text" },
+    "description": { "value": "The hottest pieces everyone's talking about - from runway to street style.", "type": "textarea" }
+  },
+  "brand_logos": {
+    "logos": {
+      "value": [
+        {"image": "/storage/media/37/brand-logo-fashion-1.png"},
+        {"image": "/storage/media/38/brand-logo-fashion-2.png"},
+        {"image": "/storage/media/39/brand-logo-fashion-3.png"},
+        {"image": "/storage/media/40/brand-logo-fashion-4.png"}
+      ],
+      "type": "array"
+    }
+  },
+  "blog": {
+    "title": { "value": "Style Journal", "type": "text" },
+    "description": { "value": "Fashion insights, styling tips, and trend forecasts from industry experts and influencers.", "type": "textarea" }
+  },
+  "footer": {
+    "description": { "value": "Your destination for contemporary fashion and timeless style. Curating the world's best designers and emerging brands.", "type": "textarea" },
+    "menu1": {
+      "title": { "value": "Customer Care", "type": "text" },
+      "links": {
+        "value": [
+          {"name": "Size Guide", "href": "#"},
+          {"name": "Shipping & Returns", "href": "#"},
+          {"name": "Contact Us", "href": "#"},
+          {"name": "Style Advice", "href": "#"}
+        ],
+        "type": "array"
+      }
+    },
+    "menu2": {
+      "title": { "value": "Company", "type": "text" },
+      "links": {
+        "value": [
+          {"name": "About Us", "href": "#"},
+          {"name": "Careers", "href": "#"},
+          {"name": "Press", "href": "#"},
+          {"name": "Privacy Policy", "href": "#"}
+        ],
+        "type": "array"
+      }
+    },
+    "contact": {
+      "address": { "value": "789 Fashion Avenue, Style District, NY 10018", "type": "textarea" },
+      "phone": { "value": "+1 (555) 328-4466", "type": "text" },
+      "email": { "value": "hello@fashionstore.com", "type": "email" }
+    },
+    "social_links": {
+      "value": [
+        {"platform": "instagram", "url": ""},
+        {"platform": "tiktok", "url": ""},
+        {"platform": "pinterest", "url": ""},
+        {"platform": "youtube", "url": ""}
+      ],
+      "type": "array"
+    },
+    "copyright_text": { "value": "© {year} {store_name}. All rights reserved.", "type": "text" }
+  }
+}

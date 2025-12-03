@@ -1,0 +1,111 @@
+{
+  "header": {
+    "welcome_text": { "value": "Free shipping on orders over $500", "type": "text" },
+    "phone_text": { "value": "Timepiece Experts: +1 555 WATCHES", "type": "text" },
+    "show_welcome": { "value": true, "type": "boolean" },
+    "show_phone": { "value": true, "type": "boolean" }
+  },
+  "hero": {
+    "badge_text": { "value": "Swiss Precision 2024", "type": "text" },
+    "title": { "value": "Master Time", "type": "text" },
+    "subtitle": { "value": "Discover exceptional timepieces that blend traditional craftsmanship with modern innovation, designed for those who value precision and elegance.", "type": "textarea" },
+    "button_text": { "value": "Explore Collection", "type": "text" },
+    "button_link": { "value": "#", "type": "text" },
+    "secondary_button_text": { "value": "Watch Guide", "type": "text" },
+    "secondary_button_link": { "value": "#", "type": "text" },
+    "image": { "value": "/storage/media/61/home-banner-watches.png", "type": "image" }
+  },
+  "categories": {
+    "title": { "value": "Shop by Collection", "type": "text" },
+    "description": { "value": "Explore our curated selection of luxury timepieces, from classic dress watches to modern sports chronographs.", "type": "textarea" }
+  },
+  "featured_products": {
+    "title": { "value": "Master Collection", "type": "text" },
+    "description": { "value": "Handpicked by our horologists - exceptional timepieces that represent the pinnacle of watchmaking excellence.", "type": "textarea" }
+  },
+  "newsletter": {
+    "title": { "value": "Timekeeper's Circle", "type": "text" },
+    "subtitle": { "value": "Join our exclusive community for early access to new releases, collector insights, and horological expertise.", "type": "textarea" },
+    "placeholder_text": { "value": "Enter your email for exclusive updates", "type": "text" },
+    "button_text": { "value": "Join Circle", "type": "text" },
+    "privacy_text": { "value": "Unsubscribe anytime. Your time, your choice.", "type": "text" }
+  },
+  "cta_boxes": {
+    "value": [
+      { "icon": "settings", "title": "Watch Services", "subtitle": "Professional maintenance & repair" },
+      { "icon": "star", "title": "Collector's Club", "subtitle": "Exclusive access to rare pieces" },
+      { "icon": "gift", "title": "Gift Certificates", "subtitle": "Perfect for watch enthusiasts" },
+      { "icon": "users", "title": "VIP Concierge", "subtitle": "Personal shopping assistance" }
+    ],
+    "type": "array"
+  },
+  "cta_bottom": {
+    "title": { "value": "Join the Elite Circle", "type": "text" },
+    "subtitle": { "value": "Experience personalized service and exclusive access to the world's finest timepieces.", "type": "textarea" },
+    "button_text": { "value": "Get Started", "type": "text" },
+    "button_link": { "value": "/contact", "type": "text" }
+  },
+  "trending_products": {
+    "title": { "value": "Trending Timepieces", "type": "text" },
+    "description": { "value": "The most sought-after watches by collectors and enthusiasts - from vintage classics to modern innovations.", "type": "textarea" }
+  },
+  "brand_logos": {
+    "logos": {
+      "value": [
+        {"image": "/storage/media/62/brand-logo-watches-1.png"},
+        {"image": "/storage/media/63/brand-logo-watches-2.png"},
+        {"image": "/storage/media/64/brand-logo-watches-3.png"},
+        {"image": "/storage/media/65/brand-logo-watches-4.png"},
+        {"image": "/storage/media/66/brand-logo-watches-5.png"},
+        {"image": "/storage/media/67/brand-logo-watches-6.png"}
+      ],
+      "type": "array"
+    }
+  },
+  "blog": {
+    "title": { "value": "Horological Journal", "type": "text" },
+    "description": { "value": "Expert insights into watchmaking, collecting tips, and the latest developments in the world of luxury timepieces.", "type": "textarea" }
+  },
+  "footer": {
+    "description": { "value": "Your premier destination for luxury timepieces. Curating the world's finest watches with uncompromising attention to quality and authenticity.", "type": "textarea" },
+    "menu1": {
+      "title": { "value": "Customer Service", "type": "text" },
+      "links": {
+        "value": [
+          {"name": "Watch Care Guide", "href": "#"},
+          {"name": "Warranty & Service", "href": "#"},
+          {"name": "Contact Experts", "href": "#"},
+          {"name": "Authentication", "href": "#"}
+        ],
+        "type": "array"
+      }
+    },
+    "menu2": {
+      "title": { "value": "Company", "type": "text" },
+      "links": {
+        "value": [
+          {"name": "About Us", "href": "#"},
+          {"name": "Careers", "href": "#"},
+          {"name": "Press", "href": "#"},
+          {"name": "Privacy Policy", "href": "#"}
+        ],
+        "type": "array"
+      }
+    },
+    "contact": {
+      "address": { "value": "456 Horological Avenue, Timepiece District, NY 10019", "type": "textarea" },
+      "phone": { "value": "+1 (555) 928-2463", "type": "text" },
+      "email": { "value": "hello@watchstore.com", "type": "email" }
+    },
+    "social_links": {
+      "value": [
+        {"platform": "instagram", "url": ""},
+        {"platform": "youtube", "url": ""},
+        {"platform": "facebook", "url": ""},
+        {"platform": "twitter", "url": ""}
+      ],
+      "type": "array"
+    },
+    "copyright_text": { "value": "© {year} {store_name}. All rights reserved.", "type": "text" }
+  }
+}

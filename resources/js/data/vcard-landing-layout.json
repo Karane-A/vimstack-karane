@@ -1,0 +1,239 @@
+[
+  {
+    "id": "header-1",
+    "type": "header",
+    "name": "Header",
+    "icon": "Navigation",
+    "config": {
+      "logo": "StoreGo",
+      "menuItems": ["Features", "Pricing", "Themes", "Support"],
+      "buttonText": "Get Started Free"
+    }
+  },
+  {
+    "id": "hero-1",
+    "type": "hero",
+    "name": "Hero Section",
+    "icon": "Layout",
+    "config": {
+      "variant": "variant3",
+      "title": "Create Multiple Online Stores in Minutes",
+      "subtitle": "Build and manage unlimited e-commerce stores with professional themes. Choose from 10+ themes and 30+ payment gateways.",
+      "buttonText": "Create Your Store",
+      "buttonUrl": "/register",
+      "announcement": "New: Advanced Store Analytics & Multi-Theme Support"
+    }
+  },
+  {
+    "id": "features-1",
+    "type": "features",
+    "name": "Features",
+    "icon": "Star",
+    "config": {
+      "title": "Everything You Need for E-commerce Success",
+      "items": [
+        {
+          "icon": "Zap",
+          "title": "Multi-Store Management",
+          "description": "Create and manage unlimited online stores from a single dashboard."
+        },
+        {
+          "icon": "Shield",
+          "title": "Professional Themes",
+          "description": "Choose from 10+ professional themes including Fashion, Electronics, Beauty, and more."
+        },
+        {
+          "icon": "Users",
+          "title": "Customer Management",
+          "description": "Manage customers, orders, and reviews across all your stores efficiently."
+        },
+        {
+          "icon": "Grid3X3",
+          "title": "Payment Gateways",
+          "description": "Integrate with 30+ payment gateways including Stripe, PayPal, Razorpay, and more."
+        },
+        {
+          "icon": "MousePointer",
+          "title": "Product Management",
+          "description": "Add products, manage inventory, and track sales across all your stores."
+        },
+        {
+          "icon": "Briefcase",
+          "title": "Blog System",
+          "description": "Built-in blog system for each store to boost SEO and customer engagement."
+        }
+      ]
+    }
+  },
+  {
+    "id": "about-1",
+    "type": "about",
+    "name": "About",
+    "icon": "Image",
+    "config": {
+      "title": "Why Choose StoreGo?",
+      "description": "Join over 1,000+ entrepreneurs who've built successful online businesses. Our platform combines powerful e-commerce features with intuitive design to make store management effortless and effective.",
+      "buttonText": "Learn More"
+    }
+  },
+  {
+    "id": "services-1",
+    "type": "services",
+    "name": "Services",
+    "icon": "DollarSign",
+    "config": {
+      "title": "Choose Your Perfect Plan",
+      "services": [
+        {
+          "title": "Starter",
+          "description": "Perfect for individuals starting their e-commerce journey",
+          "price": "Free",
+          "features": [
+            "1 Online Store",
+            "Basic Themes",
+            "Product Management",
+            "Basic Analytics",
+            "Email Support"
+          ]
+        },
+        {
+          "title": "Professional",
+          "description": "Ideal for entrepreneurs and small businesses",
+          "price": "$9",
+          "features": [
+            "5 Online Stores",
+            "All Premium Themes",
+            "30+ Payment Gateways",
+            "Advanced Analytics",
+            "Custom Domain",
+            "Priority Support",
+            "Blog System"
+          ]
+        },
+        {
+          "title": "Business",
+          "description": "Perfect for agencies and growing businesses",
+          "price": "$29",
+          "features": [
+            "Unlimited Stores",
+            "Multi-Store Management",
+            "White-label Solution",
+            "API Access",
+            "Advanced Integrations",
+            "Dedicated Support",
+            "Custom Development"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "testimonials-1",
+    "type": "testimonials",
+    "name": "Testimonials",
+    "icon": "MessageSquare",
+    "config": {
+      "title": "Trusted by Professionals Worldwide",
+      "testimonials": [
+        {
+          "content": "StoreGo transformed how I manage my online stores. I've increased sales by 300% and managing multiple stores is now effortless.",
+          "name": "Sarah Johnson",
+          "role": "E-commerce Entrepreneur",
+          "title": "Game-changer for e-commerce"
+        },
+        {
+          "content": "The multi-theme feature helps me target different markets effectively. It's like having multiple specialized stores from one dashboard.",
+          "name": "Michael Chen",
+          "role": "Online Store Owner",
+          "title": "Invaluable for multi-store management"
+        },
+        {
+          "content": "Our entire team uses StoreGo for client stores. The professional themes and easy setup process impresses clients every time.",
+          "name": "Emily Rodriguez",
+          "role": "Digital Agency Owner",
+          "title": "Professional and efficient"
+        },
+        {
+          "content": "I love how I can manage all my stores from one place. The payment gateway integrations work flawlessly across all themes.",
+          "name": "David Park",
+          "role": "Multi-Store Owner",
+          "title": "Seamless management"
+        }
+      ]
+    }
+  },
+  {
+    "id": "cta-1",
+    "type": "cta",
+    "name": "Call to Action",
+    "icon": "Zap",
+    "config": {
+      "title": "Ready to Transform Your E-commerce Business?",
+      "description": "Join 1,000+ entrepreneurs who've built successful online stores. Create your professional store in under 5 minutes.",
+      "buttonText": "Start Free Trial"
+    }
+  },
+  {
+    "id": "contact-1",
+    "type": "contact",
+    "name": "Contact",
+    "icon": "Mail",
+    "config": {
+      "title": "Get in Touch",
+      "description": "Have questions about StoreGo? Our team is here to help you get started with your online stores.",
+      "email": "hello@storego.com",
+      "phone": "+1 (555) 123-4567",
+      "address": "123 Innovation Drive, Tech City, TC 12345"
+    }
+  },
+  {
+    "id": "footer-1",
+    "type": "footer",
+    "name": "Footer",
+    "icon": "Minus",
+    "config": {
+      "companyName": "StoreGo",
+      "description": "The future of multi-store e-commerce. Create, manage, and scale your online stores with ease.",
+      "links": [
+        {
+          "title": "Features",
+          "url": "/features"
+        },
+        {
+          "title": "Pricing",
+          "url": "/pricing"
+        },
+        {
+          "title": "Themes",
+          "url": "/themes"
+        },
+        {
+          "title": "Support",
+          "url": "/support"
+        },
+        {
+          "title": "Privacy Policy",
+          "url": "/privacy"
+        },
+        {
+          "title": "Terms of Service",
+          "url": "/terms"
+        }
+      ],
+      "socialLinks": [
+        {
+          "platform": "Twitter",
+          "url": "https://twitter.com/storego"
+        },
+        {
+          "platform": "LinkedIn",
+          "url": "https://linkedin.com/company/storego"
+        },
+        {
+          "platform": "Facebook",
+          "url": "https://facebook.com/storego"
+        }
+      ]
+    }
+  }
+]

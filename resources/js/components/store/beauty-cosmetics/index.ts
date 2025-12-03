@@ -1,0 +1,10 @@
+export { default as BeautyHeroSection } from './BeautyHeroSection';
+export { default as BeautyCategorySection } from './BeautyCategorySection';
+export { default as BeautyProductCard } from './BeautyProductCard';
+export { default as BeautyNewsletterSection } from './BeautyNewsletterSection';
+export { default as BeautyFeaturedProductsSection } from './BeautyFeaturedProductsSection';
+export { default as BeautyTrendingProductsSection } from './BeautyTrendingProductsSection';
+export { default as BeautyCTASection } from './BeautyCTASection';
+export { default as BeautyBrandLogoSlider } from './BeautyBrandLogoSlider';
+export { default as BeautyBlogSection } from './BeautyBlogSection';
+export { default as BeautyFooter } from './BeautyFooter';

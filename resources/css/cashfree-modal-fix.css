@@ -1,0 +1,20 @@
+/* Cashfree Modal Z-index Fix */
+.cashfree-modal-backdrop,
+.cashfree-modal,
+[id*="cashfree"],
+[class*="cashfree"] {
+  z-index: 99999 !important;
+}
+
+/* Ensure Cashfree modal content is clickable */
+.cashfree-modal-content,
+.cashfree-modal iframe,
+[id*="cashfree"] iframe {
+  pointer-events: auto !important;
+  z-index: 100000 !important;
+}
+
+/* Fix backdrop click issues */
+.cashfree-modal-backdrop {
+  pointer-events: auto !important;
+}

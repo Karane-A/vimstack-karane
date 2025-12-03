@@ -1,0 +1,11 @@
+export { default as JewelryHeroSection } from './JewelryHeroSection';
+export { default as JewelryCategorySection } from './JewelryCategorySection';
+export { default as JewelryFeaturedProductsSection } from './JewelryFeaturedProductsSection';
+export { default as JewelryNewsletterSection } from './JewelryNewsletterSection';
+export { default as JewelryTrendingProductsSection } from './JewelryTrendingProductsSection';
+export { default as JewelryCTASection } from './JewelryCTASection';
+export { default as JewelryBrandLogoSlider } from './JewelryBrandLogoSlider';
+export { default as JewelryBlogSection } from './JewelryBlogSection';
+export { default as JewelryFooter } from './JewelryFooter';
+export { default as JewelryProductCard } from './JewelryProductCard';
+export { default as JewelryBlogCard } from './JewelryBlogCard';

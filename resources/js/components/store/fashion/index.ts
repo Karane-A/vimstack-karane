@@ -1,0 +1,12 @@
+export { default as FashionHeroSection } from './FashionHeroSection';
+export { default as FashionCategorySection } from './FashionCategorySection';
+export { default as FashionProductCard } from './FashionProductCard';
+export { default as FashionNewsletterSection } from './FashionNewsletterSection';
+export { default as FashionFeaturedProductsSection } from './FashionFeaturedProductsSection';
+export { default as FashionTrendingProductsSection } from './FashionTrendingProductsSection';
+export { default as FashionCTASection } from './FashionCTASection';
+export { default as FashionBrandLogoSlider } from './FashionBrandLogoSlider';
+export { default as FashionBlogSection } from './FashionBlogSection';
+export { default as FashionFooter } from './FashionFooter';
+export { default as FashionRelatedProducts } from './FashionRelatedProducts';
+export { default as FashionImageGallery } from './FashionImageGallery';
