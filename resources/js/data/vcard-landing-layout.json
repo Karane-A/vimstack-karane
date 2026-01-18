@@ -5,7 +5,7 @@
     "name": "Header",
     "icon": "Navigation",
     "config": {
-      "logo": "StoreGo",
+      "logo": "Vimstack",
       "menuItems": ["Features", "Pricing", "Themes", "Support"],
       "buttonText": "Get Started Free"
     }
@@ -71,7 +71,7 @@
     "name": "About",
     "icon": "Image",
     "config": {
-      "title": "Why Choose StoreGo?",
+      "title": "Why Choose Vimstack?",
       "description": "Join over 1,000+ entrepreneurs who've built successful online businesses. Our platform combines powerful e-commerce features with intuitive design to make store management effortless and effective.",
       "buttonText": "Learn More"
     }
@@ -136,7 +136,7 @@
       "title": "Trusted by Professionals Worldwide",
       "testimonials": [
         {
-          "content": "StoreGo transformed how I manage my online stores. I've increased sales by 300% and managing multiple stores is now effortless.",
+          "content": "Vimstack transformed how I manage my online stores. I've increased sales by 300% and managing multiple stores is now effortless.",
           "name": "Sarah Johnson",
           "role": "E-commerce Entrepreneur",
           "title": "Game-changer for e-commerce"
@@ -148,7 +148,7 @@
           "title": "Invaluable for multi-store management"
         },
         {
-          "content": "Our entire team uses StoreGo for client stores. The professional themes and easy setup process impresses clients every time.",
+          "content": "Our entire team uses Vimstack for client stores. The professional themes and easy setup process impresses clients every time.",
           "name": "Emily Rodriguez",
           "role": "Digital Agency Owner",
           "title": "Professional and efficient"
@@ -180,8 +180,8 @@
     "icon": "Mail",
     "config": {
       "title": "Get in Touch",
-      "description": "Have questions about StoreGo? Our team is here to help you get started with your online stores.",
-      "email": "hello@storego.com",
+      "description": "Have questions about Vimstack? Our team is here to help you get started with your online stores.",
+      "email": "hello@vimstack.com",
       "phone": "+1 (555) 123-4567",
       "address": "123 Innovation Drive, Tech City, TC 12345"
     }
@@ -192,7 +192,7 @@
     "name": "Footer",
     "icon": "Minus",
     "config": {
-      "companyName": "StoreGo",
+      "companyName": "Vimstack",
       "description": "The future of multi-store e-commerce. Create, manage, and scale your online stores with ease.",
       "links": [
         {
@@ -223,15 +223,15 @@
       "socialLinks": [
         {
           "platform": "Twitter",
-          "url": "https://twitter.com/storego"
+          "url": "https://twitter.com/vimstack"
         },
         {
           "platform": "LinkedIn",
-          "url": "https://linkedin.com/company/storego"
+          "url": "https://linkedin.com/company/vimstack"
         },
         {
           "platform": "Facebook",
-          "url": "https://facebook.com/storego"
+          "url": "https://facebook.com/vimstack"
         }
       ]
     }

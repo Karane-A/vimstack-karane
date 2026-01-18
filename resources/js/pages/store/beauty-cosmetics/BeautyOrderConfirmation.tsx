@@ -47,7 +47,6 @@ interface BeautyOrderConfirmationProps {
   wishlistCount?: number;
   isLoggedIn?: boolean;
   userName?: string;
-  whatsappRedirectUrl?: string;
   customPages?: Array<{
     id: number;
     name: string;
@@ -63,14 +62,12 @@ export default function BeautyOrderConfirmation({
   wishlistCount = 0,
   isLoggedIn = true,
   userName = '',
-  whatsappRedirectUrl,
   customPages = [],
 }: BeautyOrderConfirmationProps) {
   const { props } = usePage();
   const storeSlug = props.store?.slug || store.slug || 'demo';
   const storeSettings = props.storeSettings || {};
   const currencies = props.currencies || [];
-  const [showWhatsAppPrompt, setShowWhatsAppPrompt] = useState(false);
   
   const defaultOrder = {
     id: 'ORD-12345',
@@ -109,37 +106,6 @@ export default function BeautyOrderConfirmation({
     });
   };
 
-  // Auto redirect to WhatsApp like WhatsStore
-  useEffect(() => {
-    if (whatsappRedirectUrl && orderData.payment_method === 'WhatsApp') {
-      // Show prompt for 2 seconds then auto redirect
-      setShowWhatsAppPrompt(true);
-      
-      const timer = setTimeout(() => {
-        window.open(whatsappRedirectUrl, '_blank');
-        // Clear session after opening WhatsApp
-        fetch('/api/clear-whatsapp-session', { method: 'POST' });
-      }, 2000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [whatsappRedirectUrl, orderData]);
-  
-  // Handle WhatsApp redirect
-  const handleWhatsAppClick = () => {
-    if (whatsappRedirectUrl) {
-      window.open(whatsappRedirectUrl, '_blank');
-      setShowWhatsAppPrompt(false);
-      // Clear session after opening WhatsApp
-      fetch('/api/clear-whatsapp-session', { method: 'POST' });
-    }
-  };
-  
-  // Dismiss WhatsApp prompt
-  const dismissWhatsAppPrompt = () => {
-    setShowWhatsAppPrompt(false);
-  };
-
   return (
     <>
       <Head title={`Order Confirmation - ${store.name}`} />
@@ -175,39 +141,6 @@ export default function BeautyOrderConfirmation({
             </div>
           </div>
         </div>
-
-        {/* WhatsApp Auto Redirect */}
-        {showWhatsAppPrompt && whatsappRedirectUrl && (
-          <div className="bg-green-50 border-t border-b border-green-200 py-16">
-            <div className="container mx-auto px-4">
-              <div className="max-w-2xl mx-auto text-center">
-                <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-green-100 mb-8 shadow-2xl">
-                  <MessageCircle className="h-12 w-12 text-green-600 animate-pulse" />
-                </div>
-                <h3 className="text-4xl font-light text-green-800 mb-6">
-                  Opening WhatsApp...
-                </h3>
-                <p className="text-xl text-green-700 leading-relaxed mb-8">
-                  Your order confirmation will open in WhatsApp automatically.
-                </p>
-                <div className="flex justify-center gap-6">
-                  <button
-                    onClick={handleWhatsAppClick}
-                    className="bg-green-600 text-white px-8 py-4 rounded-full font-semibold hover:bg-green-700 transition-colors shadow-lg hover:shadow-xl"
-                  >
-                    Open Now
-                  </button>
-                  <button
-                    onClick={dismissWhatsAppPrompt}
-                    className="border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-full font-semibold hover:border-green-600 hover:text-green-600 transition-colors"
-                  >
-                    Skip
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Order Summary */}
         <div className="bg-white py-20">

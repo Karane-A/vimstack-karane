@@ -343,7 +343,6 @@ class CompanyController extends Controller
             $features = [];
             if ($plan->enable_custdomain === 'on') $features[] = __('Custom Domain');
             if ($plan->enable_custsubdomain === 'on') $features[] = __('Subdomain');
-            if ($plan->enable_chatgpt === 'on') $features[] = __('AI Integration');
             
             // Calculate yearly price
             $yearlyPrice = $plan->yearly_price;

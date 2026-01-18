@@ -254,6 +254,185 @@ class ProductController extends BaseController
     }
     
     /**
+     * Download CSV template for bulk import.
+     */
+    public function downloadTemplate()
+    {
+        $user = Auth::user();
+        $currentStoreId = getCurrentStoreId($user);
+        
+        // Get categories for reference
+        $categories = Category::where('store_id', $currentStoreId)
+                            ->where('is_active', true)
+                            ->pluck('name')
+                            ->toArray();
+        
+        $csvData = [];
+        // Header row with instructions
+        $csvData[] = ['name', 'sku', 'description', 'price', 'sale_price', 'stock', 'category_name', 'is_active', 'cover_image', 'images'];
+        // Example row
+        $csvData[] = [
+            'Sample Product',
+            'SKU-001',
+            'This is a sample product description',
+            '99.99',
+            '79.99',
+            '100',
+            !empty($categories) ? $categories[0] : 'General',
+            '1',
+            '',
+            ''
+        ];
+        // Instructions row
+        $csvData[] = [
+            'INSTRUCTIONS: name (required)',
+            'sku (optional)',
+            'description (optional)',
+            'price (required, numeric)',
+            'sale_price (optional, numeric)',
+            'stock (required, integer)',
+            'category_name (optional - must match existing category)',
+            'is_active (1=active, 0=inactive)',
+            'cover_image (optional - leave empty, add later)',
+            'images (optional - comma-separated URLs, leave empty to add later)'
+        ];
+        
+        $filename = 'products-import-template.csv';
+        
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+        
+        $callback = function() use ($csvData) {
+            $file = fopen('php://output', 'w');
+            foreach ($csvData as $row) {
+                fputcsv($file, $row);
+            }
+            fclose($file);
+        };
+        
+        return response()->stream($callback, 200, $headers);
+    }
+    
+    /**
+     * Import products from CSV.
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt|max:10240' // Max 10MB
+        ]);
+        
+        $user = Auth::user();
+        $currentStoreId = getCurrentStoreId($user);
+        
+        $file = $request->file('csv_file');
+        $csvData = array_map('str_getcsv', file($file->getRealPath()));
+        
+        // Remove header row
+        $headers = array_shift($csvData);
+        
+        // Remove instructions row if present
+        if (!empty($csvData) && stripos($csvData[0][0], 'INSTRUCTIONS') !== false) {
+            array_shift($csvData);
+        }
+        
+        $imported = 0;
+        $skipped = 0;
+        $errors = [];
+        
+        // Get all categories for this store
+        $categories = Category::where('store_id', $currentStoreId)
+                            ->where('is_active', true)
+                            ->get()
+                            ->keyBy('name');
+        
+        foreach ($csvData as $index => $row) {
+            $rowNumber = $index + 2; // +2 because we removed header and array is 0-indexed
+            
+            // Skip empty rows
+            if (empty(array_filter($row))) {
+                continue;
+            }
+            
+            try {
+                // Map CSV columns
+                $name = $row[0] ?? null;
+                $sku = $row[1] ?? null;
+                $description = $row[2] ?? null;
+                $price = $row[3] ?? null;
+                $sale_price = $row[4] ?? null;
+                $stock = $row[5] ?? 0;
+                $category_name = $row[6] ?? null;
+                $is_active = isset($row[7]) ? (bool)$row[7] : true;
+                $cover_image = $row[8] ?? null;
+                $images = $row[9] ?? null;
+                
+                // Validate required fields
+                if (empty($name)) {
+                    $errors[] = "Row $rowNumber: Product name is required";
+                    $skipped++;
+                    continue;
+                }
+                
+                if (empty($price) || !is_numeric($price)) {
+                    $errors[] = "Row $rowNumber: Valid price is required for '$name'";
+                    $skipped++;
+                    continue;
+                }
+                
+                // Check product limit
+                $productCheck = $user->canAddProductToStore($currentStoreId);
+                if (!$productCheck['allowed']) {
+                    $errors[] = "Product limit reached. Cannot import more products.";
+                    break;
+                }
+                
+                // Find category ID
+                $category_id = null;
+                if (!empty($category_name) && isset($categories[$category_name])) {
+                    $category_id = $categories[$category_name]->id;
+                }
+                
+                // Create product
+                Product::create([
+                    'name' => $name,
+                    'sku' => $sku,
+                    'description' => $description,
+                    'price' => $price,
+                    'sale_price' => $sale_price && is_numeric($sale_price) ? $sale_price : null,
+                    'stock' => is_numeric($stock) ? (int)$stock : 0,
+                    'category_id' => $category_id,
+                    'store_id' => $currentStoreId,
+                    'is_active' => $is_active,
+                    'cover_image' => $cover_image,
+                    'images' => $images,
+                ]);
+                
+                $imported++;
+                
+            } catch (\Exception $e) {
+                $errors[] = "Row $rowNumber: " . $e->getMessage();
+                $skipped++;
+            }
+        }
+        
+        $message = "Import complete! $imported products imported.";
+        if ($skipped > 0) {
+            $message .= " $skipped products skipped.";
+        }
+        if (!empty($errors)) {
+            $message .= " Errors: " . implode('; ', array_slice($errors, 0, 5));
+            if (count($errors) > 5) {
+                $message .= " and " . (count($errors) - 5) . " more errors.";
+            }
+        }
+        
+        return redirect()->back()->with($imported > 0 ? 'success' : 'error', $message);
+    }
+    
+    /**
      * Export products data as CSV.
      */
     public function export()
@@ -266,30 +445,21 @@ class ProductController extends BaseController
                         ->get();
         
         $csvData = [];
-        $csvData[] = ['Product Name', 'SKU', 'Category', 'Price', 'Sale Price', 'Stock', 'Variants', 'Status', 'Created Date'];
+        // Header row matching import template
+        $csvData[] = ['name', 'sku', 'description', 'price', 'sale_price', 'stock', 'category_name', 'is_active', 'cover_image', 'images'];
         
         foreach ($products as $product) {
-            $variantDetails = 'No variants';
-            if ($product->variants && is_array($product->variants) && count($product->variants) > 0) {
-                $variantList = [];
-                foreach ($product->variants as $variant) {
-                    if (is_array($variant) && isset($variant['name'])) {
-                        $variantList[] = $variant['name'] . (isset($variant['price']) ? ' (' . formatStoreCurrency($variant['price'], $user->id, $currentStoreId) . ')' : '');
-                    }
-                }
-                $variantDetails = implode('; ', $variantList);
-            }
-            
             $csvData[] = [
                 $product->name,
-                $product->sku ?: 'Not set',
-                $product->category ? $product->category->name : 'Uncategorized',
-                formatStoreCurrency($product->price, $user->id, $currentStoreId),
-                $product->sale_price ? formatStoreCurrency($product->sale_price, $user->id, $currentStoreId) : 'Not set',
+                $product->sku ?: '',
+                $product->description ?: '',
+                $product->price,
+                $product->sale_price ?: '',
                 $product->stock,
-                $variantDetails,
-                $product->is_active ? 'Active' : 'Inactive',
-                $product->created_at->format('Y-m-d H:i:s')
+                $product->category ? $product->category->name : '',
+                $product->is_active ? '1' : '0',
+                $product->cover_image ?: '',
+                $product->images ?: '',
             ];
         }
         

@@ -121,7 +121,30 @@ class AuthController extends Controller
                 'email' => $request->email,
                 'password' => $request->password,
                 'is_active' => true,
+                'customer_group' => 'regular', // Upgrade from guest to regular
             ]);
+
+            // Link any existing orders from this email to the new customer account
+            // This includes guest orders (where customer_group = 'guest')
+            $guestCustomer = Customer::where('store_id', $store->id)
+                ->where('email', $request->email)
+                ->where('customer_group', 'guest')
+                ->first();
+            
+            if ($guestCustomer) {
+                // Update all orders from the guest customer to the new registered customer
+                \App\Models\Order::where('store_id', $store->id)
+                    ->where('customer_email', $request->email)
+                    ->update(['customer_id' => $customer->id]);
+                
+                // Delete the guest customer record (optional, or you could mark it as merged)
+                $guestCustomer->delete();
+            } else {
+                // Just link orders by email if no guest customer exists
+                \App\Models\Order::where('store_id', $store->id)
+                    ->where('customer_email', $request->email)
+                    ->update(['customer_id' => $customer->id]);
+            }
 
             Auth::guard('customer')->login($customer);
 

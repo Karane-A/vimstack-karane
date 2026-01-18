@@ -34,5 +34,5 @@
   <rect x="570" y="200" width="70" height="8" rx="4" fill="#f59e0b"/>
   
   <!-- Text overlay -->
-  <text x="400" y="550" font-family="Arial, sans-serif" font-size="24" fill="#ffffff" text-anchor="middle" font-weight="bold">StoreGo E-commerce Platform</text>
+  <text x="400" y="550" font-family="Arial, sans-serif" font-size="24" fill="#ffffff" text-anchor="middle" font-weight="bold">Vimstack E-commerce Platform</text>
 </svg>

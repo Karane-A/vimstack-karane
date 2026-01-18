@@ -29,7 +29,6 @@ class PlanController extends Controller
             if ($plan->enable_custdomain === 'on') $features[] = 'Custom Domain';
             if ($plan->enable_custsubdomain === 'on') $features[] = 'Subdomain';
             if ($plan->pwa_business === 'on') $features[] = 'PWA';
-            if ($plan->enable_chatgpt === 'on') $features[] = 'AI Integration';
             if ($plan->enable_custom_pages === 'on') $features[] = 'Custom Pages';
             if ($plan->enable_blog === 'on') $features[] = 'Blog';
             if ($plan->enable_shipping_method === 'on') $features[] = 'Shipping Method';
@@ -133,7 +132,6 @@ class PlanController extends Controller
             'enable_custdomain' => 'nullable|in:on,off',
             'enable_custsubdomain' => 'nullable|in:on,off',
             'pwa_business' => 'nullable|in:on,off',
-            'enable_chatgpt' => 'nullable|in:on,off',
             'enable_custom_pages' => 'nullable|in:on,off',
             'enable_blog' => 'nullable|in:on,off',
             'enable_shipping_method' => 'nullable|in:on,off',
@@ -148,7 +146,6 @@ class PlanController extends Controller
         $validated['enable_custdomain'] = $validated['enable_custdomain'] ?? 'off';
         $validated['enable_custsubdomain'] = $validated['enable_custsubdomain'] ?? 'off';
         $validated['pwa_business'] = $validated['pwa_business'] ?? 'off';
-        $validated['enable_chatgpt'] = $validated['enable_chatgpt'] ?? 'off';
         $validated['enable_custom_pages'] = $validated['enable_custom_pages'] ?? 'off';
         $validated['enable_blog'] = $validated['enable_blog'] ?? 'off';
         $validated['enable_shipping_method'] = $validated['enable_shipping_method'] ?? 'off';
@@ -205,7 +202,6 @@ class PlanController extends Controller
             'enable_custdomain' => 'nullable|in:on,off',
             'enable_custsubdomain' => 'nullable|in:on,off',
             'pwa_business' => 'nullable|in:on,off',
-            'enable_chatgpt' => 'nullable|in:on,off',
             'enable_custom_pages' => 'nullable|in:on,off',
             'enable_blog' => 'nullable|in:on,off',
             'enable_shipping_method' => 'nullable|in:on,off',
@@ -220,7 +216,6 @@ class PlanController extends Controller
         $validated['enable_custdomain'] = $validated['enable_custdomain'] ?? 'off';
         $validated['enable_custsubdomain'] = $validated['enable_custsubdomain'] ?? 'off';
         $validated['pwa_business'] = $validated['pwa_business'] ?? 'off';
-        $validated['enable_chatgpt'] = $validated['enable_chatgpt'] ?? 'off';
         $validated['enable_custom_pages'] = $validated['enable_custom_pages'] ?? 'off';
         $validated['enable_blog'] = $validated['enable_blog'] ?? 'off';
         $validated['enable_shipping_method'] = $validated['enable_shipping_method'] ?? 'off';
@@ -273,7 +268,6 @@ class PlanController extends Controller
             if ($plan->enable_custdomain === 'on') $features[] = 'Custom Domain';
             if ($plan->enable_custsubdomain === 'on') $features[] = 'Subdomain';
             if ($plan->pwa_business === 'on') $features[] = 'PWA';
-            if ($plan->enable_chatgpt === 'on') $features[] = 'AI Integration';
             if ($plan->enable_custom_pages === 'on') $features[] = 'Custom Pages';
             if ($plan->enable_blog === 'on') $features[] = 'Blog';
             if ($plan->enable_shipping_method === 'on') $features[] = 'Shipping Method';

@@ -44,6 +44,8 @@ class StripeController extends Controller
                 $order->update([
                     'status' => 'confirmed',
                     'payment_status' => 'paid',
+                    'confirmed_at' => $order->confirmed_at ?? now(),
+                    'payment_confirmed_at' => $order->payment_confirmed_at ?? now(),
                     'payment_details' => array_merge($order->payment_details ?? [], [
                         'payment_intent_id' => $session->payment_intent,
                         'amount_total' => $session->amount_total,

@@ -14,11 +14,11 @@ class SeoSettingsSeeder extends Seeder
     public function run(): void
     {
         $seoDefaults = [
-            'metaKeywords' => 'ecommerce, online store, shopping, multi-store, saas platform, storego',
-            'metaDescription' => 'StoreGo - A powerful SaaS platform for creating and managing multiple online stores with professional themes and complete e-commerce features.',
+            'metaKeywords' => 'ecommerce, online store, shopping, multi-store, saas platform, vimstack',
+            'metaDescription' => 'Vimstack - A powerful SaaS platform for creating and managing multiple online stores with professional themes and complete e-commerce features.',
             'metaImage' => '/images/logos/logo-dark.png',
             'themeMode' => 'light',
-            'titleText' => 'StoreGo',
+            'titleText' => 'Vimstack',
             'timeFormat' => 'H:i',
             'dateFormat' => 'Y-m-d',
             'defaultTimezone' => 'UTC',

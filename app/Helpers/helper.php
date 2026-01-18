@@ -18,16 +18,38 @@ if (!function_exists('getCacheSize')) {
      */
     function getCacheSize()
     {
-        $file_size = 0;
-        $framework_path = storage_path('framework');
-        
-        if (is_dir($framework_path)) {
-            foreach (\File::allFiles($framework_path) as $file) {
-                $file_size += $file->getSize();
+        try {
+            $file_size = 0;
+            $framework_path = storage_path('framework');
+            
+            if (is_dir($framework_path)) {
+                // Use iterator with error handling to skip inaccessible directories
+                $iterator = new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator(
+                        $framework_path,
+                        \RecursiveDirectoryIterator::SKIP_DOTS | \FilesystemIterator::CURRENT_AS_FILEINFO
+                    ),
+                    \RecursiveIteratorIterator::SELF_FIRST
+                );
+                
+                foreach ($iterator as $file) {
+                    try {
+                        if ($file->isFile()) {
+                            $file_size += $file->getSize();
+                        }
+                    } catch (\Exception $e) {
+                        // Skip files we can't access
+                        continue;
+                    }
+                }
             }
+            
+            return number_format($file_size / 1000000, 2);
+        } catch (\Exception $e) {
+            // If cache directory access fails, return 0
+            \Log::warning('Cache size calculation failed: ' . $e->getMessage());
+            return '0.00';
         }
-        
-        return number_format($file_size / 1000000, 2);
     }
 }
 
@@ -57,13 +79,32 @@ if (! function_exists('settings')) {
         }
 
         if (!$user_id) {
-            return collect();
+            return [];
         }
 
-        return Setting::where('user_id', $user_id)
+        $settings = Setting::where('user_id', $user_id)
                      ->where('store_id', $store_id)
                      ->pluck('value', 'key')
                      ->toArray();
+
+        // Override with superadmin brand settings for company users
+        $currentUser = $user_id ? User::find($user_id) : null;
+        if ($currentUser && $currentUser->type === 'company') {
+            $superAdmin = User::where('type', 'superadmin')->first();
+            if ($superAdmin) {
+                $brandKeys = ['logoLight', 'favicon', 'titleText', 'footerText', 
+                              'themeColor', 'customColor', 'sidebarVariant', 'sidebarStyle', 
+                              'layoutDirection', 'themeMode'];
+                $brandSettings = Setting::where('user_id', $superAdmin->id)
+                                       ->whereNull('store_id')
+                                       ->whereIn('key', $brandKeys)
+                                       ->pluck('value', 'key')
+                                       ->toArray();
+                $settings = array_merge($settings, $brandSettings);
+            }
+        }
+
+        return $settings;
     }
 }
 
@@ -126,10 +167,7 @@ if (! function_exists('getSetting')) {
     function getSetting($key, $default = null, $user_id = null, $store_id = null)
     {
         // Check if this is a payment/messaging setting that should be retrieved from payment_settings table
-        $paymentSettingKeys = [
-            'is_whatsapp_enabled', 'whatsapp_phone_number', 'messaging_message_template', 'messaging_item_template',
-            'is_telegram_enabled', 'telegram_bot_token', 'telegram_chat_id', 'messaging_order_variables', 'messaging_item_variables'
-        ];
+        $paymentSettingKeys = [];
         
         if (in_array($key, $paymentSettingKeys)) {
             return getPaymentSetting($key, $default, $user_id, $store_id);
@@ -241,13 +279,6 @@ if (! function_exists('updateSetting')) {
             ['user_id' => $user_id, 'store_id' => null, 'key' => $key],
             ['value' => $value]
         );
-    }
-}
-
-if (! function_exists('isLandingPageEnabled')) {
-    function isLandingPageEnabled()
-    {
-        return getSetting('landingPageEnabled', true) === true || getSetting('landingPageEnabled', true) === '1';
     }
 }
 
@@ -559,23 +590,6 @@ if (! function_exists('getPaymentMethodConfig')) {
                     'mode' => $settings['paymentwall_mode'] ?? 'sandbox',
                     'public_key' => $settings['paymentwall_public_key'] ?? null,
                     'private_key' => $settings['paymentwall_private_key'] ?? null,
-                ];
-                
-            case 'whatsapp':
-                return [
-                    'enabled' => isPaymentMethodEnabled('whatsapp', $userId, $storeId),
-                    'phone_number' => $settings['whatsapp_phone_number'] ?? null,
-                    'message_template' => $settings['messaging_message_template'] ?? null,
-                    'item_template' => $settings['messaging_item_template'] ?? null,
-                ];
-                
-            case 'telegram':
-                return [
-                    'enabled' => isPaymentMethodEnabled('telegram', $userId, $storeId),
-                    'bot_token' => $settings['telegram_bot_token'] ?? null,
-                    'chat_id' => $settings['telegram_chat_id'] ?? null,
-                    'message_template' => $settings['messaging_message_template'] ?? null,
-                    'item_template' => $settings['messaging_item_template'] ?? null,
                 ];
                 
             default:
@@ -1036,22 +1050,20 @@ if (! function_exists('defaultSettings')) {
             'dateFormat' => 'Y-m-d',
             'timeFormat' => 'H:i',
             'calendarStartDay' => 'sunday',
-            'defaultTimezone' => 'UTC',
+            'defaultTimezone' => 'Africa/Kampala',
             'emailVerification' => false,
-            'landingPageEnabled' => true,
             
             // Brand Settings
-            'logoDark' => '/images/logos/logo-dark.png',
             'logoLight' => '/images/logos/logo-light.png',
-            'favicon' => '/images/logos/favicon.ico',
-            'titleText' => 'StoreGo',
-            'footerText' => '© 2025 StoreGo SaaS. Powered by WorkDo.',
+            'favicon' => '/images/logos/vimstack-favicon.png',
+            'titleText' => 'Vimstack',
+            'footerText' => '© 2025 Vimstack. All rights reserved.',
             'themeColor' => 'green',
             'customColor' => '#10b981',
             'sidebarVariant' => 'inset',
             'sidebarStyle' => 'plain',
             'layoutDirection' => 'left',
-            'themeMode' => 'light',
+            'themeMode' => 'light', // Force light mode only
             
             // Storage Settings
             'storage_type' => 'local',
@@ -1071,8 +1083,8 @@ if (! function_exists('defaultSettings')) {
             'wasabi_root' => '',
             
             // Currency Settings
-            'decimalFormat' => '2',
-            'defaultCurrency' => 'USD',
+            'decimalFormat' => '0', // UGX typically uses 0 decimals
+            'defaultCurrency' => 'ugx',
             'decimalSeparator' => '.',
             'thousandsSeparator' => ',',
             'floatNumber' => true,
@@ -1080,9 +1092,9 @@ if (! function_exists('defaultSettings')) {
             'currencySymbolPosition' => 'before',
             
             // SEO Settings
-            'metaKeywords' => 'ecommerce, online store, shopping, multi-store, saas platform, storego',
-            'metaDescription' => 'StoreGo - A powerful SaaS platform for creating and managing multiple online stores with professional themes and complete e-commerce features.',
-            'metaImage' => '/images/logos/logo-dark.png',
+            'metaKeywords' => 'ecommerce, online store, shopping, multi-store, saas platform, vimstack',
+            'metaDescription' => 'Vimstack - A powerful SaaS platform for creating and managing multiple online stores with professional themes and complete e-commerce features.',
+            'metaImage' => '/images/logos/logo-dark.svg',
             
             // Cookie Settings
             'enableLogging' => false,
@@ -1123,37 +1135,6 @@ if (! function_exists('createDefaultSettings')) {
     }
 }
 
-if (! function_exists('getDefaultMessagingSettings')) {
-    /**
-     * Get default messaging settings and variables
-     *
-     * @return array
-     */
-    function getDefaultMessagingSettings()
-    {
-        $orderVariables = [
-            'store_name', 'order_no', 'customer_name', 'shipping_address', 'shipping_country', 
-            'shipping_city', 'shipping_postalcode', 'item_variable', 'qty_total', 
-            'sub_total', 'discount_amount', 'shipping_amount', 'total_tax', 'final_total'
-        ];
-
-        $itemVariables = [
-            'sku', 'quantity', 'product_name', 'variant_name', 'item_tax', 'item_total'
-        ];
-
-        return [
-            'is_whatsapp_enabled' => '0',
-            'whatsapp_phone_number' => '',
-            'is_telegram_enabled' => '0',
-            'telegram_bot_token' => '',
-            'telegram_chat_id' => '',
-            'messaging_message_template' => 'Your order #{order_no} from {store_name} 🛍️\n\nHi {customer_name}!\n\nYour order has been confirmed!\n\n📦 Items ({qty_total} items):\n{item_variable}\n\n💰 Order Summary:\nSubtotal: {sub_total}\nDiscount: {discount_amount}\nShipping: {shipping_amount}\nTax: {total_tax}\nTotal: {final_total}\n\n🚚 Shipping Address:\n{shipping_address}\n{shipping_city}, {shipping_country} - {shipping_postalcode}\n\nThank you for shopping with us!',
-            'messaging_item_template' => '• {product_name} ({variant_name})\n  Qty: {quantity}\n  Price: {item_total} (Tax: {item_tax})\n  SKU: {sku}',
-            'messaging_order_variables' => json_encode($orderVariables),
-            'messaging_item_variables' => json_encode($itemVariables)
-        ];
-    }
-}
 
 if (! function_exists('copySettingsFromSuperAdmin')) {
     /**
@@ -1175,9 +1156,9 @@ if (! function_exists('copySettingsFromSuperAdmin')) {
         $settingsToCopy = [
             // System Settings
             'base_url', 'defaultLanguage', 'dateFormat', 'timeFormat', 'calendarStartDay', 
-            'defaultTimezone', 'emailVerification', 'landingPageEnabled',
+            'defaultTimezone', 'emailVerification',
             // Brand Settings
-            'logoDark', 'logoLight', 'favicon', 'titleText', 'footerText',
+            'logoLight', 'favicon', 'titleText', 'footerText',
             'themeColor', 'customColor', 'sidebarVariant', 'sidebarStyle',
             'layoutDirection', 'themeMode', 'metaKeywords', 'metaDescription', 'metaImage',
             // Currency Settings
@@ -1202,29 +1183,6 @@ if (! function_exists('copySettingsFromSuperAdmin')) {
             );
         }
         
-        // Copy messaging templates from payment settings
-        $messagingSettings = getDefaultMessagingSettings();
-        
-        // Get superadmin messaging templates if they exist
-        $superAdminPaymentSettings = PaymentSetting::where('user_id', $superAdmin->id)
-            ->whereNull('store_id')
-            ->whereIn('key', array_keys($messagingSettings))
-            ->get();
-        
-        // Copy existing superadmin messaging settings or use defaults
-        foreach ($messagingSettings as $key => $defaultValue) {
-            $existingSetting = $superAdminPaymentSettings->where('key', $key)->first();
-            $value = $existingSetting ? $existingSetting->value : $defaultValue;
-            
-            PaymentSetting::updateOrCreate(
-                [
-                    'user_id' => $companyUserId,
-                    'store_id' => $storeId,
-                    'key' => $key
-                ],
-                ['value' => $value]
-            );
-        }
     }
 }
 

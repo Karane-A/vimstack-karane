@@ -11,6 +11,19 @@ import { formatCurrency } from '@/utils/helpers';
 import { Permission } from '@/components/Permission';
 import { usePermissions } from '@/hooks/usePermissions';
 
+import { ResponsiveWrapper } from '@/components/mobile/responsive-wrapper';
+import { 
+  PullToRefresh, 
+  List as MobileList, 
+  SwipeAction, 
+  Tag as MobileTag,
+  Tabs as MobileTabs,
+  Space as MobileSpace,
+  Dialog as MobileDialog,
+  Toast,
+  Badge as MobileBadge
+} from 'antd-mobile';
+
 interface OrdersProps {
   orders: Array<{
     id: number;
@@ -34,13 +47,21 @@ interface OrdersProps {
 export default function Orders({ orders = [], stats }: OrdersProps) {
   const { t } = useTranslation();
   const [orderToDelete, setOrderToDelete] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState('all');
 
   const { hasPermission } = usePermissions();
   
   const handleDelete = () => {
     if (orderToDelete) {
-      router.delete(route('orders.destroy', orderToDelete));
-      setOrderToDelete(null);
+      router.delete(route('orders.destroy', orderToDelete), {
+        onSuccess: () => {
+          setOrderToDelete(null);
+          Toast.show({
+            icon: 'success',
+            content: t('Order deleted successfully'),
+          });
+        }
+      });
     }
   };
 
@@ -65,7 +86,94 @@ export default function Orders({ orders = [], stats }: OrdersProps) {
     }
   };
 
-  return (
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Completed': return 'success';
+      case 'Processing': return 'primary';
+      case 'Shipped': return 'warning';
+      case 'Cancelled': return 'danger';
+      default: return 'default';
+    }
+  };
+
+  const filteredOrders = activeTab === 'all' 
+    ? orders 
+    : orders.filter(o => o.status.toLowerCase() === activeTab.toLowerCase());
+
+  const renderMobileOrders = () => (
+    <div className="flex flex-col h-full bg-gray-50">
+      <div className="bg-white sticky top-0 z-10">
+        <MobileTabs activeKey={activeTab} onChange={setActiveTab}>
+          <MobileTabs.Tab title={t('All')} key="all" />
+          <MobileTabs.Tab title={t('Pending')} key="pending" />
+          <MobileTabs.Tab title={t('Processing')} key="processing" />
+          <MobileTabs.Tab title={t('Completed')} key="completed" />
+        </MobileTabs>
+      </div>
+
+      <PullToRefresh onRefresh={async () => {
+        await router.reload({ only: ['orders', 'stats'] });
+      }}>
+        <MobileList header={t('Recent Orders')}>
+          {filteredOrders.length === 0 ? (
+            <div className="py-12 text-center text-gray-500">
+              <ShoppingCart className="h-12 w-12 mx-auto mb-2 opacity-20" />
+              {t('No orders found')}
+            </div>
+          ) : (
+            filteredOrders.map((order) => (
+              <SwipeAction
+                key={order.id}
+                rightActions={[
+                  {
+                    key: 'view',
+                    text: t('View'),
+                    color: 'primary',
+                    onClick: () => router.visit(route('orders.show', order.id))
+                  },
+                  {
+                    key: 'delete',
+                    text: t('Delete'),
+                    color: 'danger',
+                    onClick: () => {
+                      MobileDialog.confirm({
+                        content: t('Are you sure you want to delete this order?'),
+                        onConfirm: () => {
+                          setOrderToDelete(order.id);
+                          handleDelete();
+                        }
+                      });
+                    }
+                  }
+                ]}
+              >
+                <MobileList.Item
+                  onClick={() => router.visit(route('orders.show', order.id))}
+                  description={
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-500 text-xs">{order.date}</span>
+                        <MobileTag color={getStatusColor(order.status)} fill="outline">{order.status}</MobileTag>
+                      </div>
+                      <div className="text-sm font-medium text-gray-700 truncate">{order.customer}</div>
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="text-base font-bold text-primary">{formatCurrency(order.total)}</span>
+                        <span className="text-xs text-gray-400">{t('{{items}} items', { items: order.items })}</span>
+                      </div>
+                    </div>
+                  }
+                >
+                  <span className="font-semibold text-gray-900">{order.orderNumber}</span>
+                </MobileList.Item>
+              </SwipeAction>
+            ))
+          )}
+        </MobileList>
+      </PullToRefresh>
+    </div>
+  );
+
+  const renderDesktopOrders = () => (
     <PageTemplate 
       title={t('Order Management')}
       url="/orders"
@@ -131,41 +239,63 @@ export default function Orders({ orders = [], stats }: OrdersProps) {
           <CardContent>
             <div className="space-y-4">
               {orders.length > 0 ? orders.map((order) => (
-                <div key={order.id} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                      <ShoppingCart className="h-6 w-6 text-primary" />
+                <div key={order.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 border rounded-lg gap-4 hover:shadow-md transition-shadow">
+                  <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <ShoppingCart className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                     </div>
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <h3 className="font-semibold">{order.orderNumber}</h3>
-                        <Badge variant={getStatusVariant(order.status)}>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
+                        <h3 className="font-semibold text-sm sm:text-base">{order.orderNumber}</h3>
+                        <Badge variant={getStatusVariant(order.status)} className="text-xs w-fit">
                           {order.status}
                         </Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground">{order.customer} • {order.email}</p>
-                      <div className="flex items-center space-x-4 mt-1">
-                        <span className="text-xs text-muted-foreground">{formatCurrency(order.total)}</span>
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-2 truncate">
+                        {order.customer} 
+                        <span className="hidden sm:inline"> • {order.email}</span>
+                      </p>
+                      <div className="sm:hidden text-xs text-muted-foreground truncate mb-2">{order.email}</div>
+                      <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-x-3 sm:gap-x-4 gap-y-1">
+                        <span className="text-xs sm:text-sm font-semibold text-primary">{formatCurrency(order.total)}</span>
                         <span className="text-xs text-muted-foreground">{t('{{items}} items', { items: order.items })}</span>
                         <span className="text-xs text-muted-foreground">{order.date}</span>
-                        <span className="text-xs text-muted-foreground">{order.paymentMethod}</span>
+                        <span className="text-xs text-muted-foreground hidden sm:inline">{order.paymentMethod}</span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center gap-2 justify-end sm:justify-start border-t sm:border-t-0 pt-3 sm:pt-0">
                     <Permission permission="view-orders">
-                      <Button variant="ghost" size="sm" onClick={() => router.visit(route('orders.show', order.id))}>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => router.visit(route('orders.show', order.id))}
+                        className="h-9 px-3 touch-manipulation"
+                      >
                         <Eye className="h-4 w-4" />
+                        <span className="ml-2 sm:hidden">{t('View')}</span>
                       </Button>
                     </Permission>
                     <Permission permission="edit-orders">
-                      <Button variant="ghost" size="sm" onClick={() => router.visit(route('orders.edit', order.id))}>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => router.visit(route('orders.edit', order.id))}
+                        className="h-9 px-3 touch-manipulation"
+                      >
                         <Edit className="h-4 w-4" />
+                        <span className="ml-2 sm:hidden">{t('Edit')}</span>
                       </Button>
                     </Permission>
                     <Permission permission="delete-orders">
-                      <Button variant="ghost" size="sm" onClick={() => setOrderToDelete(order.id)}>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => setOrderToDelete(order.id)}
+                        className="h-9 px-3 touch-manipulation text-destructive hover:text-destructive"
+                      >
                         <Trash2 className="h-4 w-4" />
+                        <span className="ml-2 sm:hidden">{t('Delete')}</span>
                       </Button>
                     </Permission>
                   </div>
@@ -200,5 +330,12 @@ export default function Orders({ orders = [], stats }: OrdersProps) {
         </div>
       )}
     </PageTemplate>
+  );
+
+  return (
+    <ResponsiveWrapper
+      mobileComponent={renderMobileOrders()}
+      desktopComponent={renderDesktopOrders()}
+    />
   );
 }

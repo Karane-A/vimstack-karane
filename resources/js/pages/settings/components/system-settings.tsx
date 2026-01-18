@@ -33,8 +33,7 @@ export default function SystemSettings({
     timeFormat: '12h',
     calendarStartDay: 'sunday',
     defaultTimezone: 'UTC',
-    emailVerification: false,
-    landingPageEnabled: true
+    emailVerification: false
   };
   
   // Get settings data from page props - prioritize systemSettings
@@ -47,8 +46,7 @@ export default function SystemSettings({
     timeFormat: settingsData.timeFormat || defaultSettings.timeFormat,
     calendarStartDay: settingsData.calendarStartDay || defaultSettings.calendarStartDay,
     defaultTimezone: settingsData.defaultTimezone || defaultSettings.defaultTimezone,
-    emailVerification: settingsData.emailVerification === 'true' || settingsData.emailVerification === true || defaultSettings.emailVerification,
-    landingPageEnabled: settingsData.landingPageEnabled === 'true' || settingsData.landingPageEnabled === true || settingsData.landingPageEnabled === '1' || (settingsData.landingPageEnabled === undefined ? defaultSettings.landingPageEnabled : false)
+    emailVerification: settingsData.emailVerification === 'true' || settingsData.emailVerification === true || defaultSettings.emailVerification
   }));
   
   // Update state when settings change
@@ -63,8 +61,7 @@ export default function SystemSettings({
       setSystemSettings(prevSettings => ({
         ...prevSettings,
         ...mergedSettings,
-        emailVerification: mergedSettings.emailVerification === 'true' || mergedSettings.emailVerification === true || mergedSettings.emailVerification === '1',
-        landingPageEnabled: mergedSettings.landingPageEnabled === 'true' || mergedSettings.landingPageEnabled === true || mergedSettings.landingPageEnabled === '1' || (mergedSettings.landingPageEnabled === undefined ? defaultSettings.landingPageEnabled : false)
+        emailVerification: mergedSettings.emailVerification === 'true' || mergedSettings.emailVerification === true || mergedSettings.emailVerification === '1'
       }));
     }
   }, [settingsData]);
@@ -89,8 +86,7 @@ export default function SystemSettings({
       timeFormat: systemSettings.timeFormat,
       calendarStartDay: systemSettings.calendarStartDay,
       defaultTimezone: systemSettings.defaultTimezone,
-      emailVerification: Boolean(systemSettings.emailVerification),
-      landingPageEnabled: Boolean(systemSettings.landingPageEnabled)
+      emailVerification: Boolean(systemSettings.emailVerification)
     };
     
     // Submit to backend using Inertia
@@ -285,19 +281,6 @@ export default function SystemSettings({
               </div>
 
               <div className="grid gap-2 md:col-span-2">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="landingPageEnabled">{t("Landing Page")}</Label>
-                    <p className="text-sm text-muted-foreground">
-                      {t("Enable or disable the public landing page")}
-                    </p>
-                  </div>
-                  <Switch
-                    id="landingPageEnabled"
-                    checked={systemSettings.landingPageEnabled}
-                    onCheckedChange={(checked) => handleSystemSettingsChange('landingPageEnabled', checked)}
-                  />
-                </div>
               </div>
             </>
           )}

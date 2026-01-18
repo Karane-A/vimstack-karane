@@ -19,7 +19,6 @@ class SystemSettingsController extends Controller
      * - Language and localization settings
      * - Date/time formats and timezone
      * - Email verification requirements
-     * - Landing page enable/disable toggle
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
@@ -34,7 +33,6 @@ class SystemSettingsController extends Controller
                 'calendarStartDay' => 'required|string',
                 'defaultTimezone' => 'required|string',
                 'emailVerification' => 'boolean',
-                'landingPageEnabled' => 'boolean',
                 'registrationEnabled' => 'boolean',
                 'termsConditionsUrl' => 'nullable|url',
             ]);
@@ -63,7 +61,6 @@ class SystemSettingsController extends Controller
         try {
             $validated = $request->validate([
                 'settings' => 'required|array',
-                'settings.logoDark' => 'nullable|string',
                 'settings.logoLight' => 'nullable|string',
                 'settings.favicon' => 'nullable|string',
                 'settings.titleText' => 'nullable|string|max:255',
@@ -73,8 +70,10 @@ class SystemSettingsController extends Controller
                 'settings.sidebarVariant' => 'nullable|string|in:inset,floating,minimal',
                 'settings.sidebarStyle' => 'nullable|string|in:plain,colored,gradient',
                 'settings.layoutDirection' => 'nullable|string|in:left,right',
-                'settings.themeMode' => 'nullable|string|in:light,dark,system',
             ]);
+
+            // Force light mode
+            $validated['settings']['themeMode'] = 'light';
 
             $user = auth()->user();
             $storeId = $user->type === 'company' ? getCurrentStoreId($user) : null;
@@ -112,30 +111,6 @@ class SystemSettingsController extends Controller
             return redirect()->back()->with('success', __('ReCaptcha settings updated successfully.'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', __('Failed to update ReCaptcha settings: :error', ['error' => $e->getMessage()]));
-        }
-    }
-
-    /**
-     * Update the chatgpt settings.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function updateChatgpt(Request $request)
-    {
-        try {
-            $validated = $request->validate([
-                'chatgptKey' => 'required|string',
-                'chatgptModel' => 'required|string',
-            ]);
-            
-            foreach ($validated as $key => $value) {
-                updateSetting($key, $value);
-            }
-
-            return redirect()->back()->with('success', __('Chat GPT settings updated successfully.'));
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', __('Failed to update Chat GPT settings: :error', ['error' => $e->getMessage()]));
         }
     }
 

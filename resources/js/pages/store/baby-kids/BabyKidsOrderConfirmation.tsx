@@ -13,7 +13,6 @@ interface BabyKidsOrderConfirmationProps {
   wishlistCount?: number;
   isLoggedIn?: boolean;
   userName?: string;
-  whatsappRedirectUrl?: string;
   customPages?: any[];
 }
 
@@ -25,32 +24,12 @@ export default function BabyKidsOrderConfirmation({
   wishlistCount = 0,
   isLoggedIn = false,
   userName = '',
-  whatsappRedirectUrl,
   customPages = [],
 }: BabyKidsOrderConfirmationProps) {
   const storeSlug = store.slug || 'demo';
   const { props } = usePage();
   const storeSettings = props.storeSettings || {};
   const currencies = props.currencies || [];
-  
-  const [showWhatsappPrompt, setShowWhatsappPrompt] = useState(false);
-  
-  useEffect(() => {
-    console.log('Order payment method:', order?.payment_method);
-    console.log('WhatsApp redirect URL:', whatsappRedirectUrl);
-    
-    if (whatsappRedirectUrl && (order?.payment_method === 'whatsapp' || order?.payment_method === 'WhatsApp')) {
-      setShowWhatsappPrompt(true);
-      
-      const timer = setTimeout(() => {
-        window.open(whatsappRedirectUrl, '_blank');
-        fetch('/api/clear-whatsapp-session', { method: 'POST' });
-      }, 2000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [whatsappRedirectUrl, order?.payment_method]);
-  
 
 
   return (
@@ -94,51 +73,6 @@ export default function BabyKidsOrderConfirmation({
             </div>
           </div>
         </div>
-
-        {/* WhatsApp Auto Redirect */}
-        {whatsappRedirectUrl && (order?.payment_method === 'whatsapp' || order?.payment_method === 'WhatsApp') && (
-          <div className="bg-pink-50 py-16 relative overflow-hidden">
-            <div className="absolute inset-0">
-              <div className="absolute top-10 left-10 w-24 h-24 bg-pink-200 rounded-full opacity-20 animate-pulse"></div>
-              <div className="absolute bottom-10 right-10 w-16 h-16 bg-blue-200 rounded-full opacity-30 animate-pulse" style={{ animationDelay: '1s' }}></div>
-              <div className="absolute top-1/2 right-1/4 w-12 h-12 bg-yellow-200 rounded-full opacity-25 animate-pulse" style={{ animationDelay: '2s' }}></div>
-            </div>
-            
-            <div className="container mx-auto px-6 lg:px-12 relative z-10">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <MessageCircle className="h-8 w-8 text-white animate-pulse" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-800 mb-3">Opening WhatsApp...</h3>
-                <div className="w-16 h-1 bg-pink-400 mx-auto rounded-full mb-4"></div>
-                <p className="text-lg text-gray-600 mb-3">
-                  Your order confirmation will open in WhatsApp automatically for your little ones!
-                </p>
-                <p className="text-sm text-gray-500 mb-6">
-                  You'll receive all order details and can chat with us directly.
-                </p>
-                
-                <div className="flex justify-center gap-4">
-                  <button
-                    onClick={() => {
-                      window.open(whatsappRedirectUrl, '_blank');
-                      fetch('/api/clear-whatsapp-session', { method: 'POST' });
-                    }}
-                    className="bg-green-500 text-white px-6 py-3 rounded-full font-bold hover:bg-green-600 transition-colors"
-                  >
-                    Open WhatsApp Now
-                  </button>
-                  <button
-                    onClick={() => setShowWhatsappPrompt(false)}
-                    className="border-2 border-pink-500 text-pink-500 px-6 py-3 rounded-full font-bold hover:bg-pink-500 hover:text-white transition-colors"
-                  >
-                    Skip
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Order Details */}
         <div className="bg-white py-16">

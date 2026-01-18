@@ -8,6 +8,7 @@ import { Upload, X, Image as ImageIcon, Search, Plus, Check } from 'lucide-react
 import { usePage } from '@inertiajs/react';
 import { hasPermission } from '@/utils/authorization';
 import { getImageUrl } from '@/utils/image-helper';
+import { getCsrfToken } from '@/utils/csrf';
 
 interface MediaItem {
   id: number;
@@ -33,7 +34,7 @@ export default function MediaLibraryModal({
   onSelect, 
   multiple = false 
 }: MediaLibraryModalProps) {
-  const { auth } = usePage().props as any;
+  const { auth, csrf_token } = usePage().props as any;
   const permissions = auth?.permissions || [];
   const canCreateMedia = hasPermission(permissions, 'create-media');
   const canManageMedia = hasPermission(permissions, 'manage-media');
@@ -110,12 +111,21 @@ export default function MediaLibraryModal({
     });
     
     try {
+      // Get CSRF token using utility function (tries Inertia props first, then meta tag)
+      const csrfToken = getCsrfToken();
+      
+      if (!csrfToken) {
+        toast.error('CSRF token not found. Please refresh the page.');
+        setUploading(false);
+        return;
+      }
+      
       const response = await fetch(route('api.media.batch'), {
         method: 'POST',
         body: formData,
         credentials: 'same-origin',
         headers: {
-          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+          'X-CSRF-TOKEN': csrfToken,
           'X-Requested-With': 'XMLHttpRequest',
         },
       });
@@ -344,11 +354,20 @@ export default function MediaLibraryModal({
                     >
                       <div className="relative aspect-square bg-muted">
                         <img
-                          src={getImageUrl(item.thumb_url)}
+                          src={getImageUrl(item.thumb_url || item.url)}
                           alt={item.name}
                           className="w-full h-full object-cover"
+                          loading="lazy"
+                          decoding="async"
                           onError={(e) => {
-                            e.currentTarget.src = getImageUrl(item.url);
+                            // If thumb_url fails, try original URL
+                            const originalUrl = getImageUrl(item.url);
+                            if (e.currentTarget.src !== originalUrl) {
+                              e.currentTarget.src = originalUrl;
+                            } else {
+                              // If both fail, show placeholder
+                              e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMDAgNzBMMTMwIDEwMEgxMTBWMTMwSDkwVjEwMEg3MEwxMDAgNzBaIiBmaWxsPSIjOUI5QkEwIi8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOUI5QkEwIiBmb250LXNpemU9IjEyIj5JbWFnZSBub3QgZm91bmQ8L3RleHQ+Cjwvc3ZnPgo=';
+                            }
                           }}
                         />
                         

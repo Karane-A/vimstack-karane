@@ -13,14 +13,24 @@ export function useFavicon() {
                       favicon.startsWith('/') ? `${window.location.origin}${favicon}` : favicon;
 
     // Update favicon in document head
-    let link = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
+    // Remove existing favicon links first
+    const existingLinks = document.querySelectorAll("link[rel*='icon']");
+    existingLinks.forEach(link => link.remove());
     
-    if (!link) {
-      link = document.createElement('link');
-      link.rel = 'icon';
-      document.head.appendChild(link);
+    // Create new favicon link
+    const link = document.createElement('link');
+    link.rel = 'icon';
+    
+    // Set appropriate type based on file extension
+    if (faviconUrl.endsWith('.svg')) {
+      link.type = 'image/svg+xml';
+    } else if (faviconUrl.endsWith('.ico')) {
+      link.type = 'image/x-icon';
+    } else if (faviconUrl.endsWith('.png')) {
+      link.type = 'image/png';
     }
     
     link.href = faviconUrl;
+    document.head.appendChild(link);
   }, [favicon]);
 }

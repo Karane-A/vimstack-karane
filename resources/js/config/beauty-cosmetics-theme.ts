@@ -93,7 +93,7 @@ const beautyTheme: BeautyThemeConfig = {
   store: {
     name: 'Beauty Store',
     logo: '/storage/media/beauty-logo.png',
-    favicon: '/storage/media/beauty-favicon.ico',
+    favicon: '/images/logos/vimstack-favicon.png',
     description: 'Premium beauty and cosmetics for your natural radiance',
     contactEmail: 'hello@beautystore.com',
     contactPhone: '+1 555 BEAUTY',

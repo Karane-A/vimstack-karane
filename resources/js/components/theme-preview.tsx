@@ -6,13 +6,13 @@ import { useLogos } from '@/contexts/LogoContext';
 
 export function ThemePreview() {
   const { appearance, themeColor, position, variant, collapsible, style } = useThemePreview();
-  const { logoLight, logoDark } = useLogos();
+  const { logoLight } = useLogos();
   const [logoError, setLogoError] = React.useState(false);
   
   // Reset logo error when logo sources change
   React.useEffect(() => {
     setLogoError(false);
-  }, [logoLight, logoDark, appearance]);
+  }, [logoLight]);
   
   // Determine sidebar style class
   const getSidebarStyleClass = () => {
@@ -21,20 +21,15 @@ export function ThemePreview() {
     return 'bg-sidebar text-sidebar-foreground';
   };
   
-  // Logo preview based on appearance
+  // Logo preview - always use logoLight (light mode only)
   const getLogoSrc = () => {
     if (logoError) return '';
-    
-    if (appearance === 'dark') {
-      return logoLight || '/images/logos/logo-light.png';
-    } else {
-      return logoDark || '/images/logos/logo-dark.png';
-    }
+    return logoLight || '/images/logos/logo-light.png';
   };
   
   // Get title text
   const getTitleText = () => {
-    return 'StoreGo';
+    return 'Vimstack';
   };
   
   return (

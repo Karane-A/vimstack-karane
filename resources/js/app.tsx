@@ -1,5 +1,4 @@
 import '../css/app.css';
-import '../css/dark-mode.css';
 
 import { createInertiaApp, router } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
@@ -37,7 +36,7 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () 
     }
 });
 
-const appName = import.meta.env.VITE_APP_NAME || 'StoreGo';
+const appName = import.meta.env.VITE_APP_NAME || 'Vimstack';
 
 createInertiaApp({
     title: (title) => {

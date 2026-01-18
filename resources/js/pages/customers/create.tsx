@@ -16,6 +16,7 @@ import { usePermissions } from '@/hooks/usePermissions';
 export default function CreateCustomer() {
   const { t } = useTranslation();
   const { hasPermission } = usePermissions();
+  const { countries = [], languages = [] } = usePage().props as any;
   const [avatar, setAvatar] = useState('');
   const [formData, setFormData] = useState({
     first_name: '',
@@ -312,10 +313,15 @@ export default function CreateCustomer() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="us">United States</SelectItem>
-                        <SelectItem value="ca">Canada</SelectItem>
-                        <SelectItem value="uk">United Kingdom</SelectItem>
-                        <SelectItem value="au">Australia</SelectItem>
+                        {countries && countries.length > 0 ? (
+                          countries.map((country: any) => (
+                            <SelectItem key={country.id} value={country.id.toString()}>
+                              {country.name}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <SelectItem value="" disabled>{t('No countries available')}</SelectItem>
+                        )}
                       </SelectContent>
                     </Select>
                   </div>
@@ -391,10 +397,15 @@ export default function CreateCustomer() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="us">United States</SelectItem>
-                        <SelectItem value="ca">Canada</SelectItem>
-                        <SelectItem value="uk">United Kingdom</SelectItem>
-                        <SelectItem value="au">Australia</SelectItem>
+                        {countries && countries.length > 0 ? (
+                          countries.map((country: any) => (
+                            <SelectItem key={country.id} value={country.id.toString()}>
+                              {country.name}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <SelectItem value="" disabled>{t('No countries available')}</SelectItem>
+                        )}
                       </SelectContent>
                     </Select>
                   </div>
@@ -446,13 +457,18 @@ export default function CreateCustomer() {
                     onValueChange={(value) => handleSelectChange('preferred_language', value)}
                   >
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder={t('Select language')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="en">{t('English')}</SelectItem>
-                      <SelectItem value="es">{t('Spanish')}</SelectItem>
-                      <SelectItem value="fr">{t('French')}</SelectItem>
-                      <SelectItem value="de">{t('German')}</SelectItem>
+                      {languages && languages.length > 0 ? (
+                        languages.map((language: any) => (
+                          <SelectItem key={language.code} value={language.code}>
+                            {language.name}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="en">{t('English')}</SelectItem>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>

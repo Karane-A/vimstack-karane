@@ -44,7 +44,18 @@ export function useStoreFavicon() {
       // Create new favicon link with proper attributes
       const link = document.createElement('link');
       link.rel = 'icon';
-      link.type = 'image/x-icon';
+      
+      // Set appropriate type based on file extension
+      if (faviconUrl.endsWith('.svg')) {
+        link.type = 'image/svg+xml';
+      } else if (faviconUrl.endsWith('.ico')) {
+        link.type = 'image/x-icon';
+      } else if (faviconUrl.endsWith('.png')) {
+        link.type = 'image/png';
+      } else {
+        link.type = 'image/x-icon';
+      }
+      
       link.href = faviconUrl;
       
       // Add to head

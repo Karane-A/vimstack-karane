@@ -95,14 +95,23 @@ class CoinGatePaymentController extends Controller
     {
         try {
             $user = auth()->user();
-            $coingateData = session('coingate_data');
             
-            if (!$coingateData) {
-                Log::error('CoinGate data not found in session');
-                return redirect()->route('plans.index')->with('error', 'Payment session expired');
+            // SECURITY FIX: Get order ID from request instead of session
+            $orderId = $request->input('order_id') ?? $request->input('id');
+            
+            if (!$orderId) {
+                // Fallback to session for backward compatibility
+                $coingateData = session('coingate_data');
+                if ($coingateData) {
+                    $orderId = is_object($coingateData) ? $coingateData->order_id : $coingateData['order_id'];
+                }
             }
             
-            $orderId = is_object($coingateData) ? $coingateData->order_id : $coingateData['order_id'];
+            if (!$orderId) {
+                Log::error('CoinGate callback: No order ID provided');
+                return redirect()->route('plans.index')->with('error', 'Invalid payment callback');
+            }
+            
             $planOrder = PlanOrder::where('payment_id', $orderId)->first();
             
             if (!$planOrder) {
@@ -110,24 +119,75 @@ class CoinGatePaymentController extends Controller
                 return redirect()->route('plans.index')->with('error', 'Order not found');
             }
             
-            // Mark as successful and activate subscription
-            $planOrder->update([
-                'status' => 'approved',
-                'processed_at' => now()
-            ]);
+            // SECURITY FIX: Verify payment status with CoinGate API
+            $settings = getPaymentGatewaySettings();
             
-            $planOrder->activateSubscription();
+            if (!isset($settings['payment_settings']['coingate_api_token'])) {
+                Log::error('CoinGate API token not configured');
+                return redirect()->route('plans.index')->with('error', 'Payment verification failed');
+            }
             
-            // Clear session
-            session()->forget('coingate_data');
+            $client = new Client(
+                $settings['payment_settings']['coingate_api_token'], 
+                ($settings['payment_settings']['coingate_mode'] ?? 'sandbox') === 'sandbox'
+            );
             
-            Log::info('CoinGate payment successful', [
-                'order_id' => $orderId,
-                'user_id' => $user->id,
-                'plan_id' => $planOrder->plan_id
-            ]);
-            
-            return redirect()->route('plans.index')->with('success', 'Plan activated successfully!');
+            // Verify order status with CoinGate API
+            try {
+                $coingateOrder = $client->order->get($orderId);
+                
+                if (!$coingateOrder) {
+                    Log::error('CoinGate order not found on API', ['order_id' => $orderId]);
+                    return redirect()->route('plans.index')->with('error', 'Payment verification failed');
+                }
+                
+                // Verify order status
+                if ($coingateOrder->status === 'paid' || $coingateOrder->status === 'confirmed') {
+                    // Verify amount matches
+                    $expectedAmount = number_format($planOrder->final_price, 2, '.', '');
+                    $paidAmount = number_format($coingateOrder->price_amount, 2, '.', '');
+                    
+                    if ($expectedAmount !== $paidAmount) {
+                        Log::error('CoinGate amount mismatch', [
+                            'expected' => $expectedAmount,
+                            'paid' => $paidAmount
+                        ]);
+                        return redirect()->route('plans.index')->with('error', 'Payment amount verification failed');
+                    }
+                    
+                    // All verification passed - activate subscription
+                    if ($planOrder->status !== 'approved') {
+                        $planOrder->update([
+                            'status' => 'approved',
+                            'processed_at' => now()
+                        ]);
+                        
+                        $planOrder->activateSubscription();
+                        
+                        Log::info('CoinGate payment verified and activated', [
+                            'order_id' => $orderId,
+                            'user_id' => $user->id,
+                            'plan_id' => $planOrder->plan_id
+                        ]);
+                    }
+                    
+                    // Clear session
+                    session()->forget('coingate_data');
+                    
+                    return redirect()->route('plans.index')->with('success', 'Plan activated successfully!');
+                    
+                } elseif ($coingateOrder->status === 'canceled' || $coingateOrder->status === 'expired') {
+                    $planOrder->update(['status' => 'cancelled']);
+                    return redirect()->route('plans.index')->with('error', 'Payment was cancelled or expired');
+                } else {
+                    // Payment still pending
+                    return redirect()->route('plans.index')->with('info', 'Payment is still being processed. Please wait.');
+                }
+                
+            } catch (\Exception $apiError) {
+                Log::error('CoinGate API error: ' . $apiError->getMessage());
+                return redirect()->route('plans.index')->with('error', 'Payment verification failed');
+            }
             
         } catch (\Exception $e) {
             Log::error('CoinGate callback error: ' . $e->getMessage());

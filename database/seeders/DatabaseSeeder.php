@@ -19,7 +19,6 @@ class DatabaseSeeder extends Seeder
                 RoleSeeder::class,
                 PlanSeeder::class, 
                 UserSeeder::class,
-                LandingPageSeeder::class,
                 StoreSeeder::class,
                 ExpressCheckoutSeeder::class,
                 TaxSeeder::class,
@@ -45,9 +44,7 @@ class DatabaseSeeder extends Seeder
                 PayoutRequestSeeder::class,
                 SeoSettingsSeeder::class,
                 CompanyStoreSettingsSeeder::class,
-                WhatsAppSettingsSeeder::class,
                 EmailTemplateSeeder::class,
-                LandingPageDataSeeder::class,
             ]);
         } else {
             // Main version: Run only essential seeders with minimal data
@@ -56,7 +53,6 @@ class DatabaseSeeder extends Seeder
                 RoleSeeder::class,
                 PlanSeeder::class,
                 UserSeeder::class,
-                LandingPageSeeder::class,
                 LocationSeeder::class,
                 StoreSeeder::class,
                 TaxSeeder::class,
@@ -67,7 +63,6 @@ class DatabaseSeeder extends Seeder
                 CurrencySeeder::class,
                 ReferralSettingSeeder::class,
                 CompanyStoreSettingsSeeder::class,
-                WhatsAppSettingsSeeder::class,
                 EmailTemplateSeeder::class,
             ]);
         }

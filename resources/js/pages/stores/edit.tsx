@@ -209,6 +209,8 @@ export default function EditStore({ store, availableThemes, planPermissions }) {
                           src={theme.thumbnail}
                           alt={theme.name}
                           className="h-full w-full object-cover"
+                          loading="lazy"
+                          decoding="async"
                         />
                         {formData.theme === theme.id && (
                           <div className="absolute inset-0 flex items-center justify-center bg-primary/20">

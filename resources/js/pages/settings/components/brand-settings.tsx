@@ -19,7 +19,6 @@ import { usePage, router } from '@inertiajs/react';
 
 // Define the brand settings interface
 export interface BrandSettings {
-  logoDark: string;
   logoLight: string;
   favicon: string;
   titleText: string;
@@ -34,11 +33,10 @@ export interface BrandSettings {
 
 // Default brand settings
 export const DEFAULT_BRAND_SETTINGS: BrandSettings = {
-  logoDark: '/images/logos/logo-dark.png',
   logoLight: '/images/logos/logo-light.png',
-  favicon: '/images/logos/favicon.ico',
-  titleText: 'StoreGo',
-  footerText: '© 2025 StoreGo SaaS. Powered by WorkDo.',
+  favicon: '/images/logos/vimstack-favicon.png',
+  titleText: 'Vimstack',
+  footerText: '© 2025 Vimstack. All rights reserved.',
   themeColor: 'green',
   customColor: '#10b981',
   sidebarVariant: 'inset',
@@ -51,14 +49,15 @@ export const DEFAULT_BRAND_SETTINGS: BrandSettings = {
 export const getBrandSettings = (userSettings?: Record<string, string>): BrandSettings => {
   // If we have settings from the backend, use those
   if (userSettings) {
+    const baseUrl = (typeof window !== 'undefined' ? (window.appSettings?.baseUrl || window.location.origin) : '');
+    
     const getFullUrl = (path: string, defaultPath: string) => {
-      if (!path) return window.appSettings?.baseUrl + defaultPath;
-      if (path.startsWith('http')) return path;
-      return window.appSettings?.baseUrl + path;
+      if (!path) return baseUrl + defaultPath;
+      if (path.startsWith('http://') || path.startsWith('https://')) return path;
+      return baseUrl + path;
     };
 
     return {
-      logoDark: getFullUrl(userSettings.logoDark, DEFAULT_BRAND_SETTINGS.logoDark),
       logoLight: getFullUrl(userSettings.logoLight, DEFAULT_BRAND_SETTINGS.logoLight),
       favicon: getFullUrl(userSettings.favicon, DEFAULT_BRAND_SETTINGS.favicon),
       titleText: userSettings.titleText || DEFAULT_BRAND_SETTINGS.titleText,
@@ -137,7 +136,7 @@ export default function BrandSettings({ userSettings }: BrandSettingsProps) {
     setSettings(prev => ({ ...prev, [name]: value }));
 
     // Update brand context if the input is for a logo
-    if (['logoLight', 'logoDark', 'favicon'].includes(name)) {
+    if (['logoLight', 'favicon'].includes(name)) {
       updateBrandSettings({ [name]: value });
     }
   };
@@ -160,18 +159,23 @@ export default function BrandSettings({ userSettings }: BrandSettingsProps) {
 
   // Convert relative path to full URL for display
   const getDisplayUrl = (path: string): string => {
-    if (!path) return path;
+    if (!path) return '';
 
     // If it's already a full URL, return as is
-    if (path.startsWith('http')) return path;
-
-    // If it's a relative path starting with /storage/, make it full URL
-    if (path.startsWith('/storage/')) {
-      return `${window.appSettings?.baseUrl || window.location.origin}${path}`;
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return path;
     }
 
-    // If it's just a filename or other relative path, assume it's in storage
-    return path.startsWith('/') ? `${window.appSettings?.baseUrl || window.location.origin}${path}` : path;
+    // Get base URL
+    const baseUrl = window.appSettings?.baseUrl || window.location.origin;
+    
+    // If it's a relative path, convert to full URL
+    if (path.startsWith('/')) {
+      return `${baseUrl}${path}`;
+    }
+
+    // Default fallback
+    return `${baseUrl}/${path}`;
   };
 
   // Handle media picker selection
@@ -194,7 +198,6 @@ export default function BrandSettings({ userSettings }: BrandSettingsProps) {
 
   // State to track logo errors
   const [logoErrors, setLogoErrors] = useState({
-    logoDark: false,
     logoLight: false,
     favicon: false
   });
@@ -232,12 +235,6 @@ export default function BrandSettings({ userSettings }: BrandSettingsProps) {
     updatePosition(direction);
   };
 
-  // Handle theme mode change
-  const handleThemeModeChange = (mode: Appearance) => {
-    setSettings(prev => ({ ...prev, themeMode: mode }));
-    updateAppearance(mode);
-  };
-
   // Save settings
   const saveSettings = () => {
     setIsLoading(true);
@@ -260,7 +257,6 @@ export default function BrandSettings({ userSettings }: BrandSettingsProps) {
     // Update brand context
     updateBrandSettings({
       logoLight: settings.logoLight,
-      logoDark: settings.logoDark,
       favicon: settings.favicon
     });
 
@@ -271,14 +267,20 @@ export default function BrandSettings({ userSettings }: BrandSettingsProps) {
     router.post(route('settings.brand.update'), {
       settings: settings
     }, {
-      preserveScroll: true,
+      preserveScroll: false,
       onSuccess: () => {
+        toast.success(t('Brand settings updated successfully'));
+        
         // Force update brand context with full URLs for immediate display
         updateBrandSettings({
           logoLight: getDisplayUrl(settings.logoLight),
-          logoDark: getDisplayUrl(settings.logoDark),
           favicon: getDisplayUrl(settings.favicon)
         });
+        
+        // Reload the page after a short delay to ensure sidebar updates
+        setTimeout(() => {
+          window.location.reload();
+        }, 800);
       },
       onFinish: () => {
         setIsLoading(false);
@@ -340,102 +342,93 @@ export default function BrandSettings({ userSettings }: BrandSettingsProps) {
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-3">
-                  <Label>{t("Logo (Dark Mode)")}</Label>
-                  <div className="flex flex-col gap-3">
-                    <div className="border rounded-md p-4 flex items-center justify-center bg-muted/30 h-32">
-                      {settings.logoDark && !logoErrors.logoDark ? (
-                        <img
-                          key={`preview-dark-${Date.now()}`}
-                          src={getDisplayUrl(settings.logoDark)}
-                          alt="Dark Logo"
-                          className="max-h-full max-w-full object-contain"
-                          onError={() => setLogoErrors(prev => ({ ...prev, logoDark: true }))}
-                        />
-                      ) : (
-                        <div className="text-muted-foreground flex flex-col items-center gap-2">
-                          <div className="h-12 w-24 bg-muted flex items-center justify-center rounded border border-dashed">
-                            <span className="font-semibold text-muted-foreground">{t("Logo")}</span>
+                  <Label>{t("Logo")}</Label>
+                  <div className="border-2 border-dashed rounded-lg p-6 hover:border-primary/50 transition-colors">
+                    <div className="flex flex-col items-center gap-4">
+                      {/* Logo Preview */}
+                      <div className="w-full h-32 flex items-center justify-center bg-gradient-to-br from-muted/30 to-muted/10 rounded-md">
+                        {settings.logoLight && !logoErrors.logoLight ? (
+                          <img
+                            key={`preview-light-${Date.now()}`}
+                            src={getDisplayUrl(settings.logoLight)}
+                            alt="Logo Preview"
+                            className="max-h-28 max-w-full object-contain"
+                            onError={() => setLogoErrors(prev => ({ ...prev, logoLight: true }))}
+                          />
+                        ) : (
+                          <div className="text-center">
+                            <Upload className="h-12 w-12 mx-auto mb-2 text-muted-foreground/40" />
+                            <p className="text-sm text-muted-foreground">
+                              {logoErrors.logoLight ? "Click browse to select an image" : "No logo uploaded"}
+                            </p>
                           </div>
-                          <span className="text-xs">
-                            {logoErrors.logoDark ? "Failed to load image" : "No logo selected"}
-                          </span>
-                        </div>
+                        )}
+                      </div>
+                      
+                      {/* Browse Button */}
+                      <MediaPicker
+                        label=""
+                        value={settings.logoLight}
+                        onChange={(url) => handleMediaSelect('logoLight', url)}
+                        placeholder=""
+                        showPreview={false}
+                      />
+                      
+                      {settings.logoLight && (
+                        <p className="text-xs text-muted-foreground text-center">
+                          {t("Logo uploaded successfully")}
+                        </p>
                       )}
                     </div>
-                    <MediaPicker
-                      label=""
-                      value={settings.logoDark}
-                      onChange={(url) => handleMediaSelect('logoDark', url)}
-                      placeholder="Select dark mode logo..."
-                      showPreview={false}
-                    />
                   </div>
-                </div>
-
-                <div className="space-y-3">
-                  <Label>{t("Logo (Light Mode)")}</Label>
-                  <div className="flex flex-col gap-3">
-                    <div className="border rounded-md p-4 flex items-center justify-center bg-muted/30 h-32">
-                      {settings.logoLight && !logoErrors.logoLight ? (
-                        <img
-                          key={`preview-light-${Date.now()}`}
-                          src={getDisplayUrl(settings.logoLight)}
-                          alt="Light Logo"
-                          className="max-h-full max-w-full object-contain"
-                          onError={() => setLogoErrors(prev => ({ ...prev, logoLight: true }))}
-                        />
-                      ) : (
-                        <div className="text-muted-foreground flex flex-col items-center gap-2">
-                          <div className="h-12 w-24 bg-muted flex items-center justify-center rounded border border-dashed">
-                            <span className="font-semibold text-muted-foreground">{t("Logo")}</span>
-                          </div>
-                          <span className="text-xs">
-                            {logoErrors.logoLight ? "Failed to load image" : "No logo selected"}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    <MediaPicker
-                      label=""
-                      value={settings.logoLight}
-                      onChange={(url) => handleMediaSelect('logoLight', url)}
-                      placeholder="Select light mode logo..."
-                      showPreview={false}
-                    />
-                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {t("Recommended size: 200x50px (PNG or SVG)")}
+                  </p>
                 </div>
 
                 <div className="space-y-3">
                   <Label>{t("Favicon")}</Label>
-                  <div className="flex flex-col gap-3">
-                    <div className="border rounded-md p-4 flex items-center justify-center bg-muted/30 h-20">
-                      {settings.favicon && !logoErrors.favicon ? (
-                        <img
-                          key={`preview-favicon-${Date.now()}`}
-                          src={getDisplayUrl(settings.favicon)}
-                          alt="Favicon"
-                          className="h-16 w-16 object-contain"
-                          onError={() => setLogoErrors(prev => ({ ...prev, favicon: true }))}
-                        />
-                      ) : (
-                        <div className="text-muted-foreground flex flex-col items-center gap-1">
-                          <div className="h-10 w-10 bg-muted flex items-center justify-center rounded border border-dashed">
-                            <span className="font-semibold text-xs text-muted-foreground">{t("Icon")}</span>
+                  <div className="border-2 border-dashed rounded-lg p-6 hover:border-primary/50 transition-colors">
+                    <div className="flex flex-col items-center gap-4">
+                      {/* Favicon Preview */}
+                      <div className="w-full h-32 flex items-center justify-center bg-gradient-to-br from-muted/30 to-muted/10 rounded-md">
+                        {settings.favicon && !logoErrors.favicon ? (
+                          <img
+                            key={`preview-favicon-${Date.now()}`}
+                            src={getDisplayUrl(settings.favicon)}
+                            alt="Favicon Preview"
+                            className="h-20 w-20 object-contain"
+                            onError={() => setLogoErrors(prev => ({ ...prev, favicon: true }))}
+                          />
+                        ) : (
+                          <div className="text-center">
+                            <Upload className="h-10 w-10 mx-auto mb-2 text-muted-foreground/40" />
+                            <p className="text-sm text-muted-foreground">
+                              {logoErrors.favicon ? "Click browse to select an icon" : "No favicon uploaded"}
+                            </p>
                           </div>
-                          <span className="text-xs">
-                            {logoErrors.favicon ? "Failed to load image" : "No favicon selected"}
-                          </span>
-                        </div>
+                        )}
+                      </div>
+                      
+                      {/* Browse Button */}
+                      <MediaPicker
+                        label=""
+                        value={settings.favicon}
+                        onChange={(url) => handleMediaSelect('favicon', url)}
+                        placeholder=""
+                        showPreview={false}
+                      />
+                      
+                      {settings.favicon && (
+                        <p className="text-xs text-muted-foreground text-center">
+                          {t("Favicon uploaded successfully")}
+                        </p>
                       )}
                     </div>
-                    <MediaPicker
-                      label=""
-                      value={settings.favicon}
-                      onChange={(url) => handleMediaSelect('favicon', url)}
-                      placeholder="Select favicon..."
-                      showPreview={false}
-                    />
                   </div>
+                  <p className="text-xs text-muted-foreground">
+                    {t("Recommended size: 32x32px or 64x64px (ICO, PNG)")}
+                  </p>
                 </div>
               </div>
             </div>
@@ -452,7 +445,7 @@ export default function BrandSettings({ userSettings }: BrandSettingsProps) {
                     name="titleText"
                     value={settings.titleText}
                     onChange={handleInputChange}
-                    placeholder="StoreGo"
+                    placeholder="Vimstack"
                   />
                   <p className="text-xs text-muted-foreground">
                     {t("Application title displayed in the browser tab")}
@@ -466,7 +459,7 @@ export default function BrandSettings({ userSettings }: BrandSettingsProps) {
                     name="footerText"
                     value={settings.footerText}
                     onChange={handleInputChange}
-                    placeholder="© 2025 StoreGo SaaS. Powered by WorkDo."
+                    placeholder="© 2025 Vimstack. All rights reserved."
                   />
                   <p className="text-xs text-muted-foreground">
                     {t("Text displayed in the footer")}
@@ -660,67 +653,6 @@ export default function BrandSettings({ userSettings }: BrandSettingsProps) {
                   </div>
                 </div>
 
-                {/* Mode Section */}
-                <div className="space-y-4">
-                  <div className="flex items-center">
-                    <Moon className="h-5 w-5 mr-2 text-muted-foreground" />
-                    <h3 className="text-base font-medium">{t("Theme Mode")}</h3>
-                  </div>
-                  <Separator className="my-2" />
-
-                  <div className="space-y-2">
-                    <div className="grid grid-cols-3 gap-2">
-                      <Button
-                        type="button"
-                        variant={settings.themeMode === "light" ? "default" : "outline"}
-                        className="h-10 justify-start"
-                        style={{
-                          backgroundColor: settings.themeMode === "light" ?
-                            (settings.themeColor === 'custom' ? settings.customColor : null) :
-                            'transparent'
-                        }}
-                        onClick={() => handleThemeModeChange("light")}
-                      >
-                        {t("Light")}
-                        {settings.themeMode === "light" && (
-                          <Check className="h-4 w-4 ml-2" />
-                        )}
-                      </Button>
-                      <Button
-                        type="button"
-                        variant={settings.themeMode === "dark" ? "default" : "outline"}
-                        className="h-10 justify-start"
-                        style={{
-                          backgroundColor: settings.themeMode === "dark" ?
-                            (settings.themeColor === 'custom' ? settings.customColor : null) :
-                            'transparent'
-                        }}
-                        onClick={() => handleThemeModeChange("dark")}
-                      >
-                        {t("Dark")}
-                        {settings.themeMode === "dark" && (
-                          <Check className="h-4 w-4 ml-2" />
-                        )}
-                      </Button>
-                      <Button
-                        type="button"
-                        variant={settings.themeMode === "system" ? "default" : "outline"}
-                        className="h-10 justify-start"
-                        style={{
-                          backgroundColor: settings.themeMode === "system" ?
-                            (settings.themeColor === 'custom' ? settings.customColor : null) :
-                            'transparent'
-                        }}
-                        onClick={() => handleThemeModeChange("system")}
-                      >
-                        {t("System")}
-                        {settings.themeMode === "system" && (
-                          <Check className="h-4 w-4 ml-2" />
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           )}

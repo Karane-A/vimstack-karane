@@ -93,7 +93,7 @@ const fashionTheme: FashionThemeConfig = {
   store: {
     name: 'Fashion Store',
     logo: '/storage/media/fashion-logo.png',
-    favicon: '/storage/media/fashion-favicon.ico',
+    favicon: '/images/logos/vimstack-favicon.png',
     description: 'Contemporary fashion and timeless style for the modern wardrobe',
     contactEmail: 'hello@fashionstore.com',
     contactPhone: '+1 555 FASHION',

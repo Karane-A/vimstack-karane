@@ -39,7 +39,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
-            'landing.enabled' => \App\Http\Middleware\CheckLandingPageEnabled::class,
             'verified' => App\Http\Middleware\EnsureEmailIsVerified::class,
             'plan.access' => \App\Http\Middleware\CheckPlanAccess::class,
             'feature.access' => \App\Http\Middleware\CheckFeatureAccess::class,
@@ -68,6 +67,17 @@ return Application::configure(basePath: dirname(__DIR__))
 
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        // Handle cache permission errors gracefully
+        $exceptions->render(function (\Symfony\Component\Finder\Exception\AccessDeniedException $e, $request) {
+            // If it's a cache directory access error, log and continue
+            if (str_contains($e->getMessage(), 'storage\framework\cache') || 
+                str_contains($e->getMessage(), 'storage/framework/cache')) {
+                \Log::warning('Cache directory access denied: ' . $e->getMessage());
+                // Don't render error page, let the app continue with fallback
+                return null;
+            }
+        });
+        
         $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, $request) {
             // Check if this is a store route and the error message indicates store not found
             if ($request->is('store/*') && str_contains($e->getMessage(), 'Store not found')) {

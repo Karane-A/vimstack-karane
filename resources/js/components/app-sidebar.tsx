@@ -56,32 +56,11 @@ export function AppSidebar() {
             href: route('media-library'),
             icon: Image,
         },
-
-
-        {
-            title: t('Plans'),
-            icon: CreditCard,
-            children: [
-                {
-                    title: t('Plan'),
-                    href: route('plans.index')
-                },
-                {
-                    title: t('Plan Request'),
-                    href: route('plan-requests.index')
-                },
-                {
-                    title: t('Plan Orders'),
-                    href: route('plan-orders.index')
-                }
-            ]
-        },
         {
             title: t('Coupons'),
             href: route('coupons.index'),
             icon: Settings,
         },
-
         {
             title: t('Currencies'),
             href: route('currencies.index'),
@@ -106,36 +85,32 @@ export function AppSidebar() {
             ]
         },
         {
-            title: t('Referral Program'),
-            href: route('referral.index'),
-            icon: Gift,
+            title: t('Email Templates'),
+            href: route('email-templates.index'),
+            icon: Mail,
         },
         {
-            title: t('Landing Page'),
-            icon: Palette,
+            title: t('Plans'),
+            icon: CreditCard,
             children: [
                 {
-                    title: t('Landing Page'),
-                    href: route('landing-page')
+                    title: t('All Plans'),
+                    href: route('plans.index')
                 },
                 {
-                    title: t('Custom Pages'),
-                    href: route('landing-page.custom-pages.index')
+                    title: t('Plan Requests'),
+                    href: route('plan-requests.index')
                 },
                 {
-                    title: t('Subscribers'),
-                    href: route('landing-page.subscribers.index')
-                },
-                {
-                    title: t('Contacts'),
-                    href: route('landing-page.contacts.index')
+                    title: t('Plan Orders'),
+                    href: route('plan-orders.index')
                 }
             ]
         },
         {
-            title: t('Email Templates'),
-            href: route('email-templates.index'),
-            icon: Mail,
+            title: t('Referral Program'),
+            href: route('referral.index'),
+            icon: Gift,
         },
         {
             title: t('Settings'),
@@ -370,51 +345,7 @@ export function AppSidebar() {
             });
         }
 
-        // Plans
-        const planChildren = [];
-        
-        // Main Plans page - check for view-plans permission
-        if (hasPermission(permissions, 'view-plans') || hasPermission(permissions, 'manage-plans')) {
-            planChildren.push({
-                title: t('Plan'),
-                href: route('plans.index')
-            });
-        }
-        
-        // Plan Requests - check for plan requests permissions
-        if (hasPermission(permissions, 'manage-plan-requests') || hasPermission(permissions, 'view-plan-requests')) {
-            planChildren.push({
-                title: t('My Plan Request'),
-                href: route('plan-requests.index')
-            });
-        }
-        
-        // Plan Orders - check for plan orders permissions
-        if (hasPermission(permissions, 'manage-plan-orders') || hasPermission(permissions, 'view-plan-orders')) {
-            planChildren.push({
-                title: t('My Plan Orders'),
-                href: route('plan-orders.index')
-            });
-        }
-        
-        if (planChildren.length > 0) {
-            items.push({
-                title: t('Plans'),
-                icon: CreditCard,
-                children: planChildren
-            });
-        }
-
-        // Referral Program
-        if (hasPermission(permissions, 'manage-referral')) {
-            items.push({
-                title: t('Referral Program'),
-                href: route('referral.index'),
-                icon: Gift,
-            });
-        }
-
-        // Settings - Only show if user has any settings permissions
+        // Settings
         if (hasPermission(permissions, 'manage-settings') || 
             hasPermission(permissions, 'manage-system-settings') ||
             hasPermission(permissions, 'manage-email-settings') ||
@@ -424,7 +355,6 @@ export function AppSidebar() {
             hasPermission(permissions, 'manage-payment-settings') ||
             hasPermission(permissions, 'manage-currency-settings') ||
             hasPermission(permissions, 'manage-recaptcha-settings') ||
-            hasPermission(permissions, 'manage-chatgpt-settings') ||
             hasPermission(permissions, 'manage-cookie-settings') ||
             hasPermission(permissions, 'manage-seo-settings') ||
             hasPermission(permissions, 'manage-cache-settings') ||
@@ -437,6 +367,24 @@ export function AppSidebar() {
             });
         }
 
+        // Plans (separate menu item)
+        if (hasPermission(permissions, 'view-plans') || hasPermission(permissions, 'manage-plans')) {
+            items.push({
+                title: t('Plans'),
+                href: route('plans.index'),
+                icon: CreditCard,
+            });
+        }
+
+        // Referral Program (separate menu item)
+        if (hasPermission(permissions, 'manage-referral')) {
+            items.push({
+                title: t('Referral Program'),
+                href: route('referral.index'),
+                icon: Gift,
+            });
+        }
+
         return items;
     };
 
@@ -444,8 +392,12 @@ export function AppSidebar() {
 
     const { position } = useLayout();
     const { variant, collapsible, style } = useSidebarSettings();
-    const { logoLight, logoDark, favicon, updateBrandSettings } = useBrand();
     const [sidebarStyle, setSidebarStyle] = useState({});
+    
+    // Hardcoded logo paths
+    const logoPath = '/storage/media/15/vimstack-logo.jpg';
+    const faviconPath = '/images/logos/vimstack-favicon.png';
+    const appTitle = 'Vimstack';
 
     useEffect(() => {
 
@@ -489,54 +441,30 @@ export function AppSidebar() {
                     <Link href={getFirstAvailableHref()} prefetch className="flex items-center justify-center">
                         {/* Logo for expanded sidebar */}
                         <div className="h-8 group-data-[collapsible=icon]:hidden flex items-center">
-                            {(() => {
-                                const isDark = document.documentElement.classList.contains('dark');
-                                const currentLogo = isDark ? logoLight : logoDark;
-                                const displayUrl = currentLogo ? (
-                                    currentLogo.startsWith('http') ? currentLogo : 
-                                    currentLogo.startsWith('/storage/') ? `${window.appSettings?.baseUrl || window.location.origin}${currentLogo}` :
-                                    currentLogo.startsWith('/') ? `${window.appSettings?.baseUrl || window.location.origin}${currentLogo}` : currentLogo
-                                ) : '';
-                                
-                                return displayUrl ? (
-                                    <img
-                                        key={`${currentLogo}-${Date.now()}`}
-                                        src={displayUrl}
-                                        alt="Logo"
-                                        className="h-8 w-auto max-w-[150px] transition-all duration-200"
-                                        onError={() => updateBrandSettings({ [isDark ? 'logoLight' : 'logoDark']: '' })}
-                                    />
-                                ) : (
-                                    <div className="h-8 text-inherit font-semibold flex items-center text-lg tracking-tight">
-                                        StoreGo
-                                    </div>
-                                );
-                            })()} 
+                            <img
+                                src={logoPath}
+                                alt={appTitle}
+                                className="h-8 w-auto max-w-[150px] transition-all duration-200 object-contain"
+                                onError={(e) => {
+                                    console.error('Logo failed to load:', logoPath);
+                                }}
+                            />
                         </div>
 
                         {/* Icon for collapsed sidebar */}
                         <div className="h-8 w-8 hidden group-data-[collapsible=icon]:block">
-                            {(() => {
-                                const displayFavicon = favicon ? (
-                                    favicon.startsWith('http') ? favicon : 
-                                    favicon.startsWith('/storage/') ? `${window.appSettings?.baseUrl || window.location.origin}${favicon}` :
-                                    favicon.startsWith('/') ? `${window.appSettings?.baseUrl || window.location.origin}${favicon}` : favicon
-                                ) : '';
-                                
-                                return displayFavicon ? (
-                                    <img
-                                        key={`${favicon}-${Date.now()}`}
-                                        src={displayFavicon}
-                                        alt="Icon"
-                                        className="h-8 w-8 transition-all duration-200"
-                                        onError={() => updateBrandSettings({ favicon: '' })}
-                                    />
-                                ) : (
-                                    <div className="h-8 w-8 bg-primary text-white rounded flex items-center justify-center font-bold shadow-sm">
-                                        W
-                                    </div>
-                                );
-                            })()} 
+                            <img
+                                src={faviconPath}
+                                alt={appTitle}
+                                className="h-8 w-8 transition-all duration-200 object-contain rounded"
+                                onError={(e) => {
+                                    // Fallback to first letter if favicon fails
+                                    const container = e.currentTarget.parentElement;
+                                    if (container) {
+                                        container.innerHTML = `<div class="h-8 w-8 bg-primary text-white rounded flex items-center justify-center font-bold shadow-sm">${appTitle.charAt(0)}</div>`;
+                                    }
+                                }}
+                            />
                         </div>
                     </Link>
                 </div>

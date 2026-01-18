@@ -16,7 +16,7 @@ class MailConfigService
             'password' => getSetting('email_password', ''),
             'encryption' => getSetting('email_encryption', 'tls'),
             'fromAddress' => getSetting('email_from_address', 'noreply@example.com'),
-            'fromName' => getSetting('email_from_name', 'StoreGo System')
+            'fromName' => getSetting('email_from_name', 'Vimstack System')
         ];
 
         Config::set([

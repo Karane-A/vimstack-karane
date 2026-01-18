@@ -31,7 +31,7 @@ class EmailSettingController extends Controller
             'password' => getSetting('email_password', '', null, $storeId),
             'encryption' => getSetting('email_encryption', 'tls', null, $storeId),
             'fromAddress' => getSetting('email_from_address', 'noreply@example.com', null, $storeId),
-            'fromName' => getSetting('email_from_name', 'StoreGo System', null, $storeId)
+            'fromName' => getSetting('email_from_name', 'Vimstack System', null, $storeId)
         ];
 
         // Mask password if it exists
@@ -111,7 +111,7 @@ class EmailSettingController extends Controller
             'username' => getSetting('email_username', 'user@example.com', null, $storeId),
             'encryption' => getSetting('email_encryption', 'tls', null, $storeId),
             'fromAddress' => getSetting('email_from_address', 'noreply@example.com', null, $storeId),
-            'fromName' => getSetting('email_from_name', 'StoreGo System', null, $storeId)
+            'fromName' => getSetting('email_from_name', 'Vimstack System', null, $storeId)
         ];
         
         // Get the actual password (not masked)

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'storego-pwa-v1';
+const CACHE_NAME = 'vimstack-pwa-v1';
 const assets = [];
 
 self.addEventListener("install", installEvent => {

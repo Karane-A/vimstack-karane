@@ -62,7 +62,7 @@ Route::middleware(['auth', 'verified', 'plan.access'])->group(function () {
   
     // General settings page with system and company settings - require any settings permissions
     Route::get('settings', [SettingsController::class, 'index'])
-        ->middleware('role_or_permission:superadmin|manage-settings|manage-system-settings|manage-email-settings|manage-brand-settings|manage-company-settings|manage-storage-settings|manage-payment-settings|manage-currency-settings|manage-recaptcha-settings|manage-chatgpt-settings|manage-seo-settings|manage-cache-settings|manage-account-settings|manage-webhook-settings')
+        ->middleware('role_or_permission:superadmin|manage-settings|manage-system-settings|manage-email-settings|manage-brand-settings|manage-company-settings|manage-storage-settings|manage-payment-settings|manage-currency-settings|manage-recaptcha-settings|manage-seo-settings|manage-cache-settings|manage-account-settings|manage-webhook-settings')
         ->name('settings');
     
     // System Settings routes
@@ -70,7 +70,6 @@ Route::middleware(['auth', 'verified', 'plan.access'])->group(function () {
     Route::post('settings/brand', [SystemSettingsController::class, 'updateBrand'])->name('settings.brand.update');
     Route::post('settings/storage', [SystemSettingsController::class, 'updateStorage'])->name('settings.storage.update');
     Route::post('settings/recaptcha', [SystemSettingsController::class, 'updateRecaptcha'])->name('settings.recaptcha.update');
-    Route::post('settings/chatgpt', [SystemSettingsController::class, 'updateChatgpt'])->name('settings.chatgpt.update');
     Route::post('settings/cookie', [SystemSettingsController::class, 'updateCookie'])
         ->middleware('role_or_permission:superadmin|manage-cookie-settings')
         ->name('settings.cookie.update');

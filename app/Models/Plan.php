@@ -20,7 +20,6 @@ class Plan extends Model
         'enable_custsubdomain',
         'enable_branding',
         'pwa_business',
-        'enable_chatgpt',
         'enable_custom_pages',
         'enable_blog',
         'enable_shipping_method',

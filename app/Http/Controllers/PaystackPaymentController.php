@@ -26,6 +26,8 @@ class PaystackPaymentController extends Controller
             curl_setopt_array($curl, array(
                 CURLOPT_URL => "https://api.paystack.co/transaction/verify/" . $validated['payment_id'],
                 CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_SSL_VERIFYPEER => true,  // SECURITY FIX: Enable SSL verification
+                CURLOPT_SSL_VERIFYHOST => 2,     // SECURITY FIX: Verify hostname
                 CURLOPT_HTTPHEADER => [
                     "Authorization: Bearer " . $settings['payment_settings']['paystack_secret_key'],
                     "Cache-Control: no-cache",
@@ -33,11 +35,35 @@ class PaystackPaymentController extends Controller
             ));
 
             $response = curl_exec($curl);
+            $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
             curl_close($curl);
+            
+            if ($httpCode !== 200) {
+                \Log::error('Paystack API error', ['http_code' => $httpCode]);
+                return back()->withErrors(['error' => __('Payment verification failed - API error')]);
+            }
 
             $result = json_decode($response, true);
+            
+            if (!$result || !isset($result['status'])) {
+                return back()->withErrors(['error' => __('Payment verification failed - Invalid response')]);
+            }
 
             if ($result['status'] && $result['data']['status'] === 'success') {
+                // SECURITY FIX: Verify payment amount matches expected price
+                $pricing = calculatePlanPricing($plan, $validated['coupon_code'] ?? null);
+                $expectedAmount = $pricing['final_price'] * 100; // Paystack uses kobo (smallest currency unit)
+                $paidAmount = $result['data']['amount'];
+                
+                if (abs($paidAmount - $expectedAmount) > 1) { // Allow 1 kobo difference
+                    \Log::error('Paystack amount mismatch', [
+                        'expected' => $expectedAmount,
+                        'paid' => $paidAmount,
+                        'plan_id' => $plan->id
+                    ]);
+                    return back()->withErrors(['error' => __('Payment amount verification failed')]);
+                }
+                
                 processPaymentSuccess([
                     'user_id' => auth()->id(),
                     'plan_id' => $plan->id,

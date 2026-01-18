@@ -57,9 +57,43 @@ class PaymentSettingController extends Controller
         
         // Add default currency to payment settings
         $settings = settings($superAdminId);
-        $paymentSettings['defaultCurrency'] = $settings['defaultCurrency'] ?? 'usd';
         
-        return response()->json($paymentSettings);
+        // SECURITY FIX: Only return PUBLIC keys and enabled flags to frontend
+        // NEVER expose secret keys, API tokens, or other sensitive credentials
+        $publicSettings = [
+            'defaultCurrency' => $settings['defaultCurrency'] ?? 'usd',
+            
+            // Stripe - public key only
+            'is_stripe_enabled' => $paymentSettings['is_stripe_enabled'] ?? false,
+            'stripe_key' => $paymentSettings['stripe_key'] ?? null,
+            
+            // PayPal - client ID only
+            'is_paypal_enabled' => $paymentSettings['is_paypal_enabled'] ?? false,
+            'paypal_client_id' => $paymentSettings['paypal_client_id'] ?? null,
+            'paypal_mode' => $paymentSettings['paypal_mode'] ?? 'sandbox',
+            
+            // Paystack - public key only
+            'is_paystack_enabled' => $paymentSettings['is_paystack_enabled'] ?? false,
+            'paystack_public_key' => $paymentSettings['paystack_public_key'] ?? null,
+            
+            // Flutterwave - public key only
+            'is_flutterwave_enabled' => $paymentSettings['is_flutterwave_enabled'] ?? false,
+            'flutterwave_public_key' => $paymentSettings['flutterwave_public_key'] ?? null,
+            
+            // Bank Transfer - no sensitive data
+            'is_bank_enabled' => $paymentSettings['is_bank_enabled'] ?? false,
+            'bank_detail' => $paymentSettings['bank_detail'] ?? null,
+            
+            // Skrill - merchant ID only (not secret word)
+            'is_skrill_enabled' => $paymentSettings['is_skrill_enabled'] ?? false,
+            'skrill_merchant_id' => $paymentSettings['skrill_merchant_id'] ?? null,
+            
+            // CoinGate - mode only
+            'is_coingate_enabled' => $paymentSettings['is_coingate_enabled'] ?? false,
+            'coingate_mode' => $paymentSettings['coingate_mode'] ?? 'sandbox',
+        ];
+        
+        return response()->json($publicSettings);
     }
     public function store(Request $request)
     {

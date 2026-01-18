@@ -20,7 +20,7 @@ class CurrencySeeder extends Seeder
 
 
         $currencies = [
-            ['name' => 'US Dollar', 'code' => 'USD', 'symbol' => '$', 'description' => 'United States Dollar', 'is_default' => true],
+            ['name' => 'US Dollar', 'code' => 'USD', 'symbol' => '$', 'description' => 'United States Dollar', 'is_default' => false],
             ['name' => 'Euro', 'code' => 'EUR', 'symbol' => '€', 'description' => 'Euro', 'is_default' => false],
             ['name' => 'British Pound', 'code' => 'GBP', 'symbol' => '£', 'description' => 'British Pound Sterling', 'is_default' => false],
             ['name' => 'Japanese Yen', 'code' => 'JPY', 'symbol' => '¥', 'description' => 'Japanese Yen', 'is_default' => false],
@@ -95,7 +95,7 @@ class CurrencySeeder extends Seeder
             ['name' => 'Ethiopian Birr', 'code' => 'ETB', 'symbol' => 'Br', 'description' => 'Ethiopian Birr', 'is_default' => false],
             ['name' => 'Ghanaian Cedi', 'code' => 'GHS', 'symbol' => '₵', 'description' => 'Ghanaian Cedi', 'is_default' => false],
             ['name' => 'Tanzanian Shilling', 'code' => 'TZS', 'symbol' => 'TSh', 'description' => 'Tanzanian Shilling', 'is_default' => false],
-            ['name' => 'Ugandan Shilling', 'code' => 'UGX', 'symbol' => 'USh', 'description' => 'Ugandan Shilling', 'is_default' => false],
+            ['name' => 'Ugandan Shilling', 'code' => 'UGX', 'symbol' => 'USh', 'description' => 'Ugandan Shilling', 'is_default' => true],
             ['name' => 'Zambian Kwacha', 'code' => 'ZMW', 'symbol' => 'ZK', 'description' => 'Zambian Kwacha', 'is_default' => false],
             ['name' => 'Botswana Pula', 'code' => 'BWP', 'symbol' => 'P', 'description' => 'Botswana Pula', 'is_default' => false],
             ['name' => 'Namibian Dollar', 'code' => 'NAD', 'symbol' => 'N$', 'description' => 'Namibian Dollar', 'is_default' => false],

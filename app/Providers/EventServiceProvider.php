@@ -7,8 +7,6 @@ use App\Events\OrderStatusChanged;
 use App\Events\StoreCreated;
 use App\Events\UserCreated;
 use App\Listeners\SendOrderCreatedEmail;
-use App\Listeners\SendOrderCreatedWhatsApp;
-
 use App\Listeners\SendOrderStatusChangedEmail;
 use App\Listeners\SendStoreCreatedEmail;
 use App\Listeners\SendUserCreatedEmail;
@@ -27,7 +25,6 @@ class EventServiceProvider extends ServiceProvider
         ],
         OrderCreated::class => [
             SendOrderCreatedEmail::class,
-            SendOrderCreatedWhatsApp::class,
         ],
         OrderStatusChanged::class => [
             SendOrderStatusChangedEmail::class,

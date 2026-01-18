@@ -160,7 +160,6 @@ function PerfumeCheckout({
   
   // Payment form state
   const [paymentMethod, setPaymentMethod] = useState('cod');
-  const [whatsappNumber, setWhatsappNumber] = useState('');
   const [paymentErrors, setPaymentErrors] = useState<Record<string, string>>({});
   
   // Order notes and coupon code
@@ -344,45 +343,8 @@ function PerfumeCheckout({
     // Proceed to review step
     setCurrentStep('review');
   };
-  
-  // Handle WhatsApp number validation
-  const handleWhatsAppNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setWhatsappNumber(value);
-    
-    if (paymentErrors.whatsappNumber) {
-      setPaymentErrors(prev => ({ ...prev, whatsappNumber: '' }));
-    }
-    
-    if (value && paymentMethod === 'whatsapp') {
-      const phoneRegex = /^[+]?[0-9]{10,15}$/;
-      if (!phoneRegex.test(value.replace(/\s+/g, ''))) {
-        setPaymentErrors(prev => ({ ...prev, whatsappNumber: 'Please enter a valid WhatsApp number' }));
-      }
-    }
-  };
 
-  // Handle order placement
   const handlePlaceOrder = async () => {
-    // Validate WhatsApp number if WhatsApp payment is selected
-    if (paymentMethod === 'whatsapp') {
-      const newErrors: Record<string, string> = {};
-      
-      if (!whatsappNumber) {
-        newErrors.whatsappNumber = 'WhatsApp number is required';
-      } else {
-        const phoneRegex = /^[+]?[0-9]{10,15}$/;
-        if (!phoneRegex.test(whatsappNumber.replace(/\s+/g, ''))) {
-          newErrors.whatsappNumber = 'Please enter a valid WhatsApp number';
-        }
-      }
-      
-      if (Object.keys(newErrors).length > 0) {
-        setPaymentErrors(newErrors);
-        return;
-      }
-    }
-
     const orderData = {
       store_id: store.id,
       customer_first_name: shippingFirstName,
@@ -403,7 +365,6 @@ function PerfumeCheckout({
       shipping_method_id: selectedShippingId,
       notes: orderNotes,
       coupon_code: couponApplied ? couponCode : null,
-      whatsapp_number: paymentMethod === 'whatsapp' ? whatsappNumber : null,
     };
 
     // Use appropriate utility based on payment method
@@ -1012,80 +973,16 @@ function PerfumeCheckout({
                             </div>
                           </div>
                           
-                          {/* WhatsApp Payment */}
-                          {enabledPaymentMethods.whatsapp && (
-                            <div className={`relative border-2 rounded-xl p-4 cursor-pointer transition-all duration-300 ${
-                              paymentMethod === 'whatsapp' ? 'border-purple-500 bg-purple-50' : 'border-gray-200 hover:border-purple-300'
-                            }`}>
-                              <div className="flex items-center">
-                                <input
-                                  id="payment-whatsapp"
-                                  name="payment-method"
-                                  type="radio"
-                                  checked={paymentMethod === 'whatsapp'}
-                                  onChange={() => setPaymentMethod('whatsapp')}
-                                  className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-purple-300"
-                                />
-                                <label htmlFor="payment-whatsapp" className="ml-4 flex-1 cursor-pointer">
-                                  <span className="block text-sm font-medium text-gray-900">WhatsApp</span>
-                                  <span className="block text-sm text-gray-600">Complete your fragrance order via WhatsApp</span>
-                                </label>
-                              </div>
-                            </div>
-                          )}
-                          
-                          {/* Telegram Payment */}
-                          {enabledPaymentMethods.telegram && (
-                            <div className={`relative border-2 rounded-xl p-4 cursor-pointer transition-all duration-300 ${
-                              paymentMethod === 'telegram' ? 'border-purple-500 bg-purple-50' : 'border-gray-200 hover:border-purple-300'
-                            }`}>
-                              <div className="flex items-center">
-                                <input
-                                  id="payment-telegram"
-                                  name="payment-method"
-                                  type="radio"
-                                  checked={paymentMethod === 'telegram'}
-                                  onChange={() => setPaymentMethod('telegram')}
-                                  className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-purple-300"
-                                />
-                                <label htmlFor="payment-telegram" className="ml-4 flex-1 cursor-pointer">
-                                  <span className="block text-sm font-medium text-gray-900">Telegram</span>
-                                  <span className="block text-sm text-gray-600">Complete your fragrance order via Telegram</span>
-                                </label>
-                              </div>
-                            </div>
-                          )}
-                          
                           {/* Dynamic Payment Methods */}
-                          {Object.entries(enabledPaymentMethods).filter(([method]) => !['whatsapp', 'telegram'].includes(method)).map(([method, config]: [string, any]) => {
+                          {Object.entries(enabledPaymentMethods).map(([method, config]: [string, any]) => {
                             const methodNames: Record<string, string> = {
                               stripe: 'Credit Card (Stripe)',
                               paypal: 'PayPal',
-                              razorpay: 'Razorpay',
                               paystack: 'Paystack',
                               flutterwave: 'Flutterwave',
                               bank: 'Bank Transfer',
-                              mercadopago: 'MercadoPago',
-                              paytabs: 'PayTabs',
                               skrill: 'Skrill',
-                              coingate: 'CoinGate',
-                              payfast: 'PayFast',
-                              tap: 'Tap',
-                              xendit: 'Xendit',
-                              paytr: 'PayTR',
-                              mollie: 'Mollie',
-                              toyyibpay: 'toyyibPay',
-                              cashfree: 'Cashfree',
-                              iyzipay: 'Iyzipay',
-                              benefit: 'Benefit',
-                              ozow: 'Ozow',
-                              easebuzz: 'Easebuzz',
-                              khalti: 'Khalti',
-                              authorizenet: 'Authorize.Net',
-                              fedapay: 'FedaPay',
-                              payhere: 'PayHere',
-                              cinetpay: 'CinetPay',
-                              paymentwall: 'PaymentWall'
+                              coingate: 'CoinGate'
                             };
                             
                             return (
@@ -1115,31 +1012,6 @@ function PerfumeCheckout({
                           })}
                         </div>
                         
-                        {/* WhatsApp Number Input */}
-                        {paymentMethod === 'whatsapp' && (
-                          <div className="mt-6">
-                            <h3 className="text-xl font-medium text-purple-800 mb-4">WhatsApp Details</h3>
-                            
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">WhatsApp Number *</label>
-                              <input
-                                type="tel"
-                                value={whatsappNumber}
-                                onChange={handleWhatsAppNumberChange}
-                                placeholder="+1234567890"
-                                className={`block w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors ${
-                                  paymentErrors.whatsappNumber ? 'border-red-500' : 'border-gray-300'
-                                }`}
-                              />
-                              <p className="mt-2 text-sm text-gray-600">
-                                Enter your WhatsApp number with country code (e.g., +1234567890)
-                              </p>
-                              {paymentErrors.whatsappNumber && (
-                                <p className="mt-2 text-sm text-red-600">{paymentErrors.whatsappNumber}</p>
-                              )}
-                            </div>
-                          </div>
-                        )}
                       </div>
                       
                       <div className="flex justify-between pt-6">

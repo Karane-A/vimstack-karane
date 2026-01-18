@@ -83,7 +83,7 @@ const storeTheme: StoreThemeConfig = {
   store: {
     name: 'Home Accessories',
     logo: '/storage/media/logo.png',
-    favicon: '/storage/media/favicon.ico',
+    favicon: '/images/logos/vimstack-favicon.png',
     description: 'Quality home decor and accessories for every room',
     contactEmail: 'info@homeaccessories.com',
     contactPhone: '+1 234 567 8900',

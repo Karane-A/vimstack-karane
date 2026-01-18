@@ -9,11 +9,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 
 export default function CreateExpressCheckout() {
   const { t } = useTranslation();
+  const { availablePaymentMethods = [] } = usePage().props as any;
   const [checkoutType, setCheckoutType] = useState('buy_now');
   const [formData, setFormData] = useState({
     name: '',
@@ -121,76 +123,142 @@ export default function CreateExpressCheckout() {
           <TabsContent value="general" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>{t('Checkout Information')}</CardTitle>
+                <CardTitle>{t('Basic Information')}</CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {t('Configure the basic details for your express checkout')}
+                </p>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="name">{t('Checkout Name *')}</Label>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="name" className="text-base font-semibold">
+                      {t('Checkout Name')} <span className="text-destructive">*</span>
+                    </Label>
+                    <p className="text-sm text-muted-foreground">
+                      {t('Internal name to identify this checkout configuration')}
+                    </p>
                     <Input 
                       id="name" 
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
-                      placeholder={t('Enter checkout name')} 
+                      placeholder={t('e.g., Mobile Quick Checkout')}
+                      className="mt-2"
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="type">{t('Checkout Type *')}</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="type" className="text-base font-semibold">
+                      {t('Checkout Type')} <span className="text-destructive">*</span>
+                    </Label>
+                    <p className="text-sm text-muted-foreground">
+                      {t('Select the checkout experience type')}
+                    </p>
                     <Select value={checkoutType} onValueChange={handleTypeChange}>
-                      <SelectTrigger>
-                        <SelectValue />
+                      <SelectTrigger className="mt-2">
+                        <SelectValue placeholder={t('Choose type')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="buy_now">{t('Buy Now')}</SelectItem>
-                        <SelectItem value="express_cart">{t('Express Cart')}</SelectItem>
-                        <SelectItem value="guest_checkout">{t('Guest Checkout')}</SelectItem>
-                        <SelectItem value="mobile_optimized">{t('Mobile Optimized')}</SelectItem>
+                        <SelectItem value="buy_now">
+                          <div className="flex flex-col items-start">
+                            <span className="font-medium">{t('Buy Now')}</span>
+                            <span className="text-xs text-muted-foreground">{t('Quick one-click purchase')}</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="express_cart">
+                          <div className="flex flex-col items-start">
+                            <span className="font-medium">{t('Express Cart')}</span>
+                            <span className="text-xs text-muted-foreground">{t('Fast cart checkout')}</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="guest_checkout">
+                          <div className="flex flex-col items-start">
+                            <span className="font-medium">{t('Guest Checkout')}</span>
+                            <span className="text-xs text-muted-foreground">{t('No account required')}</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="mobile_optimized">
+                          <div className="flex flex-col items-start">
+                            <span className="font-medium">{t('Mobile Optimized')}</span>
+                            <span className="text-xs text-muted-foreground">{t('Mobile-first experience')}</span>
+                          </div>
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
-                <div>
-                  <Label htmlFor="description">{t('Description')}</Label>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="description" className="text-base font-semibold">{t('Description')}</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {t('Describe the purpose and use case for this checkout method')}
+                  </p>
                   <Textarea 
                     id="description" 
                     name="description"
                     value={formData.description}
                     onChange={handleInputChange}
-                    placeholder={t('Describe this checkout method')} 
+                    placeholder={t('e.g., Optimized checkout for mobile users with saved payment methods')}
+                    rows={3}
+                    className="mt-2"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="button_text">{t('Button Text')}</Label>
-                    <Input 
-                      id="button_text" 
-                      name="button_text"
-                      value={formData.button_text}
-                      onChange={handleInputChange}
-                      placeholder={t('Buy Now')} 
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="button_color">{t('Button Color')}</Label>
-                    <Input 
-                      id="button_color" 
-                      name="button_color"
-                      type="color" 
-                      value={formData.button_color}
-                      onChange={handleInputChange}
-                    />
+                
+                <div className="border-t pt-6">
+                  <h4 className="text-base font-semibold mb-4">{t('Button Customization')}</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="button_text">{t('Button Text')}</Label>
+                      <p className="text-sm text-muted-foreground">
+                        {t('Text displayed on the checkout button')}
+                      </p>
+                      <Input 
+                        id="button_text" 
+                        name="button_text"
+                        value={formData.button_text}
+                        onChange={handleInputChange}
+                        placeholder={t('Buy Now')}
+                        className="mt-2"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="button_color">{t('Button Color')}</Label>
+                      <p className="text-sm text-muted-foreground">
+                        {t('Choose a color for the checkout button')}
+                      </p>
+                      <div className="flex gap-2 items-center mt-2">
+                        <Input 
+                          id="button_color" 
+                          name="button_color"
+                          type="color" 
+                          value={formData.button_color}
+                          onChange={handleInputChange}
+                          className="w-20 h-10 cursor-pointer"
+                        />
+                        <Input 
+                          value={formData.button_color}
+                          onChange={handleInputChange}
+                          name="button_color"
+                          placeholder="#000000"
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label>{t('Checkout Status')}</Label>
-                    <p className="text-sm text-muted-foreground">{t('Enable or disable this checkout')}</p>
+                
+                <div className="border-t pt-6">
+                  <div className="flex items-center justify-between p-4 rounded-lg border bg-card">
+                    <div className="flex-1">
+                      <Label className="text-base font-semibold">{t('Activate Checkout')}</Label>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {t('Enable this checkout method for customers')}
+                      </p>
+                    </div>
+                    <Switch 
+                      checked={formData.is_active}
+                      onCheckedChange={(checked) => handleSwitchChange('is_active', checked)}
+                    />
                   </div>
-                  <Switch 
-                    checked={formData.is_active}
-                    onCheckedChange={(checked) => handleSwitchChange('is_active', checked)}
-                  />
                 </div>
               </CardContent>
             </Card>
@@ -201,66 +269,79 @@ export default function CreateExpressCheckout() {
               <CardHeader>
                 <CardTitle>Payment Methods</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="credit_card" 
-                      checked={formData.payment_methods.includes('credit_card')}
-                      onCheckedChange={(checked) => handlePaymentMethodChange('credit_card', checked)}
-                    />
-                    <Label htmlFor="credit_card">{t('Credit/Debit Cards')}</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="paypal" 
-                      checked={formData.payment_methods.includes('paypal')}
-                      onCheckedChange={(checked) => handlePaymentMethodChange('paypal', checked)}
-                    />
-                    <Label htmlFor="paypal">{t('PayPal')}</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="apple_pay" 
-                      checked={formData.payment_methods.includes('apple_pay')}
-                      onCheckedChange={(checked) => handlePaymentMethodChange('apple_pay', checked)}
-                    />
-                    <Label htmlFor="apple_pay">{t('Apple Pay')}</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="google_pay" 
-                      checked={formData.payment_methods.includes('google_pay')}
-                      onCheckedChange={(checked) => handlePaymentMethodChange('google_pay', checked)}
-                    />
-                    <Label htmlFor="google_pay">{t('Google Pay')}</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="samsung_pay" 
-                      checked={formData.payment_methods.includes('samsung_pay')}
-                      onCheckedChange={(checked) => handlePaymentMethodChange('samsung_pay', checked)}
-                    />
-                    <Label htmlFor="samsung_pay">{t('Samsung Pay')}</Label>
-                  </div>
-                </div>
+              <CardContent className="space-y-6">
                 <div>
-                  <Label htmlFor="default_payment">{t('Default Payment Method')}</Label>
-                  <Select 
-                    value={formData.default_payment_method}
-                    onValueChange={handleDefaultPaymentChange}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder={t('Select default payment')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="credit_card">{t('Credit/Debit Cards')}</SelectItem>
-                      <SelectItem value="paypal">{t('PayPal')}</SelectItem>
-                      <SelectItem value="apple_pay">{t('Apple Pay')}</SelectItem>
-                      <SelectItem value="google_pay">{t('Google Pay')}</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {t('Select which payment methods customers can use for express checkout')}
+                  </p>
+                  
+                  {availablePaymentMethods && availablePaymentMethods.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {availablePaymentMethods.map((method: any) => (
+                        <div 
+                          key={method.value} 
+                          className={`flex items-center space-x-3 p-4 rounded-lg border-2 transition-all cursor-pointer hover:border-primary/50 ${
+                            formData.payment_methods.includes(method.value) 
+                              ? 'border-primary bg-primary/5' 
+                              : 'border-border bg-background'
+                          }`}
+                          onClick={() => handlePaymentMethodChange(method.value, !formData.payment_methods.includes(method.value))}
+                        >
+                          <Checkbox 
+                            id={method.value}
+                            checked={formData.payment_methods.includes(method.value)}
+                            onCheckedChange={(checked) => handlePaymentMethodChange(method.value, checked)}
+                            className="pointer-events-none"
+                          />
+                          <Label htmlFor={method.value} className="font-medium cursor-pointer flex-1">
+                            {t(method.label)}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <div className="mx-auto w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mb-3">
+                        <svg className="w-6 h-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                      </div>
+                      <h3 className="font-semibold text-lg mb-1">{t('No Payment Methods Available')}</h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        {t('Please enable payment methods in your store settings first to use express checkout.')}
+                      </p>
+                      <Button variant="outline" size="sm" onClick={() => window.open('/settings', '_blank')}>
+                        {t('Go to Payment Settings')}
+                      </Button>
+                    </div>
+                  )}
                 </div>
+                
+                {availablePaymentMethods && availablePaymentMethods.length > 0 && (
+                  <div>
+                    <Label htmlFor="default_payment" className="text-base font-semibold mb-2 block">
+                      {t('Default Payment Method')}
+                    </Label>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      {t('This payment method will be pre-selected for customers')}
+                    </p>
+                    <Select 
+                      value={formData.default_payment_method}
+                      onValueChange={handleDefaultPaymentChange}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder={t('Select default payment')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availablePaymentMethods.map((method: any) => (
+                          <SelectItem key={method.value} value={method.value}>
+                            {t(method.label)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -268,78 +349,118 @@ export default function CreateExpressCheckout() {
           <TabsContent value="settings" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Checkout Settings</CardTitle>
+                <CardTitle>{t('Checkout Behavior')}</CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {t('Configure how the checkout process works for customers')}
+                </p>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label>{t('Skip Cart Page')}</Label>
-                    <p className="text-sm text-muted-foreground">{t('Go directly to checkout')}</p>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-start justify-between p-4 rounded-lg border bg-card hover:border-primary/50 transition-colors">
+                    <div className="flex-1 pr-4">
+                      <Label className="text-base font-medium">{t('Skip Cart Page')}</Label>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {t('Bypass the cart and go directly to checkout for faster purchasing')}
+                      </p>
+                    </div>
+                    <Switch 
+                      checked={formData.skip_cart}
+                      onCheckedChange={(checked) => handleSwitchChange('skip_cart', checked)}
+                    />
                   </div>
-                  <Switch 
-                    checked={formData.skip_cart}
-                    onCheckedChange={(checked) => handleSwitchChange('skip_cart', checked)}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label>{t('Auto-fill Customer Data')}</Label>
-                    <p className="text-sm text-muted-foreground">{t('Use saved customer information')}</p>
+                  
+                  <div className="flex items-start justify-between p-4 rounded-lg border bg-card hover:border-primary/50 transition-colors">
+                    <div className="flex-1 pr-4">
+                      <Label className="text-base font-medium">{t('Auto-fill Customer Data')}</Label>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {t('Automatically fill in saved customer information for returning customers')}
+                      </p>
+                    </div>
+                    <Switch 
+                      checked={formData.auto_fill_customer_data}
+                      onCheckedChange={(checked) => handleSwitchChange('auto_fill_customer_data', checked)}
+                    />
                   </div>
-                  <Switch 
-                    checked={formData.auto_fill_customer_data}
-                    onCheckedChange={(checked) => handleSwitchChange('auto_fill_customer_data', checked)}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label>{t('Guest Checkout Allowed')}</Label>
-                    <p className="text-sm text-muted-foreground">{t('Allow checkout without account')}</p>
+                  
+                  <div className="flex items-start justify-between p-4 rounded-lg border bg-card hover:border-primary/50 transition-colors">
+                    <div className="flex-1 pr-4">
+                      <Label className="text-base font-medium">{t('Guest Checkout')}</Label>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {t('Allow customers to checkout without creating an account')}
+                      </p>
+                    </div>
+                    <Switch 
+                      checked={formData.guest_checkout_allowed}
+                      onCheckedChange={(checked) => handleSwitchChange('guest_checkout_allowed', checked)}
+                    />
                   </div>
-                  <Switch 
-                    checked={formData.guest_checkout_allowed}
-                    onCheckedChange={(checked) => handleSwitchChange('guest_checkout_allowed', checked)}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label>{t('Mobile Optimized')}</Label>
-                    <p className="text-sm text-muted-foreground">{t('Optimize for mobile devices')}</p>
+                  
+                  <div className="flex items-start justify-between p-4 rounded-lg border bg-card hover:border-primary/50 transition-colors">
+                    <div className="flex-1 pr-4">
+                      <Label className="text-base font-medium">{t('Mobile Optimization')}</Label>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {t('Optimize the checkout experience for mobile devices and small screens')}
+                      </p>
+                    </div>
+                    <Switch 
+                      checked={formData.mobile_optimized}
+                      onCheckedChange={(checked) => handleSwitchChange('mobile_optimized', checked)}
+                    />
                   </div>
-                  <Switch 
-                    checked={formData.mobile_optimized}
-                    onCheckedChange={(checked) => handleSwitchChange('mobile_optimized', checked)}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label>{t('Save Payment Methods')}</Label>
-                    <p className="text-sm text-muted-foreground">{t('Allow customers to save payment info')}</p>
+                  
+                  <div className="flex items-start justify-between p-4 rounded-lg border bg-card hover:border-primary/50 transition-colors">
+                    <div className="flex-1 pr-4">
+                      <Label className="text-base font-medium">{t('Save Payment Methods')}</Label>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {t('Allow customers to securely save their payment methods for future purchases')}
+                      </p>
+                    </div>
+                    <Switch 
+                      checked={formData.save_payment_methods}
+                      onCheckedChange={(checked) => handleSwitchChange('save_payment_methods', checked)}
+                    />
                   </div>
-                  <Switch 
-                    checked={formData.save_payment_methods}
-                    onCheckedChange={(checked) => handleSwitchChange('save_payment_methods', checked)}
-                  />
                 </div>
-                <div>
-                  <Label htmlFor="success_redirect_url">{t('Success Redirect URL')}</Label>
-                  <Input 
-                    id="success_redirect_url" 
-                    name="success_redirect_url"
-                    value={formData.success_redirect_url}
-                    onChange={handleInputChange}
-                    placeholder={t('https://example.com/thank-you')} 
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="cancel_redirect_url">{t('Cancel Redirect URL')}</Label>
-                  <Input 
-                    id="cancel_redirect_url" 
-                    name="cancel_redirect_url"
-                    value={formData.cancel_redirect_url}
-                    onChange={handleInputChange}
-                    placeholder={t('https://example.com/cart')} 
-                  />
+                
+                <div className="border-t pt-6 space-y-4">
+                  <h4 className="text-base font-semibold">{t('Redirect URLs')}</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {t('Specify where customers should be redirected after checkout')}
+                  </p>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="success_redirect_url" className="font-medium">
+                      {t('Success Page URL')}
+                    </Label>
+                    <p className="text-sm text-muted-foreground">
+                      {t('Where to redirect after successful payment (optional)')}
+                    </p>
+                    <Input 
+                      id="success_redirect_url" 
+                      name="success_redirect_url"
+                      value={formData.success_redirect_url}
+                      onChange={handleInputChange}
+                      placeholder={t('https://yourstore.com/thank-you')}
+                      className="mt-2"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="cancel_redirect_url" className="font-medium">
+                      {t('Cancel Page URL')}
+                    </Label>
+                    <p className="text-sm text-muted-foreground">
+                      {t('Where to redirect if customer cancels checkout (optional)')}
+                    </p>
+                    <Input 
+                      id="cancel_redirect_url" 
+                      name="cancel_redirect_url"
+                      value={formData.cancel_redirect_url}
+                      onChange={handleInputChange}
+                      placeholder={t('https://yourstore.com/cart')}
+                      className="mt-2"
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>

@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { usePage } from '@inertiajs/react';
 import { Upload, Search, X, Plus, Info, Copy, Download, MoreHorizontal, Image as ImageIcon, Calendar, HardDrive, BarChart3 } from 'lucide-react';
+import { getImageUrl } from '@/utils/image-helper';
 
 interface MediaItem {
   id: number;
@@ -54,6 +55,18 @@ export default function MediaLibraryDemo() {
       }
       
       const data = await response.json();
+      
+      // Debug: Log first media item to check URLs
+      if (data && data.length > 0) {
+        console.log('Media loaded:', data.length, 'items');
+        console.log('First item URLs:', {
+          url: data[0].url,
+          thumb_url: data[0].thumb_url,
+          resolved_url: getImageUrl(data[0].url),
+          resolved_thumb: getImageUrl(data[0].thumb_url || data[0].url)
+        });
+      }
+      
       setMedia(data);
       setFilteredMedia(data);
     } catch (error) {
@@ -173,8 +186,24 @@ export default function MediaLibraryDemo() {
   };
 
   const handleCopyLink = (url: string) => {
-    navigator.clipboard.writeText(url);
+    // Normalize URL - remove double slashes and ensure it starts with /
+    let normalizedUrl = url.replace(/\/+/g, '/');
+    if (!normalizedUrl.startsWith('/')) {
+      normalizedUrl = '/' + normalizedUrl;
+    }
+    // Get full URL for copying
+    const fullUrl = getImageUrl(normalizedUrl);
+    navigator.clipboard.writeText(fullUrl);
     toast.success('Image URL copied to clipboard');
+  };
+  
+  const normalizeUrl = (url: string): string => {
+    // Remove double slashes and ensure it starts with /
+    let normalized = url.replace(/\/+/g, '/');
+    if (!normalized.startsWith('/')) {
+      normalized = '/' + normalized;
+    }
+    return normalized;
   };
 
   const handleDownload = (id: number, filename: string) => {
@@ -322,11 +351,16 @@ export default function MediaLibraryDemo() {
                       {/* Image Container */}
                       <div className="relative aspect-square bg-muted">
                         <img
-                          src={item.thumb_url}
+                          src={getImageUrl(item.thumb_url || item.url)}
                           alt={item.name}
                           className="w-full h-full object-cover"
+                          loading="lazy"
+                          decoding="async"
                           onError={(e) => {
-                            e.currentTarget.src = item.url;
+                            const fallbackUrl = getImageUrl(item.url);
+                            if (e.currentTarget.src !== fallbackUrl) {
+                              e.currentTarget.src = fallbackUrl;
+                            }
                           }}
                         />
                         
@@ -549,11 +583,14 @@ export default function MediaLibraryDemo() {
                 {/* Image Preview */}
                 <div className="flex justify-center bg-gray-50 rounded-lg p-4">
                   <img
-                    src={selectedMediaInfo.thumb_url}
+                    src={getImageUrl(selectedMediaInfo.thumb_url || selectedMediaInfo.url)}
                     alt={selectedMediaInfo.name}
                     className="max-w-full h-48 object-contain rounded-md shadow-sm"
                     onError={(e) => {
-                      e.currentTarget.src = selectedMediaInfo.url;
+                      const fallbackUrl = getImageUrl(selectedMediaInfo.url);
+                      if (e.currentTarget.src !== fallbackUrl) {
+                        e.currentTarget.src = fallbackUrl;
+                      }
                     }}
                   />
                 </div>
@@ -588,7 +625,7 @@ export default function MediaLibraryDemo() {
                     <span className="text-sm font-medium text-muted-foreground block mb-2">{t('URL')}</span>
                     <div className="flex items-center gap-2 p-2 bg-muted rounded-md">
                       <code className="text-xs text-muted-foreground flex-1 truncate">
-                        {selectedMediaInfo.url}
+                        {normalizeUrl(selectedMediaInfo.url)}
                       </code>
                       <Button
                         size="sm"

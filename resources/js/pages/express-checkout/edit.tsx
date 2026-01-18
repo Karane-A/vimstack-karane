@@ -9,12 +9,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { router, usePage } from '@inertiajs/react';
 
 export default function EditExpressCheckout() {
   const { t } = useTranslation();
-  const { checkout } = usePage().props as any;
+  const { checkout, availablePaymentMethods = [] } = usePage().props as any;
   const [checkoutType, setCheckoutType] = useState(checkout.type || 'buy_now');
   const [formData, setFormData] = useState({
     name: checkout.name || '',
@@ -122,9 +123,12 @@ export default function EditExpressCheckout() {
           <TabsContent value="general" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>{t('Checkout Information')}</CardTitle>
+                <CardTitle>{t('Basic Information')}</CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {t('Configure the basic details for your express checkout')}
+                </p>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="name">{t('Checkout Name *')}</Label>
@@ -199,66 +203,79 @@ export default function EditExpressCheckout() {
               <CardHeader>
                 <CardTitle>Payment Methods</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="credit_card" 
-                      checked={formData.payment_methods.includes('credit_card')}
-                      onCheckedChange={(checked) => handlePaymentMethodChange('credit_card', checked)}
-                    />
-                    <Label htmlFor="credit_card">{t('Credit/Debit Cards')}</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="paypal" 
-                      checked={formData.payment_methods.includes('paypal')}
-                      onCheckedChange={(checked) => handlePaymentMethodChange('paypal', checked)}
-                    />
-                    <Label htmlFor="paypal">{t('PayPal')}</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="apple_pay" 
-                      checked={formData.payment_methods.includes('apple_pay')}
-                      onCheckedChange={(checked) => handlePaymentMethodChange('apple_pay', checked)}
-                    />
-                    <Label htmlFor="apple_pay">{t('Apple Pay')}</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="google_pay" 
-                      checked={formData.payment_methods.includes('google_pay')}
-                      onCheckedChange={(checked) => handlePaymentMethodChange('google_pay', checked)}
-                    />
-                    <Label htmlFor="google_pay">{t('Google Pay')}</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="samsung_pay" 
-                      checked={formData.payment_methods.includes('samsung_pay')}
-                      onCheckedChange={(checked) => handlePaymentMethodChange('samsung_pay', checked)}
-                    />
-                    <Label htmlFor="samsung_pay">{t('Samsung Pay')}</Label>
-                  </div>
-                </div>
+              <CardContent className="space-y-6">
                 <div>
-                  <Label htmlFor="default_payment">{t('Default Payment Method')}</Label>
-                  <Select 
-                    value={formData.default_payment_method}
-                    onValueChange={handleDefaultPaymentChange}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="credit_card">{t('Credit/Debit Cards')}</SelectItem>
-                      <SelectItem value="paypal">{t('PayPal')}</SelectItem>
-                      <SelectItem value="apple_pay">{t('Apple Pay')}</SelectItem>
-                      <SelectItem value="google_pay">{t('Google Pay')}</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {t('Select which payment methods customers can use for express checkout')}
+                  </p>
+                  
+                  {availablePaymentMethods && availablePaymentMethods.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {availablePaymentMethods.map((method: any) => (
+                        <div 
+                          key={method.value} 
+                          className={`flex items-center space-x-3 p-4 rounded-lg border-2 transition-all cursor-pointer hover:border-primary/50 ${
+                            formData.payment_methods.includes(method.value) 
+                              ? 'border-primary bg-primary/5' 
+                              : 'border-border bg-background'
+                          }`}
+                          onClick={() => handlePaymentMethodChange(method.value, !formData.payment_methods.includes(method.value))}
+                        >
+                          <Checkbox 
+                            id={method.value}
+                            checked={formData.payment_methods.includes(method.value)}
+                            onCheckedChange={(checked) => handlePaymentMethodChange(method.value, checked)}
+                            className="pointer-events-none"
+                          />
+                          <Label htmlFor={method.value} className="font-medium cursor-pointer flex-1">
+                            {t(method.label)}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <div className="mx-auto w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mb-3">
+                        <svg className="w-6 h-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                      </div>
+                      <h3 className="font-semibold text-lg mb-1">{t('No Payment Methods Available')}</h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        {t('Please enable payment methods in your store settings first to use express checkout.')}
+                      </p>
+                      <Button variant="outline" size="sm" onClick={() => window.open('/settings', '_blank')}>
+                        {t('Go to Payment Settings')}
+                      </Button>
+                    </div>
+                  )}
                 </div>
+                
+                {availablePaymentMethods && availablePaymentMethods.length > 0 && (
+                  <div>
+                    <Label htmlFor="default_payment" className="text-base font-semibold mb-2 block">
+                      {t('Default Payment Method')}
+                    </Label>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      {t('This payment method will be pre-selected for customers')}
+                    </p>
+                    <Select 
+                      value={formData.default_payment_method}
+                      onValueChange={handleDefaultPaymentChange}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder={t('Select default payment')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availablePaymentMethods.map((method: any) => (
+                          <SelectItem key={method.value} value={method.value}>
+                            {t(method.label)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

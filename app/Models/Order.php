@@ -17,7 +17,6 @@ class Order extends Model
         'payment_status',
         'customer_email',
         'customer_phone',
-        'whatsapp_number',
         'customer_first_name',
         'customer_last_name',
         'shipping_address',
@@ -43,6 +42,11 @@ class Order extends Model
         'tracking_number',
         'shipped_at',
         'delivered_at',
+        'confirmed_at',
+        'processing_at',
+        'cancelled_at',
+        'refunded_at',
+        'payment_confirmed_at',
         'notes',
         'coupon_code',
         'coupon_discount',
@@ -58,6 +62,11 @@ class Order extends Model
         'payment_details' => 'array',
         'shipped_at' => 'datetime',
         'delivered_at' => 'datetime',
+        'confirmed_at' => 'datetime',
+        'processing_at' => 'datetime',
+        'cancelled_at' => 'datetime',
+        'refunded_at' => 'datetime',
+        'payment_confirmed_at' => 'datetime',
     ];
 
     public function store(): BelongsTo

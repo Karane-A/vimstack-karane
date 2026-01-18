@@ -50,7 +50,6 @@ interface OrderConfirmationProps {
   wishlistCount?: number;
   isLoggedIn?: boolean;
   userName?: string;
-  whatsappRedirectUrl?: string;
   customPages?: Array<{
     id: number;
     name: string;
@@ -67,42 +66,8 @@ export default function OrderConfirmation({
   wishlistCount = 0,
   isLoggedIn = true,
   userName = '',
-  whatsappRedirectUrl,
   customPages = [],
 }: OrderConfirmationProps) {
-  const [showWhatsAppPrompt, setShowWhatsAppPrompt] = useState(false);
-  
-  // Auto redirect to WhatsApp like WhatsStore
-  useEffect(() => {
-    if (whatsappRedirectUrl && order?.payment_method === 'WhatsApp') {
-      // Show prompt for 2 seconds then auto redirect
-      setShowWhatsAppPrompt(true);
-      
-      const timer = setTimeout(() => {
-        window.open(whatsappRedirectUrl, '_blank');
-        // Clear session after opening WhatsApp
-        fetch('/api/clear-whatsapp-session', { method: 'POST' });
-      }, 2000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [whatsappRedirectUrl, order]);
-  
-  // Handle WhatsApp redirect
-  const handleWhatsAppClick = () => {
-    if (whatsappRedirectUrl) {
-      window.open(whatsappRedirectUrl, '_blank');
-      setShowWhatsAppPrompt(false);
-      // Clear session after opening WhatsApp
-      fetch('/api/clear-whatsapp-session', { method: 'POST' });
-    }
-  };
-  
-  // Dismiss WhatsApp prompt
-  const dismissWhatsAppPrompt = () => {
-    setShowWhatsAppPrompt(false);
-  };
-  
   // Provide default order data if none provided
   const defaultOrder = {
     id: 'ORD-12345',
@@ -223,36 +188,6 @@ export default function OrderConfirmation({
                   <span className="text-sm font-bold text-gray-900">{orderData.id}</span>
                 </div>
               </div>
-              
-              {/* WhatsApp Auto Redirect */}
-              {showWhatsAppPrompt && whatsappRedirectUrl && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-8 text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4">
-                    <MessageCircle className="h-8 w-8 text-green-600 animate-pulse" />
-                  </div>
-                  <h3 className="text-lg font-medium text-green-800 mb-2">
-                    Opening WhatsApp...
-                  </h3>
-                  <p className="text-green-700 mb-4">
-                    Your order confirmation will open in WhatsApp automatically.
-                  </p>
-                  <div className="flex justify-center gap-3">
-                    <button
-                      onClick={handleWhatsAppClick}
-                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
-                    >
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      Open Now
-                    </button>
-                    <button
-                      onClick={dismissWhatsAppPrompt}
-                      className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-                    >
-                      Skip
-                    </button>
-                  </div>
-                </div>
-              )}
               
               {/* Order Details */}
               <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">

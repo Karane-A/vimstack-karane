@@ -27,11 +27,37 @@ class OrderService
             $initialStatus = $orderData['payment_method'] === 'payfast' ? 'awaiting_payment' : 'pending';
             $initialPaymentStatus = $orderData['payment_method'] === 'payfast' ? 'awaiting_payment' : 'pending';
             
+            // Get or create customer record
+            $customerId = Auth::guard('customer')->id();
+            
+            if (!$customerId) {
+                // Guest checkout - find or create customer
+                $customer = Customer::where('store_id', $orderData['store_id'])
+                    ->where('email', $orderData['customer_email'])
+                    ->first();
+                
+                if (!$customer) {
+                    // Create new customer record for guest
+                    $customer = Customer::create([
+                        'store_id' => $orderData['store_id'],
+                        'first_name' => $orderData['customer_first_name'],
+                        'last_name' => $orderData['customer_last_name'],
+                        'email' => $orderData['customer_email'],
+                        'phone' => $orderData['customer_phone'] ?? null,
+                        'is_active' => true,
+                        'customer_group' => 'guest',
+                        'password' => null, // Guest customers don't have passwords
+                    ]);
+                }
+                
+                $customerId = $customer->id;
+            }
+            
             // Create the order
             $order = Order::create([
                 'order_number' => Order::generateOrderNumber(),
                 'store_id' => $orderData['store_id'],
-                'customer_id' => Auth::guard('customer')->id(),
+                'customer_id' => $customerId,
                 'session_id' => session()->getId(),
                 'status' => $initialStatus,
                 'payment_status' => $initialPaymentStatus,
@@ -74,7 +100,6 @@ class OrderService
                 'notes' => $orderData['notes'] ?? null,
                 'coupon_code' => $orderData['coupon_code'] ?? null,
                 'coupon_discount' => $orderData['coupon_discount'] ?? 0,
-                'whatsapp_number' => $orderData['whatsapp_number'] ?? null,
             ]);
 
             // Create order items and update inventory
@@ -120,10 +145,6 @@ class OrderService
         switch ($order->payment_method) {
             case 'cod':
                 return $this->processCashOnDelivery($order);
-            case 'whatsapp':
-                return $this->processWhatsAppPayment($order);
-            case 'telegram':
-                return $this->processTelegramPayment($order);
             case 'stripe':
                 return $this->processStripePayment($order, $storeSlug);
             case 'paypal':
@@ -157,49 +178,6 @@ class OrderService
         ];
     }
 
-    private function processWhatsAppPayment(Order $order): array
-    {
-        
-        $order->update([
-            'status' => 'pending',
-            'payment_status' => 'pending',
-            'payment_gateway' => 'whatsapp',
-        ]);
-
-        // Send WhatsApp message
-        if ($order->whatsapp_number) {
-            $whatsappService = new \App\Services\WhatsAppService();
-            $result = $whatsappService->sendOrderConfirmation($order, $order->whatsapp_number);
-        } else {
-            \Log::warning('No WhatsApp number provided for order', ['order_id' => $order->id]);
-        }
-
-        return [
-            'success' => true,
-            'message' => 'Order placed successfully. You will be contacted via WhatsApp for payment confirmation.',
-            'order_id' => $order->id,
-            'order_number' => $order->order_number,
-        ];
-    }
-
-    private function processTelegramPayment(Order $order): array
-    {
-        
-        $order->update([
-            'status' => 'pending',
-            'payment_status' => 'pending',
-            'payment_gateway' => 'telegram',
-        ]);
-
-        // Telegram message will be sent by the OrderCreated event listener
-
-        return [
-            'success' => true,
-            'message' => 'Order placed successfully. You will receive a Telegram notification.',
-            'order_id' => $order->id,
-            'order_number' => $order->order_number,
-        ];
-    }
 
     private function processStripePayment(Order $order, string $storeSlug = null): array
     {

@@ -43,5 +43,5 @@
   <rect x="465" y="240" width="60" height="30" rx="6" fill="#ffffff" stroke="#e5e7eb"/>
   
   <!-- Text -->
-  <text x="300" y="390" font-family="Arial, sans-serif" font-size="14" fill="#6b7280" text-anchor="middle">StoreGo Multi-Store Dashboard</text>
+  <text x="300" y="390" font-family="Arial, sans-serif" font-size="14" fill="#6b7280" text-anchor="middle">Vimstack Multi-Store Dashboard</text>
 </svg>

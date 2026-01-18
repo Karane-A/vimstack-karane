@@ -120,13 +120,6 @@ interface PaymentSettings {
   cashfree_mode: string;
   cashfree_secret_key: string;
   cashfree_public_key: string;
-  is_whatsapp_enabled: boolean;
-  whatsapp_phone_number: string;
-  messaging_message_template: string;
-  messaging_item_template: string;
-  is_telegram_enabled: boolean;
-  telegram_bot_token: string;
-  telegram_chat_id: string;
   is_paytabs_enabled: boolean;
   paytabs_profile_id: string;
   paytabs_server_key: string;
@@ -147,17 +140,9 @@ interface PaymentSettings {
 
 interface PaymentSettingsProps {
   settings?: any;
-  whatsappVariables?: {
-    orderVariables?: string[];
-    itemVariables?: string[];
-  };
-  telegramVariables?: {
-    orderVariables?: string[];
-    itemVariables?: string[];
-  };
 }
 
-export default function PaymentSettings({ settings = {}, whatsappVariables = {}, telegramVariables = {} }: PaymentSettingsProps) {
+export default function PaymentSettings({ settings = {} }: PaymentSettingsProps) {
   const { t } = useTranslation();
   const { props } = usePage();
   const user = (props as any).auth?.user;
@@ -266,14 +251,6 @@ export default function PaymentSettings({ settings = {}, whatsappVariables = {},
     cashfree_mode: settings.cashfree_mode || 'sandbox',
     cashfree_secret_key: settings.cashfree_secret_key || '',
     cashfree_public_key: settings.cashfree_public_key || '',
-    is_whatsapp_enabled: settings.is_whatsapp_enabled === true || settings.is_whatsapp_enabled === '1',
-    whatsapp_phone_number: settings.whatsapp_phone_number || '',
-
-    messaging_message_template: settings.messaging_message_template || '',
-    messaging_item_template: settings.messaging_item_template || '',
-    is_telegram_enabled: settings.is_telegram_enabled === true || settings.is_telegram_enabled === '1',
-    telegram_bot_token: settings.telegram_bot_token || '',
-    telegram_chat_id: settings.telegram_chat_id || '',
     is_paytabs_enabled: settings.is_paytabs_enabled === true || settings.is_paytabs_enabled === '1',
     paytabs_profile_id: settings.paytabs_profile_id || '',
     paytabs_server_key: settings.paytabs_server_key || '',
@@ -300,43 +277,11 @@ export default function PaymentSettings({ settings = {}, whatsappVariables = {},
       { key: 'bank', name: t(PAYMENT_METHOD_LABELS[PAYMENT_METHODS.BANK]) },
       { key: 'stripe', name: t(PAYMENT_METHOD_LABELS[PAYMENT_METHODS.STRIPE]) },
       { key: 'paypal', name: t(PAYMENT_METHOD_LABELS[PAYMENT_METHODS.PAYPAL]) },
-      { key: 'razorpay', name: t(PAYMENT_METHOD_LABELS[PAYMENT_METHODS.RAZORPAY]) },
-      { key: 'mercadopago', name: t(PAYMENT_METHOD_LABELS[PAYMENT_METHODS.MERCADOPAGO]) },
       { key: 'paystack', name: t(PAYMENT_METHOD_LABELS[PAYMENT_METHODS.PAYSTACK]) },
       { key: 'flutterwave', name: t(PAYMENT_METHOD_LABELS[PAYMENT_METHODS.FLUTTERWAVE]) },
-      { key: 'paytabs', name: t(PAYMENT_METHOD_LABELS[PAYMENT_METHODS.PAYTABS]) },
       { key: 'skrill', name: t(PAYMENT_METHOD_LABELS[PAYMENT_METHODS.SKRILL]) },
       { key: 'coingate', name: t(PAYMENT_METHOD_LABELS[PAYMENT_METHODS.COINGATE]) },
-      { key: 'payfast', name: t(PAYMENT_METHOD_LABELS[PAYMENT_METHODS.PAYFAST]) },
-      { key: 'tap', name: t(PAYMENT_METHOD_LABELS[PAYMENT_METHODS.TAP]) },
-      { key: 'xendit', name: t(PAYMENT_METHOD_LABELS[PAYMENT_METHODS.XENDIT]) },
-      { key: 'paytr', name: t(PAYMENT_METHOD_LABELS[PAYMENT_METHODS.PAYTR]) },
-      { key: 'mollie', name: t(PAYMENT_METHOD_LABELS[PAYMENT_METHODS.MOLLIE]) },
-      { key: 'toyyibpay', name: t(PAYMENT_METHOD_LABELS[PAYMENT_METHODS.TOYYIBPAY]) },
-      { key: 'paymentwall', name: t('PaymentWall') },
-      { key: 'sspay', name: t('SSPay') },
-      { key: 'benefit', name: t('Benefit') },
-      { key: 'iyzipay', name: t('Iyzipay') },
-      { key: 'aamarpay', name: t('Aamarpay') },
-      { key: 'midtrans', name: t('Midtrans') },
-      { key: 'yookassa', name: t('YooKassa') },
-      { key: 'nepalste', name: t('Nepalste') },
-      { key: 'paiement', name: t('Paiement Pro') },
-      { key: 'cinetpay', name: t('CinetPay') },
-      { key: 'payhere', name: t('PayHere') },
-      { key: 'fedapay', name: t('FedaPay') },
-      { key: 'authorizenet', name: t('AuthorizeNet') },
-      { key: 'khalti', name: t('Khalti') },
-      { key: 'easebuzz', name: t('Easebuzz') },
-      { key: 'ozow', name: t('Ozow') },
-      { key: 'cashfree', name: t('Cashfree') },
     ];
-    
-    // Only add WhatsApp and Telegram for company users
-    if (user?.type === 'company') {
-      methods.push({ key: 'whatsapp', name: t('WhatsApp') });
-      methods.push({ key: 'telegram', name: t('Telegram') });
-    }
     
     return methods;
   }, [t, user?.type]);
@@ -397,9 +342,6 @@ export default function PaymentSettings({ settings = {}, whatsappVariables = {},
           <Card>
             <CardHeader>
               <CardTitle>{t("Payment Methods")}</CardTitle>
-              <CardDescription>
-                {t("Configure available payment methods for subscription plans")}
-              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Search and Filter Controls */}
@@ -1653,226 +1595,8 @@ export default function PaymentSettings({ settings = {}, whatsappVariables = {},
               </PaymentMethodCard>
               )}
 
-              {/* WhatsApp */}
-              {shouldShowMethod('whatsapp') && (
-              <PaymentMethodCard
-                title={t('WhatsApp')}
-                icon={<CreditCard className="h-5 w-5" />}
-                enabled={data.is_whatsapp_enabled}
-                onToggle={(checked) => setData('is_whatsapp_enabled', checked)}
-                helpText={t("Configure WhatsApp message settings for order notifications")}
-              >
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="whatsapp_phone_number">{t("Phone Number")}</Label>
-                    <Input
-                      id="whatsapp_phone_number"
-                      value={data.whatsapp_phone_number}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        // Only allow numbers, +, -, spaces, and parentheses
-                        if (/^[0-9+\-\s()]*$/.test(value)) {
-                          setData('whatsapp_phone_number', value);
-                        }
-                      }}
-                      placeholder={t("+1234567890")}
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      {t("WhatsApp phone number from which messages will be sent to customers during checkout")}
-                    </p>
-                    {errors.whatsapp_phone_number && (
-                      <p className="text-sm text-destructive">{errors.whatsapp_phone_number}</p>
-                    )}
-                  </div>
-                  <Alert>
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      {t("Message templates are shared between WhatsApp and Telegram. Configure them in the Messaging Templates section below.")}
-                    </AlertDescription>
-                  </Alert>
-                </div>
-              </PaymentMethodCard>
-              )}
-
-              {/* Telegram */}
-              {shouldShowMethod('telegram') && (
-              <PaymentMethodCard
-                title={t('Telegram')}
-                icon={<CreditCard className="h-5 w-5" />}
-                enabled={data.is_telegram_enabled}
-                onToggle={(checked) => setData('is_telegram_enabled', checked)}
-                helpText={t("Configure Telegram bot settings for order notifications")}
-              >
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="telegram_bot_token">{t("Bot Token")}</Label>
-                    <Input
-                      id="telegram_bot_token"
-                      value={data.telegram_bot_token}
-                      onChange={(e) => setData('telegram_bot_token', e.target.value)}
-                      placeholder={t("1234567890:AAbbbbccccddddxvGENZCi8Hd4B15M8xHV0")}
-                      type="password"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      {t("Get your bot token from @BotFather on Telegram")}
-                    </p>
-                    {errors.telegram_bot_token && (
-                      <p className="text-sm text-destructive">{errors.telegram_bot_token}</p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="telegram_chat_id">{t("Chat ID")}</Label>
-                    <Input
-                      id="telegram_chat_id"
-                      value={data.telegram_chat_id}
-                      onChange={(e) => setData('telegram_chat_id', e.target.value)}
-                      placeholder={t("123456789")}
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      {t("Get Chat ID from: https://api.telegram.org/bot<TOKEN>/getUpdates")}
-                    </p>
-                    {errors.telegram_chat_id && (
-                      <p className="text-sm text-destructive">{errors.telegram_chat_id}</p>
-                    )}
-                  </div>
-                  {data.telegram_bot_token && data.telegram_chat_id && (
-                    <div className="space-y-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={async () => {
-                          try {
-                            const response = await fetch(route('payment.test-telegram'), {
-                              method: 'POST',
-                              headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
-                              },
-                              body: JSON.stringify({
-                                telegram_bot_token: data.telegram_bot_token,
-                                telegram_chat_id: data.telegram_chat_id
-                              })
-                            });
-                            const result = await response.json();
-                            if (result.success) {
-                              toast.success(result.message);
-                            } else {
-                              toast.error(result.message);
-                            }
-                          } catch (error) {
-                            toast.error(t('Failed to test connection'));
-                          }
-                        }}
-                      >
-                        {t('Test Connection')}
-                      </Button>
-                      <p className="text-xs text-muted-foreground">
-                        {t('Send a test message to verify your bot configuration')}
-                      </p>
-                    </div>
-                  )}
-                  <Alert>
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      {t("Message templates are shared between WhatsApp and Telegram. Configure them in the Messaging Templates section below.")}
-                    </AlertDescription>
-                  </Alert>
-                </div>
-              </PaymentMethodCard>
-              )}
-
-              {/* Shared Messaging Templates - Always show for company users */}
-              {user?.type === 'company' && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t("Messaging Templates")}</CardTitle>
-                  <CardDescription>
-                    {t("Shared message templates for WhatsApp and Telegram notifications")}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="messaging_message_template">{t("Message Template")}</Label>
-                    <Textarea
-                      id="messaging_message_template"
-                      value={data.messaging_message_template}
-                      onChange={(e) => setData('messaging_message_template', e.target.value)}
-                      placeholder={t("🛍️ Order {order_no} from {store_name}\nCustomer: {customer_name}\nTotal: {final_total}\n\nItems:\n{item_variable}")}
-                      rows={6}
-                    />
-                    <div className="text-xs text-muted-foreground">
-                      <p className="font-medium mb-1">{t("Order Variables:")} ({whatsappVariables?.orderVariables?.length || 0})</p>
-                      <div className="grid grid-cols-3 gap-x-4 gap-y-1 text-xs">
-                        {whatsappVariables?.orderVariables?.length > 0 ? (
-                          whatsappVariables.orderVariables.map((variable) => (
-                            <span key={variable}>{`{${variable}}`}</span>
-                          ))
-                        ) : (
-                          <span className="col-span-3 text-muted-foreground">No variables available</span>
-                        )}
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-2">
-                        {t("Note: Telegram supports HTML formatting (<b>bold</b>, <i>italic</i>), WhatsApp uses plain text")}
-                      </p>
-                    </div>
-                    {errors.messaging_message_template && (
-                      <p className="text-sm text-destructive">{errors.messaging_message_template}</p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="messaging_item_template">{t("Item Variable Format")}</Label>
-                    <Input
-                      id="messaging_item_template"
-                      value={data.messaging_item_template}
-                      onChange={(e) => setData('messaging_item_template', e.target.value)}
-                      placeholder={t("• {product_name} ({variant_name}) x{quantity} = {item_total}")}
-                    />
-                    <div className="text-xs text-muted-foreground">
-                      <p className="font-medium mb-1">{t("Item Variables:")} ({whatsappVariables?.itemVariables?.length || 0})</p>
-                      <div className="grid grid-cols-3 gap-x-4 gap-y-1 text-xs">
-                        {whatsappVariables?.itemVariables?.length > 0 ? (
-                          whatsappVariables.itemVariables.map((variable) => (
-                            <span key={variable}>{`{${variable}}`}</span>
-                          ))
-                        ) : (
-                          <span className="col-span-3 text-muted-foreground">No variables available</span>
-                        )}
-                      </div>
-                    </div>
-                    {errors.messaging_item_template && (
-                      <p className="text-sm text-destructive">{errors.messaging_item_template}</p>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-              )}
-
-              {/* Hidden fields to ensure messaging templates are always submitted */}
-              {user?.type === 'company' && (
-                <div style={{ display: 'none' }}>
-                  <input 
-                    type="hidden" 
-                    name="messaging_message_template" 
-                    value={data.messaging_message_template} 
-                  />
-                  <input 
-                    type="hidden" 
-                    name="messaging_item_template" 
-                    value={data.messaging_item_template} 
-                  />
-                </div>
-              )}
             </CardContent>
           </Card>
-
-          {/* Important Notes */}
-          <Alert>
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              <strong>{t("Important:")}</strong> {t("These payment settings will be used for all subscription plan payments. Make sure to test your configuration before going live.")}
-            </AlertDescription>
-          </Alert>
         </div>
       </form>
     </SettingsSection>

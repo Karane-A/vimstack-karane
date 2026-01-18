@@ -51,7 +51,40 @@ class ExpressCheckoutController extends BaseController
      */
     public function create()
     {
-        return Inertia::render('express-checkout/create');
+        $user = Auth::user();
+        $currentStoreId = getCurrentStoreId($user);
+        
+        // Get enabled payment methods for this store
+        $enabledMethods = getEnabledPaymentMethods($user->id, $currentStoreId);
+        
+        // Map to frontend format matching actual payment gateways
+        $availablePaymentMethods = [];
+        
+        if (isset($enabledMethods['stripe']) && $enabledMethods['stripe']['enabled']) {
+            $availablePaymentMethods[] = ['value' => 'stripe', 'label' => 'Credit/Debit Cards (Stripe)'];
+        }
+        if (isset($enabledMethods['paypal']) && $enabledMethods['paypal']['enabled']) {
+            $availablePaymentMethods[] = ['value' => 'paypal', 'label' => 'PayPal'];
+        }
+        if (isset($enabledMethods['paystack']) && $enabledMethods['paystack']['enabled']) {
+            $availablePaymentMethods[] = ['value' => 'paystack', 'label' => 'Paystack'];
+        }
+        if (isset($enabledMethods['flutterwave']) && $enabledMethods['flutterwave']['enabled']) {
+            $availablePaymentMethods[] = ['value' => 'flutterwave', 'label' => 'Flutterwave'];
+        }
+        if (isset($enabledMethods['bank']) && $enabledMethods['bank']['enabled']) {
+            $availablePaymentMethods[] = ['value' => 'bank', 'label' => 'Bank Transfer'];
+        }
+        if (isset($enabledMethods['skrill']) && $enabledMethods['skrill']['enabled']) {
+            $availablePaymentMethods[] = ['value' => 'skrill', 'label' => 'Skrill'];
+        }
+        if (isset($enabledMethods['coingate']) && $enabledMethods['coingate']['enabled']) {
+            $availablePaymentMethods[] = ['value' => 'coingate', 'label' => 'CoinGate (Crypto)'];
+        }
+        
+        return Inertia::render('express-checkout/create', [
+            'availablePaymentMethods' => $availablePaymentMethods
+        ]);
     }
 
     /**
@@ -188,8 +221,37 @@ class ExpressCheckoutController extends BaseController
         $checkout = ExpressCheckout::where('store_id', $currentStoreId)
             ->findOrFail($id);
         
+        // Get enabled payment methods for this store
+        $enabledMethods = getEnabledPaymentMethods($user->id, $currentStoreId);
+        
+        // Map to frontend format matching actual payment gateways
+        $availablePaymentMethods = [];
+        
+        if (isset($enabledMethods['stripe']) && $enabledMethods['stripe']['enabled']) {
+            $availablePaymentMethods[] = ['value' => 'stripe', 'label' => 'Credit/Debit Cards (Stripe)'];
+        }
+        if (isset($enabledMethods['paypal']) && $enabledMethods['paypal']['enabled']) {
+            $availablePaymentMethods[] = ['value' => 'paypal', 'label' => 'PayPal'];
+        }
+        if (isset($enabledMethods['paystack']) && $enabledMethods['paystack']['enabled']) {
+            $availablePaymentMethods[] = ['value' => 'paystack', 'label' => 'Paystack'];
+        }
+        if (isset($enabledMethods['flutterwave']) && $enabledMethods['flutterwave']['enabled']) {
+            $availablePaymentMethods[] = ['value' => 'flutterwave', 'label' => 'Flutterwave'];
+        }
+        if (isset($enabledMethods['bank']) && $enabledMethods['bank']['enabled']) {
+            $availablePaymentMethods[] = ['value' => 'bank', 'label' => 'Bank Transfer'];
+        }
+        if (isset($enabledMethods['skrill']) && $enabledMethods['skrill']['enabled']) {
+            $availablePaymentMethods[] = ['value' => 'skrill', 'label' => 'Skrill'];
+        }
+        if (isset($enabledMethods['coingate']) && $enabledMethods['coingate']['enabled']) {
+            $availablePaymentMethods[] = ['value' => 'coingate', 'label' => 'CoinGate (Crypto)'];
+        }
+        
         return Inertia::render('express-checkout/edit', [
-            'checkout' => $checkout
+            'checkout' => $checkout,
+            'availablePaymentMethods' => $availablePaymentMethods
         ]);
     }
 

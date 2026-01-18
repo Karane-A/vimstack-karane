@@ -169,7 +169,7 @@ class HandleInertiaRequests extends Middleware
             'globalSettings' => $globalSettings,
             'superadminSettings' => !$request->is('install/*') && !$request->is('update/*') && file_exists(storage_path('installed')) ? array_merge(defaultSettings(), getSuperadminSettings()) : defaultSettings(),
             'storeCurrency' => $storeCurrency,
-            'dynamicTitleText' => !$request->is('install/*') && !$request->is('update/*') && file_exists(storage_path('installed')) ? getSetting('titleText', config('app.name', 'StoreGo')) : config('app.name', 'StoreGo'),
+            'dynamicTitleText' => !$request->is('install/*') && !$request->is('update/*') && file_exists(storage_path('installed')) ? getSetting('titleText', config('app.name', 'Vimstack')) : config('app.name', 'Vimstack'),
             'referralSettings' => [
                 'is_enabled' => !$request->is('install/*') && !$request->is('update/*') && file_exists(storage_path('installed')) ? ReferralSetting::isEnabled() : false,
             ],

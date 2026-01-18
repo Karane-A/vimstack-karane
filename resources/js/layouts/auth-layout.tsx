@@ -2,7 +2,6 @@ import { Head } from '@inertiajs/react';
 import { CreditCard, Users, Smartphone, QrCode } from 'lucide-react';
 import { ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { LanguageSwitcher } from '@/components/language-switcher';
 import { useBrand } from '@/contexts/BrandContext';
 import { useAppearance, THEME_COLORS } from '@/hooks/use-appearance';
 
@@ -25,10 +24,10 @@ export default function AuthLayout({
 }: AuthLayoutProps) {
     const { t } = useTranslation();
     const [mounted, setMounted] = useState(false);
-    const { logoLight, logoDark, themeColor, customColor } = useBrand();
+    const { themeColor, customColor } = useBrand();
     const { appearance } = useAppearance();
     
-    const currentLogo = appearance === 'dark' ? logoDark : logoLight;
+    const currentLogo = '/storage/media/15/vimstack-logo.jpg';
     const primaryColor = themeColor === 'custom' ? customColor : THEME_COLORS[themeColor as keyof typeof THEME_COLORS];
 
     useEffect(() => {
@@ -747,10 +746,6 @@ export default function AuthLayout({
                         className="absolute -bottom-32 -left-32 w-64 h-64 rounded-full opacity-15"
                         style={{ backgroundColor: `${primaryColor}30` }}
                     ></div>
-                </div>
-                {/* Language Switcher - Top Right */}
-                <div className="absolute top-4 right-4">
-                    <LanguageSwitcher />
                 </div>
                 
                 <div 

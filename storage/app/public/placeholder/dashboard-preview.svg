@@ -24,7 +24,7 @@
   
   <!-- URL bar -->
   <rect x="140" y="62" width="200" height="16" rx="8" fill="#ffffff" stroke="#e5e7eb"/>
-  <text x="145" y="72" font-family="Arial, sans-serif" font-size="10" fill="#9ca3af">storego.com/dashboard</text>
+  <text x="145" y="72" font-family="Arial, sans-serif" font-size="10" fill="#9ca3af">vimstack.com/dashboard</text>
   
   <!-- Dashboard content -->
   <rect x="70" y="110" width="460" height="220" rx="8" fill="#f8fafc"/>
@@ -101,5 +101,5 @@
   </g>
   
   <!-- Text -->
-  <text x="300" y="380" font-family="Arial, sans-serif" font-size="14" fill="#6b7280" text-anchor="middle">StoreGo Multi-Store E-commerce Dashboard</text>
+  <text x="300" y="380" font-family="Arial, sans-serif" font-size="14" fill="#6b7280" text-anchor="middle">Vimstack Multi-Store E-commerce Dashboard</text>
 </svg>

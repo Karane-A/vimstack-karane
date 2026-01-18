@@ -121,6 +121,8 @@ class PayFastController extends Controller
                     $order->update([
                         'status' => 'confirmed',
                         'payment_status' => 'paid',
+                        'confirmed_at' => $order->confirmed_at ?? now(),
+                        'payment_confirmed_at' => $order->payment_confirmed_at ?? now(),
                         'payment_details' => array_merge($order->payment_details ?? [], [
                             'completed_at' => now(),
                             'callback_data' => $pfData,

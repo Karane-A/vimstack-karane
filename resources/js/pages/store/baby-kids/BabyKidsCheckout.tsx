@@ -128,8 +128,7 @@ export default function BabyKidsCheckout({
   
   const [sameAsShipping, setSameAsShipping] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState('cod');
-  const [whatsappNumber, setWhatsappNumber] = useState('');
-  const [paymentErrors, setPaymentErrors] = useState<Record<string, string>>({});
+  const [paymentErrors] = useState<Record<string, string>>({});
   const [orderNotes, setOrderNotes] = useState('');
   const [couponCode, setCouponCode] = useState('');
   const [couponApplied, setCouponApplied] = useState(false);
@@ -238,44 +237,9 @@ export default function BabyKidsCheckout({
     // Proceed to review step
     setCurrentStep('review');
   };
-  
-  // Handle WhatsApp number validation
-  const handleWhatsAppNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setWhatsappNumber(value);
-    
-    if (paymentErrors.whatsappNumber) {
-      setPaymentErrors(prev => ({ ...prev, whatsappNumber: '' }));
-    }
-    
-    if (value && paymentMethod === 'whatsapp') {
-      const phoneRegex = /^[+]?[0-9]{10,15}$/;
-      if (!phoneRegex.test(value.replace(/\s+/g, ''))) {
-        setPaymentErrors(prev => ({ ...prev, whatsappNumber: 'Please enter a valid WhatsApp number' }));
-      }
-    }
-  };
 
   // Handle order placement
   const handlePlaceOrder = async () => {
-    // Validate WhatsApp number if WhatsApp payment is selected
-    if (paymentMethod === 'whatsapp') {
-      const newErrors: Record<string, string> = {};
-      
-      if (!whatsappNumber) {
-        newErrors.whatsappNumber = 'WhatsApp number is required';
-      } else {
-        const phoneRegex = /^[+]?[0-9]{10,15}$/;
-        if (!phoneRegex.test(whatsappNumber.replace(/\s+/g, ''))) {
-          newErrors.whatsappNumber = 'Please enter a valid WhatsApp number';
-        }
-      }
-      
-      if (Object.keys(newErrors).length > 0) {
-        setPaymentErrors(newErrors);
-        return;
-      }
-    }
 
     const orderData = {
       store_id: store.id,
@@ -297,7 +261,6 @@ export default function BabyKidsCheckout({
       shipping_method_id: selectedShippingId,
       notes: orderNotes,
       coupon_code: couponApplied ? couponCode : null,
-      whatsapp_number: paymentMethod === 'whatsapp' ? whatsappNumber : null,
     };
 
     // Use appropriate utility based on payment method
@@ -853,81 +816,17 @@ export default function BabyKidsCheckout({
                               </div>
                             </div>
                             
-                            {/* WhatsApp Payment */}
-                            {enabledPaymentMethods.whatsapp && (
-                              <div className={`relative border-2 p-4 rounded-2xl cursor-pointer transition-all duration-300 ${
-                                paymentMethod === 'whatsapp' ? 'border-pink-500 bg-pink-50' : 'border-pink-300 hover:border-pink-400'
-                              }`}>
-                                <div className="flex items-center">
-                                  <input
-                                    id="payment-whatsapp"
-                                    name="payment-method"
-                                    type="radio"
-                                    checked={paymentMethod === 'whatsapp'}
-                                    onChange={() => setPaymentMethod('whatsapp')}
-                                    className="h-4 w-4 text-pink-500 focus:ring-pink-500 border-pink-300"
-                                  />
-                                  <label htmlFor="payment-whatsapp" className="ml-4 flex-1 cursor-pointer">
-                                    <span className="block text-sm font-bold text-gray-800">WhatsApp</span>
-                                    <span className="block text-sm text-gray-600">Complete your order via WhatsApp for your little ones</span>
-                                  </label>
-                                </div>
-                              </div>
-                            )}
-                            
-                            {/* Telegram Payment */}
-                            {enabledPaymentMethods.telegram && (
-                              <div className={`relative border-2 p-4 rounded-2xl cursor-pointer transition-all duration-300 ${
-                                paymentMethod === 'telegram' ? 'border-pink-500 bg-pink-50' : 'border-pink-300 hover:border-pink-400'
-                              }`}>
-                                <div className="flex items-center">
-                                  <input
-                                    id="payment-telegram"
-                                    name="payment-method"
-                                    type="radio"
-                                    checked={paymentMethod === 'telegram'}
-                                    onChange={() => setPaymentMethod('telegram')}
-                                    className="h-4 w-4 text-pink-500 focus:ring-pink-500 border-pink-300"
-                                  />
-                                  <label htmlFor="payment-telegram" className="ml-4 flex-1 cursor-pointer">
-                                    <span className="block text-sm font-bold text-gray-800">Telegram</span>
-                                    <span className="block text-sm text-gray-600">Complete your order via Telegram for your little ones</span>
-                                  </label>
-                                </div>
-                              </div>
-                            )}
-                            
                             {/* Dynamic Payment Methods */}
                             {Object.entries(enabledPaymentMethods).filter(([method]) => !['whatsapp', 'telegram'].includes(method)).map(([method, config]: [string, any]) => {
-                              const methodNames: Record<string, string> = {
-                                stripe: 'Credit Card (Stripe)',
-                                paypal: 'PayPal',
-                                razorpay: 'Razorpay',
-                                paystack: 'Paystack',
-                                flutterwave: 'Flutterwave',
-                                bank: 'Bank Transfer',
-                                mercadopago: 'MercadoPago',
-                                paytabs: 'PayTabs',
-                                skrill: 'Skrill',
-                                coingate: 'CoinGate',
-                                payfast: 'PayFast',
-                                tap: 'Tap',
-                                xendit: 'Xendit',
-                                paytr: 'PayTR',
-                                mollie: 'Mollie',
-                                toyyibpay: 'toyyibPay',
-                                cashfree: 'Cashfree',
-                                iyzipay: 'Iyzipay',
-                                benefit: 'Benefit',
-                                ozow: 'Ozow',
-                                easebuzz: 'Easebuzz',
-                                khalti: 'Khalti',
-                                authorizenet: 'Authorize.Net',
-                                fedapay: 'FedaPay',
-                                payhere: 'PayHere',
-                                cinetpay: 'CinetPay',
-                                paymentwall: 'PaymentWall'
-                              };
+                            const methodNames: Record<string, string> = {
+                              stripe: 'Credit Card (Stripe)',
+                              paypal: 'PayPal',
+                              paystack: 'Paystack',
+                              flutterwave: 'Flutterwave',
+                              bank: 'Bank Transfer',
+                              skrill: 'Skrill',
+                              coingate: 'CoinGate'
+                            };
                               
                               return (
                                 <div key={method} className={`relative border-2 p-4 rounded-2xl cursor-pointer transition-all duration-300 ${
@@ -956,32 +855,6 @@ export default function BabyKidsCheckout({
                             })}
                           </div>
                         </div>
-                        
-                        {/* WhatsApp Number Input */}
-                        {paymentMethod === 'whatsapp' && (
-                          <div className="mt-6">
-                            <h3 className="text-lg font-bold text-gray-800 mb-4">WhatsApp Details</h3>
-                            
-                            <div>
-                              <label className="block text-sm font-bold text-gray-700 mb-2">WhatsApp Number *</label>
-                              <input
-                                type="tel"
-                                value={whatsappNumber}
-                                onChange={handleWhatsAppNumberChange}
-                                placeholder="+1234567890"
-                                className={`w-full px-4 py-3 border-2 rounded-2xl focus:outline-none transition-colors ${
-                                  paymentErrors.whatsappNumber ? 'border-red-500' : 'border-pink-300 focus:border-pink-500'
-                                }`}
-                              />
-                              <p className="mt-2 text-sm text-gray-600">
-                                Enter your WhatsApp number with country code (e.g., +1234567890)
-                              </p>
-                              {paymentErrors.whatsappNumber && (
-                                <p className="mt-2 text-sm text-red-600">{paymentErrors.whatsappNumber}</p>
-                              )}
-                            </div>
-                          </div>
-                        )}
                       </div>
 
                       <div className="flex justify-between mt-8">

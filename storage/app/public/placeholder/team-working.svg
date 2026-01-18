@@ -29,5 +29,5 @@
   <line x1="340" y1="150" x2="410" y2="150" stroke="#e5e7eb" stroke-width="2"/>
   
   <!-- Text -->
-  <text x="300" y="350" font-family="Arial, sans-serif" font-size="16" fill="#6b7280" text-anchor="middle">StoreGo Team Collaboration</text>
+  <text x="300" y="350" font-family="Arial, sans-serif" font-size="16" fill="#6b7280" text-anchor="middle">Vimstack Team Collaboration</text>
 </svg>

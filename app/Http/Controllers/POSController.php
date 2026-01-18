@@ -439,9 +439,11 @@ class POSController extends BaseController
         }
         
         $request->validate([
-            'currency' => 'required|string|exists:currencies,code',
             'tax_rate' => 'required|numeric|min:0|max:100',
             'default_discount' => 'required|numeric|min:0|max:100',
+            'enable_guest_checkout' => 'nullable|boolean',
+            'low_stock_alerts' => 'nullable|boolean',
+            'auto_sync_online_orders' => 'nullable|boolean',
         ]);
         
         $settings = POSSettings::where('store_id', $currentStoreId)->first();

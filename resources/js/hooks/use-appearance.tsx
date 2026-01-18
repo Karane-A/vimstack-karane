@@ -51,23 +51,20 @@ const applyTheme = (settings: ThemeSettings) => {
         return;
     }
     
-    const { appearance, themeColor, customColor } = settings;
-    const isDark = appearance === 'dark';
-
-    // Apply dark mode class
-    document.documentElement.classList.toggle('dark', isDark);
-    document.body.classList.toggle('dark', isDark);
+    const { themeColor, customColor } = settings;
+    
+    // Always remove dark class - light mode only
+    document.documentElement.classList.remove('dark');
+    document.body.classList.remove('dark');
     
     // Apply theme color
     const color = themeColor === 'custom' ? customColor : THEME_COLORS[themeColor];
     document.documentElement.style.setProperty('--theme-color', color);
-    
-    // Also update CSS variables that depend on theme color
     document.documentElement.style.setProperty('--primary', color);
     document.documentElement.style.setProperty('--chart-1', color);
     
-    // Generate a lighter/darker variant for hover states
-    const adjustedColor = isDark ? lightenColor(color, 10) : darkenColor(color, 10);
+    // Generate darker variant for hover states (light mode only)
+    const adjustedColor = darkenColor(color, 10);
     document.documentElement.style.setProperty('--theme-color-hover', adjustedColor);
     
     // Force a small repaint to ensure colors are applied

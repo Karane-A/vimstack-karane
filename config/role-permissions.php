@@ -13,8 +13,7 @@ return [
         'currencies',
         'referral',
         'coupons',
-        'settings',
-        'landing_page' // Landing page management is superadmin only
+        'settings'
     ],
     
     'company' => [

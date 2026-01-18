@@ -37,7 +37,7 @@ class SendStoreCreatedEmail
             '{owner_password}' => $password,
             '{store_name}' => $store->name,
             '{store_url}' => route('store.home', ['storeSlug' => $store->slug]),
-            '{app_name}' => config('app.name', 'StoreGo'),
+            '{app_name}' => config('app.name', 'Vimstack'),
             '{app_url}' => config('app.url')
         ];
 

@@ -62,13 +62,12 @@ class MediaItem extends Model implements HasMedia
     public function registerMediaConversions(Media $media = null): void
     {
         $this->addMediaConversion('thumb')
-            ->width(300)
-            ->height(300)
-            ->sharpen(10)
-            ->quality(85)
+            ->width(200)
+            ->height(200)
+            ->sharpen(5)
+            ->quality(75)
+            ->format('webp')
             ->performOnCollections('images')
-            ->nonQueued()
-            ->optimize()
-            ->keepOriginalImageFormat();
+            ->nonQueued();
     }
 }

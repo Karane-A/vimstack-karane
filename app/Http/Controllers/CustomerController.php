@@ -53,7 +53,22 @@ class CustomerController extends BaseController
      */
     public function create()
     {
-        return Inertia::render('customers/create');
+        // Get active countries from location management
+        $countries = \App\Models\Country::where('status', true)
+            ->orderBy('name', 'asc')
+            ->get(['id', 'name', 'code']);
+        
+        // Get available languages
+        $langListPath = resource_path('lang/language.json');
+        $languages = [];
+        if (\Illuminate\Support\Facades\File::exists($langListPath)) {
+            $languages = json_decode(\Illuminate\Support\Facades\File::get($langListPath), true);
+        }
+        
+        return Inertia::render('customers/create', [
+            'countries' => $countries,
+            'languages' => $languages
+        ]);
     }
 
     /**
@@ -225,10 +240,24 @@ class CustomerController extends BaseController
         $billingAddress = $customer->addresses->where('type', 'billing')->first();
         $shippingAddress = $customer->addresses->where('type', 'shipping')->first();
         
+        // Get active countries from location management
+        $countries = \App\Models\Country::where('status', true)
+            ->orderBy('name', 'asc')
+            ->get(['id', 'name', 'code']);
+        
+        // Get available languages
+        $langListPath = resource_path('lang/language.json');
+        $languages = [];
+        if (\Illuminate\Support\Facades\File::exists($langListPath)) {
+            $languages = json_decode(\Illuminate\Support\Facades\File::get($langListPath), true);
+        }
+        
         return Inertia::render('customers/edit', [
             'customer' => $customer,
             'billingAddress' => $billingAddress,
             'shippingAddress' => $shippingAddress,
+            'countries' => $countries,
+            'languages' => $languages,
             'sameAsBilling' => $billingAddress && $shippingAddress && 
                 $billingAddress->address === $shippingAddress->address &&
                 $billingAddress->city === $shippingAddress->city &&

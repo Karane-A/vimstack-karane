@@ -28,7 +28,7 @@ export function RazorpayPaymentForm({
 }: RazorpayPaymentFormProps) {
   const { t } = useTranslation();
   const { props } = usePage();
-  const superadminTitle = (props as any).superadminSettings?.titleText || 'StoreGo';
+  const superadminTitle = (props as any).superadminSettings?.titleText || 'Vimstack';
   
   useEffect(() => {
     // Check if Razorpay script is already loaded

@@ -253,6 +253,8 @@ export default function CreateStore({ availableThemes, planPermissions }) {
                           src={theme.thumbnail}
                           alt={theme.name}
                           className="h-full w-full object-cover theme-preview-image"
+                          loading="lazy"
+                          decoding="async"
                           onError={(e) => {
                             (e.target as HTMLImageElement).src = `https://placehold.co/300x180?text=${encodeURIComponent(theme.name)}`;
                           }}

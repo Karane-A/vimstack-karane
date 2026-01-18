@@ -71,15 +71,71 @@ class SkrillPaymentController extends Controller
     public function callback(Request $request)
     {
         $transactionId = $request->input('transaction_id');
+        $merchantId = $request->input('pay_to_email');
+        $mbAmount = $request->input('mb_amount');
+        $mbCurrency = $request->input('mb_currency');
         $status = $request->input('status');
+        $md5sig = $request->input('md5sig');
         
+        // SECURITY FIX: Verify MD5 signature per Skrill documentation
+        $planOrder = PlanOrder::where('payment_id', $transactionId)->first();
+        
+        if (!$planOrder) {
+            \Log::error('Skrill callback: Order not found', ['transaction_id' => $transactionId]);
+            return response('Order not found', 404);
+        }
+        
+        // Get Skrill settings for signature verification
+        $superAdminId = \App\Models\User::where('type', 'superadmin')->first()?->id;
+        $settings = getPaymentMethodConfig('skrill', $superAdminId);
+        
+        if (!$settings['merchant_id'] || !$settings['secret_word']) {
+            \Log::error('Skrill not properly configured');
+            return response('Configuration error', 500);
+        }
+        
+        // Verify MD5 signature
+        // Formula: MD5(merchant_id + transaction_id + MD5(secret_word) + mb_amount + mb_currency + status)
+        $expectedSignature = md5(
+            $merchantId . 
+            $transactionId . 
+            strtoupper(md5($settings['secret_word'])) . 
+            $mbAmount . 
+            $mbCurrency . 
+            $status
+        );
+        
+        if (strtoupper($md5sig) !== strtoupper($expectedSignature)) {
+            \Log::error('Skrill callback: Invalid signature', [
+                'transaction_id' => $transactionId,
+                'received_sig' => $md5sig,
+                'expected_sig' => $expectedSignature
+            ]);
+            return response('Invalid signature', 400);
+        }
+        
+        // Verify amount matches
+        $expectedAmount = number_format($planOrder->final_price, 2, '.', '');
+        $receivedAmount = number_format($mbAmount, 2, '.', '');
+        
+        if ($expectedAmount !== $receivedAmount) {
+            \Log::error('Skrill callback: Amount mismatch', [
+                'expected' => $expectedAmount,
+                'received' => $receivedAmount
+            ]);
+            return response('Amount mismatch', 400);
+        }
+        
+        // All verification passed - process payment
         if ($status == '2') { // Payment processed
-            $planOrder = PlanOrder::where('payment_id', $transactionId)->first();
-            
-            if ($planOrder && $planOrder->status === 'pending') {
+            if ($planOrder->status === 'pending') {
                 $planOrder->update(['status' => 'approved']);
                 $planOrder->activateSubscription();
+                \Log::info('Skrill payment confirmed', ['order_id' => $planOrder->id]);
             }
+        } elseif ($status == '-2') { // Failed
+            $planOrder->update(['status' => 'cancelled']);
+            \Log::info('Skrill payment failed', ['order_id' => $planOrder->id]);
         }
         
         return response('OK', 200);

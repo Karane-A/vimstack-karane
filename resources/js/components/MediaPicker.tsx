@@ -63,36 +63,66 @@ export default function MediaPicker({
 
   const imageUrls = value ? value.split(',').filter(Boolean) : [];
 
+  // Button-only mode (no input field shown)
+  const buttonOnlyMode = !showPreview && placeholder === '';
+
   return (
     <div className="space-y-2">
       {label && <Label>{label}</Label>}
       
-      <div className="flex gap-2">
-        <Input
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          readOnly={multiple}
-        />
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => setIsModalOpen(true)}
-        >
-          <ImageIcon className="h-4 w-4 mr-2" />
-          Browse
-        </Button>
-        {value && (
+      {buttonOnlyMode ? (
+        // Clean button-only layout for logo uploads
+        <div className="flex gap-2 justify-center">
+          <Button
+            type="button"
+            variant="default"
+            onClick={() => setIsModalOpen(true)}
+            className="w-full max-w-xs"
+          >
+            <ImageIcon className="h-4 w-4 mr-2" />
+            {value ? 'Change Image' : 'Browse'}
+          </Button>
+          {value && (
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={handleClear}
+              title="Remove image"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+      ) : (
+        // Original layout with input field
+        <div className="flex gap-2">
+          <Input
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={placeholder}
+            readOnly={multiple}
+          />
           <Button
             type="button"
             variant="outline"
-            size="icon"
-            onClick={handleClear}
+            onClick={() => setIsModalOpen(true)}
           >
-            <X className="h-4 w-4" />
+            <ImageIcon className="h-4 w-4 mr-2" />
+            Browse
           </Button>
-        )}
-      </div>
+          {value && (
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={handleClear}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+      )}
 
       {/* Preview */}
       {showPreview && imageUrls.length > 0 && (
@@ -103,6 +133,8 @@ export default function MediaPicker({
                 src={getFullUrl(url)}
                 alt={`Preview ${index + 1}`}
                 className="w-full h-20 object-cover rounded border"
+                loading="lazy"
+                decoding="async"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMDAgNzBMMTMwIDEwMEgxMTBWMTMwSDkwVjEwMEg3MEwxMDAgNzBaIiBmaWxsPSIjOUI5QkEwIi8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOUI5QkEwIiBmb250LXNpemU9IjEyIj5JbWFnZSBub3QgZm91bmQ8L3RleHQ+Cjwvc3ZnPgo=';

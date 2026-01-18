@@ -21,9 +21,15 @@ class StorageConfigService
         }
         
         $cacheKey = 'active_storage_config_' . $userId;
-        $config = Cache::remember($cacheKey, 300, function() use ($userId) {
-            return self::loadStorageConfigFromDB($userId);
-        });
+        try {
+            $config = Cache::remember($cacheKey, 300, function() use ($userId) {
+                return self::loadStorageConfigFromDB($userId);
+            });
+        } catch (\Exception $e) {
+            // If cache fails (e.g., permission issues), load directly from DB
+            \Log::warning('Cache access failed, loading from DB: ' . $e->getMessage());
+            $config = self::loadStorageConfigFromDB($userId);
+        }
         
         return $config['disk'] ?? 'public';
     }
@@ -55,9 +61,15 @@ class StorageConfigService
         }
         
         $cacheKey = 'active_storage_config_' . $userId;
-        return Cache::remember($cacheKey, 300, function() use ($userId) {
+        try {
+            return Cache::remember($cacheKey, 300, function() use ($userId) {
+                return self::loadStorageConfigFromDB($userId);
+            });
+        } catch (\Exception $e) {
+            // If cache fails (e.g., permission issues), load directly from DB
+            \Log::warning('Cache access failed, loading from DB: ' . $e->getMessage());
             return self::loadStorageConfigFromDB($userId);
-        });
+        }
     }
 
     /**
@@ -65,14 +77,19 @@ class StorageConfigService
      */
     public static function clearCache(): void
     {
-        $userId = Auth::id();
-        if ($userId) {
-            Cache::forget('active_storage_config_' . $userId);
-        }
-        // Also clear for superadmin if current user is not superadmin
-        $superAdmin = \App\Models\User::where('type', 'superadmin')->first();
-        if ($superAdmin && $superAdmin->id !== $userId) {
-            Cache::forget('active_storage_config_' . $superAdmin->id);
+        try {
+            $userId = Auth::id();
+            if ($userId) {
+                Cache::forget('active_storage_config_' . $userId);
+            }
+            // Also clear for superadmin if current user is not superadmin
+            $superAdmin = \App\Models\User::where('type', 'superadmin')->first();
+            if ($superAdmin && $superAdmin->id !== $userId) {
+                Cache::forget('active_storage_config_' . $superAdmin->id);
+            }
+        } catch (\Exception $e) {
+            // If cache clear fails, just log it - not critical
+            \Log::warning('Cache clear failed: ' . $e->getMessage());
         }
     }
 

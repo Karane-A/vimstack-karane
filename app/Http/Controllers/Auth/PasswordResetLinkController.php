@@ -67,7 +67,7 @@ class PasswordResetLinkController extends Controller
             'password' => getSetting('email_password', '', $userId, null),
             'encryption' => getSetting('email_encryption', 'tls', $userId, null),
             'fromAddress' => getSetting('email_from_address', 'noreply@example.com', $userId, null),
-            'fromName' => getSetting('email_from_name', 'StoreGo System', $userId, null)
+            'fromName' => getSetting('email_from_name', 'Vimstack System', $userId, null)
         ];
         
         // Only configure if we have valid settings

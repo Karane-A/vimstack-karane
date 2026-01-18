@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/components/custom-toast';
 import { usePage } from '@inertiajs/react';
+import { getImageUrl } from '@/utils/image-helper';
 import { Search, Image as ImageIcon, Check } from 'lucide-react';
 
 interface MediaItem {
@@ -154,11 +155,16 @@ export default function MediaLibraryButton({
                       {/* Image Container */}
                       <div className="relative aspect-square bg-muted">
                         <img
-                          src={item.thumb_url}
+                          src={getImageUrl(item.thumb_url || item.url)}
                           alt={item.name}
                           className="w-full h-full object-cover"
+                          loading="lazy"
+                          decoding="async"
                           onError={(e) => {
-                            e.currentTarget.src = item.url;
+                            const fallbackUrl = getImageUrl(item.url);
+                            if (e.currentTarget.src !== fallbackUrl) {
+                              e.currentTarget.src = fallbackUrl;
+                            }
                           }}
                         />
                         

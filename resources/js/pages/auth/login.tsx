@@ -314,6 +314,8 @@ export default function Login({ status, canResetPassword, demoStores = [] }: Log
                                                                         src={getThemeThumbnail(store.theme)}
                                                                         alt={store.theme}
                                                                         className="demo-store-preview-image"
+                                                                        loading="lazy"
+                                                                        decoding="async"
                                                                         onError={(e) => {
                                                                             (e.target as HTMLImageElement).src = `https://placehold.co/300x600?text=${encodeURIComponent(store.theme)}`;
                                                                         }}

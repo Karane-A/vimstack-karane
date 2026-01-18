@@ -4,83 +4,39 @@ namespace App\Http\Controllers;
 
 use App\Models\MediaItem;
 use App\Models\User;
-use App\Services\StorageConfigService;
-use App\Services\DynamicStorageService;
+use App\Services\MediaStorageService;
 use Illuminate\Http\Request;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+
 class MediaController extends Controller
 {
+    protected $storageService;
+
+    public function __construct(MediaStorageService $storageService)
+    {
+        $this->storageService = $storageService;
+    }
+
     public function index()
     {
         try {
             $user = auth()->user();
             
-            // Check if user has permission to view media
-            if (!$user->hasPermissionTo('manage-media') && !$user->hasPermissionTo('view-media')) {
-                return response()->json([
-                    'message' => 'Access denied. You do not have permission to view media.',
-                    'error' => 'insufficient_permissions'
-                ], 403);
+            if (!$this->canViewMedia($user)) {
+                return $this->permissionDenied('view media');
             }
             
-            $mediaItems = MediaItem::with('media')->latest()->get();
-            
-            $media = $mediaItems->flatMap(function ($item) use ($user) {
-                $mediaQuery = $item->getMedia('images');
-                
-                // SuperAdmin can see all media
-                if ($user->type === 'superadmin') {
-                    // No user_id filter for superadmin
-                }
-                // Users with manage-any-media can see all media
-                elseif ($user->hasPermissionTo('manage-any-media')) {
-                    // No user_id filter for manage-any-media
-                }
-                // Others can only see their own media or their company's media
-                else {
-                    if ($user->type === 'company') {
-                        // Company users can see media from their users
-                        $userIds = \App\Models\User::where('created_by', $user->id)
-                            ->orWhere('id', $user->id)
-                            ->pluck('id')
-                            ->toArray();
-                        $mediaQuery = $mediaQuery->whereIn('user_id', $userIds);
-                    } else {
-                        // Regular users can only see their own media
-                        $mediaQuery = $mediaQuery->where('user_id', $user->id);
-                    }
-                }
-                
-                return $mediaQuery->map(function ($media) {
-                    try {
-                        $originalUrl = $this->getFullUrl($media->getUrl());
-                        $thumbUrl = $originalUrl;
-                        
-                        try {
-                            $thumbUrl = $this->getFullUrl($media->getUrl('thumb'));
-                        } catch (\Exception $e) {
-                            // If thumb conversion fails, use original
-                        }
-                        
-                        return [
-                            'id' => $media->id,
-                            'name' => $media->name,
-                            'file_name' => $media->file_name,
-                            'url' => $originalUrl,
-                            'thumb_url' => $thumbUrl,
-                            'size' => $media->size,
-                            'mime_type' => $media->mime_type,
-                            'user_id' => $media->user_id,
-                            'created_at' => $media->created_at,
-                        ];
-                    } catch (\Exception $e) {
-                        // Skip media files with unavailable storage disks
-                        return null;
-                    }
-                })->filter(); // Remove null entries
-            });
+            // Get media directly from Media model, not through MediaItem
+            $media = $this->getUserMedia($user)
+                ->latest()
+                ->get()
+                ->map(fn($media) => $this->formatMediaItem($media))
+                ->filter() // Remove null entries
+                ->values(); // Re-index array
 
-            return response()->json($media);
+            return response()->json($media)
+                ->header('Cache-Control', 'private, max-age=300') // Cache for 5 minutes
+                ->header('X-Content-Type-Options', 'nosniff');
         } catch (\Exception $e) {
             \Log::error('Media index error: ' . $e->getMessage());
             return response()->json([
@@ -90,86 +46,14 @@ class MediaController extends Controller
         }
     }
 
-    private function getFullUrl($url)
-    {
-        if (str_starts_with($url, 'http')) {
-            return $url;
-        }
-        
-        // Get the base URL from the APP_URL environment variable
-        $baseUrl = rtrim(config('app.url'), '/');
-        
-        // Make sure the URL starts with a slash
-        if (!str_starts_with($url, '/')) {
-            $url = '/' . $url;
-        }
-        
-        return $baseUrl . $url;
-    }
-
-    private function getUserFriendlyError(\Exception $e, $fileName): string
-    {
-        $message = $e->getMessage();
-        $extension = strtoupper(pathinfo($fileName, PATHINFO_EXTENSION));
-        
-        // Handle media library collection errors
-        if (str_contains($message, 'was not accepted into the collection')) {
-            if (str_contains($message, 'mime:') || str_contains($message, 'extension')) {
-                return "File type not allowed: {$extension}";
-            }
-            if (str_contains($message, 'size')) {
-                return "File too large: {$extension}";
-            }
-            return "File format not supported: {$extension}";
-        }
-        
-        // Handle validation errors
-        if (str_contains($message, 'validation') || str_contains($message, 'mimes')) {
-            return "Invalid file type: {$extension}";
-        }
-        
-        // Handle storage errors
-        if (str_contains($message, 'storage') || str_contains($message, 'disk') || str_contains($message, 'filesystem')) {
-            return "Storage error: {$extension}";
-        }
-        
-        // Handle file size errors
-        if (str_contains($message, 'size') || str_contains($message, 'large') || str_contains($message, 'max')) {
-            return "File too large: {$extension}";
-        }
-        
-        // Handle permission errors
-        if (str_contains($message, 'permission') || str_contains($message, 'denied') || str_contains($message, 'forbidden')) {
-            return "Permission denied: {$extension}";
-        }
-        
-        // Handle image processing errors
-        if (str_contains($message, 'image') || str_contains($message, 'gd') || str_contains($message, 'imagick')) {
-            return "Image processing failed: {$extension}";
-        }
-        
-        // Handle conversion errors
-        if (str_contains($message, 'conversion') || str_contains($message, 'thumb')) {
-            return "Thumbnail generation failed: {$extension}";
-        }
-        
-        // Generic fallback with more context
-        return "Upload failed: {$extension}";
-    }
-
     public function batchStore(Request $request)
     {
         $user = auth()->user();
         
-        // Check if user has permission to create media
-        if (!$user->hasPermissionTo('create-media') && !$user->hasPermissionTo('manage-media')) {
-            return response()->json([
-                'message' => 'Access denied. You do not have permission to upload media.',
-                'errors' => ['insufficient_permissions']
-            ], 403);
+        if (!$this->canCreateMedia($user)) {
+            return $this->permissionDenied('upload media');
         }
         
-        // Validate that files are present
         if (!$request->hasFile('files') || !is_array($request->file('files'))) {
             return response()->json([
                 'message' => __('No files provided'),
@@ -178,178 +62,54 @@ class MediaController extends Controller
         }
     
         // Check storage limits
-        $storageCheck = $this->checkStorageLimit($request->file('files'));
-        if ($storageCheck) {
-            return $storageCheck;
+        if ($error = $this->storageService->checkStorageLimit($request->file('files'), $user)) {
+            return $error;
         }
         
-        // Get fresh configuration directly from database
-        $userId = auth()->id();
-        $settings = \DB::table('settings')
-            ->where('user_id', $userId)
-            ->whereIn('key', ['storage_file_types', 'storage_max_upload_size'])
-            ->pluck('value', 'key')
-            ->toArray();
-        
-        $config = [
-            'allowed_file_types' => $settings['storage_file_types'] ?? 'jpg,png,webp,gif',
-            'max_file_size_kb' => (int)($settings['storage_max_upload_size'] ?? 2048),
-        ];
-        
-        // Get all allowed file types from config
-        $allowedTypes = array_map('trim', explode(',', strtolower($config['allowed_file_types'])));
-        
-        // Custom validation with user-friendly messages
-        $validator = \Validator::make($request->all(), [
-            'files' => 'required|array|min:1',
-            'files.*' => [
-                'required',
-                'file',
-                'mimes:' . implode(',', $allowedTypes),
-                'max:' . min($config['max_file_size_kb'], 10240) // Cap at 10MB for safety
-            ],
-        ], [
-            'files.required' => __('Please select files to upload.'),
-            'files.array' => __('Invalid file format.'),
-            'files.min' => __('Please select at least one file.'),
-            'files.*.required' => __('Please select a valid file.'),
-            'files.*.file' => __('Please select a valid file.'),
-            'files.*.mimes' => __('Only these file types are allowed: :types', [
-                'types' => strtoupper(implode(', ', $allowedTypes))
-            ]),
-            'files.*.max' => __('File size cannot exceed :max KB.', ['max' => min($config['max_file_size_kb'], 10240)]),
-        ]);
-        
+        // Validate files
+        $validator = $this->storageService->validateFiles($request->all(), $user);
         if ($validator->fails()) {
             return response()->json([
                 'message' => __('File validation failed'),
                 'errors' => $validator->errors()->all(),
-                'allowed_types' => $config['allowed_file_types'],
-                'max_size_kb' => $config['max_file_size_kb']
+                'allowed_types' => $this->storageService->getStorageConfig($user)['allowed_file_types'],
+                'max_size_kb' => $this->storageService->getStorageConfig($user)['max_file_size_kb']
             ], 422);
         }
-        
-        try {
 
         $uploadedMedia = [];
         $errors = [];
         
         foreach ($request->file('files') as $file) {
             try {
-                $mediaItem = MediaItem::create([
-                    'name' => $file->getClientOriginalName(),
-                ]);
-
-                $media = $mediaItem->addMedia($file)
-                    ->toMediaCollection('images');
-                
-                $media->user_id = auth()->id();
-                $media->save();
-                
-                // Update user storage usage
-                $this->updateStorageUsage(auth()->user(), $media->size);
-
-                // Force thumbnail generationAdd commentMore actions
-                try {
-                    $media->getUrl('thumb');
-                } catch (\Exception $e) {
-                    // Thumbnail generation failed, but continue
-                }
-
-                $originalUrl = $this->getFullUrl($media->getUrl());
-                $thumbUrl = $originalUrl; // Default to original
-                
-                try {
-                    $thumbUrl = $this->getFullUrl($media->getUrl('thumb'));
-                } catch (\Exception $e) {
-                    // If thumb conversion fails, use original
-                }
-                
-                $uploadedMedia[] = [
-                    'id' => $media->id,
-                    'name' => $media->name,
-                    'file_name' => $media->file_name,
-                    'url' => $originalUrl,
-                    'thumb_url' => $thumbUrl,
-                    'size' => $media->size,
-                    'mime_type' => $media->mime_type,
-                    'user_id' => $media->user_id,
-                    'created_at' => $media->created_at,
-                ];
+                $media = $this->uploadFile($file, $user);
+                $uploadedMedia[] = $this->formatMediaItem($media);
             } catch (\Exception $e) {
                 if (isset($mediaItem)) {
                     $mediaItem->delete();
                 }
-                $errors[] = [
-                    'file' => $file->getClientOriginalName(),
-                    'error' => $this->getUserFriendlyError($e, $file->getClientOriginalName())
-                ];
+                $errors[] = $this->getUserFriendlyError($e, $file->getClientOriginalName());
             }
         }
         
-        if (count($uploadedMedia) > 0 && empty($errors)) {
-            return response()->json([
-                'message' => count($uploadedMedia) . ' file(s) uploaded successfully',
-                'data' => $uploadedMedia
-            ]);
-        } elseif (count($uploadedMedia) > 0 && !empty($errors)) {
-            return response()->json([
-                'message' => count($uploadedMedia) . ' uploaded, ' . count($errors) . ' failed',
-                'data' => $uploadedMedia,
-                'errors' => array_column($errors, 'error')
-            ]);
-        } else {
-            return response()->json([
-                'message' => 'Upload failed',
-                'errors' => array_column($errors, 'error')
-            ], 422);
-        }
-        } catch (\Exception $e) {
-            \Log::error('Media batch upload error: ' . $e->getMessage());
-            return response()->json([
-                'message' => 'Upload failed due to server error',
-                'errors' => ['server_error']
-            ], 500);
-        }
+        return $this->buildUploadResponse($uploadedMedia, $errors);
     }
 
     public function download($id)
     {
         $user = auth()->user();
         
-        // Check if user has permission to download media
-        if (!$user->hasPermissionTo('download-media') && !$user->hasPermissionTo('manage-media') && !$user->hasPermissionTo('view-media')) {
-            return response()->json([
-                'message' => 'Access denied. You do not have permission to download media.',
-                'error' => 'insufficient_permissions'
-            ], 403);
+        if (!$this->canDownloadMedia($user)) {
+            return $this->permissionDenied('download media');
         }
         
-        $query = Media::where('id', $id);
-        
-        // SuperAdmin and users with manage-any-media can download any media
-        if ($user->type !== 'superadmin' && !$user->hasPermissionTo('manage-any-media')) {
-            if ($user->type === 'company') {
-                // Company users can download media from their users
-                $userIds = \App\Models\User::where('created_by', $user->id)
-                    ->orWhere('id', $user->id)
-                    ->pluck('id')
-                    ->toArray();
-                $query->whereIn('user_id', $userIds);
-            } else {
-                $query->where('user_id', $user->id);
-            }
-        }
-        
-        $media = $query->firstOrFail();
+        $media = $this->getUserMedia($user)->where('id', $id)->firstOrFail();
         
         try {
             $filePath = $media->getPath();
-            
             if (!file_exists($filePath)) {
                 abort(404, __('File not found'));
             }
-            
             return response()->download($filePath, $media->file_name);
         } catch (\Exception $e) {
             abort(404, __('File storage unavailable'));
@@ -360,46 +120,23 @@ class MediaController extends Controller
     {
         $user = auth()->user();
         
-        // Check if user has permission to delete media
-        if (!$user->hasPermissionTo('delete-media') && !$user->hasPermissionTo('manage-media')) {
-            return response()->json([
-                'message' => 'Access denied. You do not have permission to delete media.',
-                'error' => 'insufficient_permissions'
-            ], 403);
+        if (!$this->canDeleteMedia($user)) {
+            return $this->permissionDenied('delete media');
         }
         
-        $query = Media::where('id', $id);
-        
-        // SuperAdmin and users with manage-any-media can delete any media
-        if ($user->type !== 'superadmin' && !$user->hasPermissionTo('manage-any-media')) {
-            if ($user->type === 'company') {
-                // Company users can delete media from their users
-                $userIds = \App\Models\User::where('created_by', $user->id)
-                    ->orWhere('id', $user->id)
-                    ->pluck('id')
-                    ->toArray();
-                $query->whereIn('user_id', $userIds);
-            } else {
-                $query->where('user_id', $user->id);
-            }
-        }
-        
-        $media = $query->firstOrFail();
-        $mediaItem = $media->model;
-        
+        $media = $this->getUserMedia($user)->where('id', $id)->firstOrFail();
         $fileSize = $media->size;
+        $mediaItem = $media->model;
         
         try {
             $media->delete();
         } catch (\Exception $e) {
-            // If storage disk is unavailable, force delete from database
             $media->forceDelete();
         }
         
-        // Update user storage usage
-        $this->updateStorageUsage(auth()->user(), -$fileSize);
+        $this->storageService->updateStorageUsage($user, -$fileSize);
         
-        // Delete the MediaItem if it has no more media files
+        // Delete MediaItem if no more files
         if ($mediaItem && $mediaItem->getMedia()->count() === 0) {
             $mediaItem->delete();
         }
@@ -407,65 +144,263 @@ class MediaController extends Controller
         return response()->json(['message' => __('Media deleted successfully')]);
     }
     
-    private function checkStorageLimit($files)
+    // ========== Permission Helpers ==========
+
+    protected function canViewMedia($user): bool
     {
-        $user = auth()->user();
-        if ($user->type === 'superadmin') return null;
-        
-        $limit = $this->getUserStorageLimit($user);
-        if (!$limit) return null;
-        
-        $uploadSize = collect($files)->sum('size');
-        $currentUsage = $this->getUserStorageUsage($user);
-        
-        if (($currentUsage + $uploadSize) > $limit) {
-            return response()->json([
-                'message' => __('Storage limit exceeded'),
-                'errors' => [__('Please delete files or upgrade plan')]
-            ], 422);
-        }
-        
-        return null;
+        return $user->hasPermissionTo('manage-media') || $user->hasPermissionTo('view-media');
     }
-    
-    private function getUserStorageLimit($user)
+
+    protected function canCreateMedia($user): bool
     {
-        if ($user->type === 'company' && $user->plan) {
-            return $user->plan->storage_limit * 1024 * 1024 * 1024;
-        }
-        
-        if ($user->created_by) {
-            $company = User::find($user->created_by);
-            if ($company && $company->plan) {
-                return $company->plan->storage_limit * 1024 * 1024 * 1024;
-            }
-        }
-        
-        return null;
+        return $user->hasPermissionTo('create-media') || $user->hasPermissionTo('manage-media');
     }
-    
-    private function getUserStorageUsage($user)
+
+    protected function canDownloadMedia($user): bool
     {
+        return $user->hasPermissionTo('download-media') 
+            || $user->hasPermissionTo('manage-media') 
+            || $user->hasPermissionTo('view-media');
+    }
+
+    protected function canDeleteMedia($user): bool
+    {
+        return $user->hasPermissionTo('delete-media') || $user->hasPermissionTo('manage-media');
+    }
+
+    // ========== Query Helpers ==========
+
+    protected function getUserMedia($user)
+    {
+        // Query media from the 'images' collection
+        $query = Media::where('collection_name', 'images');
+        
+        // SuperAdmin and manage-any-media can see all
+        if ($user->type === 'superadmin' || $user->hasPermissionTo('manage-any-media')) {
+            return $query;
+        }
+        
+        // Company users see their own + their users' media
         if ($user->type === 'company') {
-            return User::where('created_by', $user->id)
+            $userIds = User::where('created_by', $user->id)
                 ->orWhere('id', $user->id)
-                ->sum('storage_limit');
+                ->pluck('id');
+            return $query->whereIn('user_id', $userIds);
         }
         
-        if ($user->created_by) {
-            $company = User::find($user->created_by);
-            if ($company) {
-                return User::where('created_by', $company->id)
-                    ->orWhere('id', $company->id)
-                    ->sum('storage_limit');
+        // Regular users see only their own
+        return $query->where('user_id', $user->id);
+    }
+
+    // ========== Upload Helpers ==========
+
+    protected function uploadFile($file, $user)
+    {
+        $mediaItem = MediaItem::create([
+            'name' => $file->getClientOriginalName(),
+        ]);
+
+        $media = $mediaItem->addMedia($file)
+            ->toMediaCollection('images');
+        
+        $media->user_id = $user->id;
+        $media->save();
+        
+        $this->storageService->updateStorageUsage($user, $media->size);
+        
+        // Generate thumbnail (non-blocking)
+        try {
+            $media->getUrl('thumb');
+        } catch (\Exception $e) {
+            // Thumbnail generation failed, continue anyway
+        }
+        
+        return $media;
+    }
+
+    // ========== Formatting Helpers ==========
+
+    protected function formatMediaItem($media)
+    {
+        try {
+            // Get URLs from Spatie Media Library
+            // These might be full URLs or relative paths depending on configuration
+            $originalUrl = $media->getUrl();
+            $thumbUrl = $this->getThumbnailUrl($media);
+            
+            // Normalize both URLs to relative paths starting with /storage/
+            $url = $this->normalizePath($originalUrl);
+            $thumbUrl = $this->normalizePath($thumbUrl);
+            
+            // Log for debugging (remove in production)
+            \Log::debug('Media URL formatting', [
+                'id' => $media->id,
+                'original' => $originalUrl,
+                'normalized' => $url,
+                'thumb_original' => $thumbUrl !== $originalUrl ? $thumbUrl : 'same',
+                'thumb_normalized' => $thumbUrl
+            ]);
+            
+            return [
+                'id' => $media->id,
+                'name' => $media->name,
+                'file_name' => $media->file_name,
+                'url' => $url,
+                'thumb_url' => $thumbUrl,
+                'size' => $media->size,
+                'mime_type' => $media->mime_type,
+                'user_id' => $media->user_id,
+                'created_at' => $media->created_at,
+            ];
+        } catch (\Exception $e) {
+            \Log::error('Media URL error: ' . $e->getMessage(), [
+                'media_id' => $media->id ?? null,
+                'trace' => $e->getTraceAsString()
+            ]);
+        return null;
+        }
+    }
+
+    protected function getThumbnailUrl($media)
+    {
+        try {
+            return $media->getUrl('thumb');
+        } catch (\Exception $e) {
+            return $media->getUrl(); // Fallback to original
+        }
+    }
+
+    protected function normalizePath($url)
+    {
+        if (empty($url)) {
+            return '';
+        }
+        
+        // If already a relative path starting with /storage/, clean and return
+        if (str_starts_with($url, '/storage/')) {
+            // Remove any double slashes
+            return preg_replace('#/+#', '/', $url);
+        }
+        
+        // If it's a full URL, extract the path
+        if (str_starts_with($url, 'http://') || str_starts_with($url, 'https://')) {
+            $parsed = parse_url($url);
+            $path = $parsed['path'] ?? '';
+            
+            // Remove double slashes
+            $path = preg_replace('#/+#', '/', $path);
+            
+            // If path already starts with /storage/, return it
+            if (str_starts_with($path, '/storage/')) {
+                return $path;
+            }
+            
+            // Handle Spatie's /media/ paths - convert to /storage/media/
+            if (str_starts_with($path, '/media/')) {
+                return '/storage' . $path;
+            }
+            
+            // Try to extract storage path from full URL
+            // Spatie might return: http://localhost/storage/media/12/file.jpg
+            if (str_contains($url, '/storage/')) {
+                $pos = strpos($url, '/storage/');
+                $path = substr($url, $pos);
+                return preg_replace('#/+#', '/', $path);
+            }
+            
+            // If path contains 'media' but not '/storage/', try to construct it
+            if (str_contains($path, 'media') && !str_contains($path, '/storage/')) {
+                // Find 'media' in path and prepend '/storage'
+                $mediaPos = strpos($path, '/media/');
+                if ($mediaPos !== false) {
+                    return '/storage' . substr($path, $mediaPos);
+                }
+            }
+            
+            // Default: try to construct /storage path
+            return $path ?: '/storage' . $path;
+        }
+        
+        // Handle relative paths starting with /media/
+        if (str_starts_with($url, '/media/')) {
+            return '/storage' . preg_replace('#/+#', '/', $url);
+        }
+        
+        // Remove any double slashes
+        $url = preg_replace('#/+#', '/', $url);
+        
+        // Ensure it starts with / (but not //)
+        if (!str_starts_with($url, '/')) {
+            $url = '/' . $url;
+        }
+        
+        // If it doesn't start with /storage/ but contains 'media', try to fix it
+        if (!str_starts_with($url, '/storage/') && str_contains($url, 'media')) {
+            $mediaPos = strpos($url, 'media');
+            if ($mediaPos > 0) {
+                // Extract everything from 'media' onwards
+                $url = '/storage/' . substr($url, $mediaPos);
+            } else {
+                $url = '/storage' . $url;
             }
         }
         
-        return $user->storage_limit;
+        return $url;
     }
-    
-    private function updateStorageUsage($user, $size)
+
+    // ========== Response Helpers ==========
+
+    protected function buildUploadResponse($uploadedMedia, $errors)
     {
-        $user->increment('storage_limit', $size);
+        if (count($uploadedMedia) > 0 && empty($errors)) {
+            return response()->json([
+                'message' => count($uploadedMedia) . ' file(s) uploaded successfully',
+                'data' => $uploadedMedia
+            ]);
+        }
+        
+        if (count($uploadedMedia) > 0 && !empty($errors)) {
+            return response()->json([
+                'message' => count($uploadedMedia) . ' uploaded, ' . count($errors) . ' failed',
+                'data' => $uploadedMedia,
+                'errors' => $errors
+            ]);
+        }
+        
+        return response()->json([
+            'message' => 'Upload failed',
+            'errors' => $errors
+        ], 422);
+    }
+
+    protected function permissionDenied($action)
+    {
+        return response()->json([
+            'message' => "Access denied. You do not have permission to {$action}.",
+            'error' => 'insufficient_permissions'
+        ], 403);
+    }
+
+    protected function getUserFriendlyError(\Exception $e, $fileName): string
+    {
+        $extension = strtoupper(pathinfo($fileName, PATHINFO_EXTENSION));
+        $message = $e->getMessage();
+        
+        $errorMap = [
+            'mime' => "Invalid file type: {$extension}",
+            'size' => "File too large: {$extension}",
+            'storage' => "Storage error: {$extension}",
+            'permission' => "Permission denied: {$extension}",
+            'image' => "Image processing failed: {$extension}",
+            'conversion' => "Thumbnail generation failed: {$extension}",
+        ];
+        
+        foreach ($errorMap as $key => $error) {
+            if (stripos($message, $key) !== false) {
+                return $error;
+            }
+        }
+        
+        return "Upload failed: {$extension}";
     }
 }

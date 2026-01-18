@@ -26,7 +26,6 @@ interface Plan {
   enable_custdomain: string;
   enable_custsubdomain: string;
   pwa_business: string;
-  enable_chatgpt: string;
   enable_custom_pages: string;
   enable_blog: string;
   enable_shipping_method: string;
@@ -61,7 +60,6 @@ export default function PlanForm({ plan, hasDefaultPlan = false, otherDefaultPla
     enable_custdomain: plan?.enable_custdomain || 'off',
     enable_custsubdomain: plan?.enable_custsubdomain || 'off',
     pwa_business: plan?.pwa_business || 'off',
-    enable_chatgpt: plan?.enable_chatgpt || 'off',
     enable_custom_pages: plan?.enable_custom_pages || 'off',
     enable_blog: plan?.enable_blog || 'off',
     enable_shipping_method: plan?.enable_shipping_method || 'off',
@@ -258,15 +256,6 @@ export default function PlanForm({ plan, hasDefaultPlan = false, otherDefaultPla
                   id="pwa_business"
                   checked={formData.pwa_business === 'on'}
                   onCheckedChange={(checked) => handleSwitchChange('pwa_business', checked)}
-                />
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <Label htmlFor="enable_chatgpt">{t("AI Integration")}</Label>
-                <Switch
-                  id="enable_chatgpt"
-                  checked={formData.enable_chatgpt === 'on'}
-                  onCheckedChange={(checked) => handleSwitchChange('enable_chatgpt', checked)}
                 />
               </div>
 

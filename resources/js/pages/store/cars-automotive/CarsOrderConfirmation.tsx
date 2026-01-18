@@ -47,7 +47,6 @@ interface CarsOrderConfirmationProps {
   wishlistCount?: number;
   isLoggedIn?: boolean;
   userName?: string;
-  whatsappRedirectUrl?: string;
   customPages?: Array<{
     id: number;
     name: string;
@@ -63,14 +62,12 @@ export default function CarsOrderConfirmation({
   wishlistCount = 0,
   isLoggedIn = true,
   userName = '',
-  whatsappRedirectUrl,
   customPages = [],
 }: CarsOrderConfirmationProps) {
   const { props } = usePage();
   const storeSlug = props.store?.slug || store.slug || 'demo';
   const storeSettings = props.storeSettings || {};
   const currencies = props.currencies || [];
-  const [showWhatsAppPrompt, setShowWhatsAppPrompt] = useState(false);
   
   // Provide default order data if none provided
   const defaultOrder = {
@@ -108,37 +105,6 @@ export default function CarsOrderConfirmation({
       month: 'long', 
       day: 'numeric' 
     });
-  };
-
-  // Auto redirect to WhatsApp like WhatsStore
-  useEffect(() => {
-    if (whatsappRedirectUrl && orderData.payment_method === 'WhatsApp') {
-      // Show prompt for 2 seconds then auto redirect
-      setShowWhatsAppPrompt(true);
-      
-      const timer = setTimeout(() => {
-        window.open(whatsappRedirectUrl, '_blank');
-        // Clear session after opening WhatsApp
-        fetch('/api/clear-whatsapp-session', { method: 'POST' });
-      }, 2000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [whatsappRedirectUrl, orderData]);
-  
-  // Handle WhatsApp redirect
-  const handleWhatsAppClick = () => {
-    if (whatsappRedirectUrl) {
-      window.open(whatsappRedirectUrl, '_blank');
-      setShowWhatsAppPrompt(false);
-      // Clear session after opening WhatsApp
-      fetch('/api/clear-whatsapp-session', { method: 'POST' });
-    }
-  };
-  
-  // Dismiss WhatsApp prompt
-  const dismissWhatsAppPrompt = () => {
-    setShowWhatsAppPrompt(false);
   };
 
   return (
@@ -186,39 +152,6 @@ export default function CarsOrderConfirmation({
             </div>
           </div>
         </div>
-
-        {/* WhatsApp Auto Redirect */}
-        {showWhatsAppPrompt && whatsappRedirectUrl && (
-          <div className="bg-green-50 border-t-4 border-b-4 border-green-600 py-16">
-            <div className="container mx-auto px-4">
-              <div className="max-w-4xl mx-auto text-center">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-green-600 transform rotate-45 mb-8">
-                  <MessageCircle className="w-10 h-10 text-white transform -rotate-45 animate-pulse" />
-                </div>
-                <h3 className="text-4xl font-black tracking-wider uppercase text-green-800 mb-6">
-                  Opening WhatsApp...
-                </h3>
-                <p className="text-xl text-green-700 leading-relaxed mb-8">
-                  Your automotive parts order confirmation will open in WhatsApp automatically.
-                </p>
-                <div className="flex justify-center gap-6">
-                  <button
-                    onClick={handleWhatsAppClick}
-                    className="bg-green-600 text-white px-8 py-4 font-black tracking-wider uppercase hover:bg-green-700 transition-colors"
-                  >
-                    Open Now
-                  </button>
-                  <button
-                    onClick={dismissWhatsAppPrompt}
-                    className="border-2 border-gray-600 text-gray-700 px-8 py-4 font-black tracking-wider uppercase hover:border-green-600 hover:text-green-600 transition-colors"
-                  >
-                    Skip
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Order Status Grid */}
         <div className="bg-gray-900 py-16">

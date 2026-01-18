@@ -14,7 +14,6 @@ interface Plan {
   enable_custdomain: string;
   enable_custsubdomain: string;
   pwa_business: string;
-  enable_chatgpt: string;
   themes: string[] | null;
   is_trial: string | null;
   trial_day: number;

@@ -3,7 +3,6 @@ import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useLayout } from '@/contexts/LayoutContext';
 import { type BreadcrumbItem as BreadcrumbItemType } from '@/types';
 import { ProfileMenu } from '@/components/profile-menu';
-import { LanguageSwitcher } from '@/components/language-switcher';
 import { usePage, router } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import { StoreSwitcher } from '@/components/store-switcher';
@@ -39,7 +38,6 @@ export function AppSidebarHeader({ breadcrumbs = [] }: { breadcrumbs?: Breadcrum
                             {t("Return Back")}
                         </button>
                     )}
-                    <LanguageSwitcher />
                     <ProfileMenu />
                     {position === 'right' && <SidebarTrigger className="-mr-1" />}
                 </div>

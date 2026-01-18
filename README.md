@@ -1,4 +1,4 @@
-# StoreGo SaaS - Multi-Store E-commerce Platform
+# Vimstack - Multi-Store E-commerce Platform
 
 A powerful SaaS application for creating and managing multiple online stores built with Laravel and React.
 
@@ -98,4 +98,4 @@ After running the seeders, you can log in with the following credentials:
 
 ## License
 
-The StoreGo SaaS platform is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+The Vimstack platform is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

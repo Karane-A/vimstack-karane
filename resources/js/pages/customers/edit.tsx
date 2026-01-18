@@ -16,7 +16,7 @@ import { usePermissions } from '@/hooks/usePermissions';
 
 export default function EditCustomer() {
   const { t } = useTranslation();
-  const { customer, billingAddress, shippingAddress, sameAsBilling } = usePage().props as any;
+  const { customer, billingAddress, shippingAddress, sameAsBilling, countries = [], languages = [] } = usePage().props as any;
   const { hasPermission } = usePermissions();
   const [avatar, setAvatar] = useState(customer.avatar || '');
   const [formData, setFormData] = useState({
@@ -257,11 +257,11 @@ export default function EditCustomer() {
           <TabsContent value="address" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Billing Address</CardTitle>
+                <CardTitle>{t('Billing Address')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="billing_address">Street Address</Label>
+                  <Label htmlFor="billing_address">{t('Street Address')}</Label>
                   <Input 
                     id="billing_address" 
                     value={formData.billing_address.address}
@@ -270,7 +270,7 @@ export default function EditCustomer() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="billing_city">City</Label>
+                    <Label htmlFor="billing_city">{t('City')}</Label>
                     <Input 
                       id="billing_city" 
                       value={formData.billing_address.city}
@@ -278,7 +278,7 @@ export default function EditCustomer() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="billing_state">State/Province</Label>
+                    <Label htmlFor="billing_state">{t('State/Province')}</Label>
                     <Input 
                       id="billing_state" 
                       value={formData.billing_address.state}
@@ -288,7 +288,7 @@ export default function EditCustomer() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="billing_postal">Postal Code</Label>
+                    <Label htmlFor="billing_postal">{t('Postal Code')}</Label>
                     <Input 
                       id="billing_postal" 
                       value={formData.billing_address.postal_code}
@@ -296,7 +296,7 @@ export default function EditCustomer() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="billing_country">Country</Label>
+                    <Label htmlFor="billing_country">{t('Country')}</Label>
                     <Select
                       value={formData.billing_address.country}
                       onValueChange={(value) => handleAddressSelectChange('billing_address', 'country', value)}
@@ -305,10 +305,15 @@ export default function EditCustomer() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="us">United States</SelectItem>
-                        <SelectItem value="ca">Canada</SelectItem>
-                        <SelectItem value="uk">United Kingdom</SelectItem>
-                        <SelectItem value="au">Australia</SelectItem>
+                        {countries && countries.length > 0 ? (
+                          countries.map((country: any) => (
+                            <SelectItem key={country.id} value={country.id.toString()}>
+                              {country.name}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <SelectItem value="" disabled>{t('No countries available')}</SelectItem>
+                        )}
                       </SelectContent>
                     </Select>
                   </div>
@@ -319,19 +324,19 @@ export default function EditCustomer() {
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle>Shipping Address</CardTitle>
+                  <CardTitle>{t('Shipping Address')}</CardTitle>
                   <div className="flex items-center space-x-2">
                     <Switch 
                       checked={formData.same_as_billing}
                       onCheckedChange={(checked) => handleSwitchChange('same_as_billing', checked)}
                     />
-                    <Label className="text-sm">Same as billing</Label>
+                    <Label className="text-sm">{t('Same as billing')}</Label>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="shipping_address">Street Address</Label>
+                  <Label htmlFor="shipping_address">{t('Street Address')}</Label>
                   <Input 
                     id="shipping_address" 
                     value={formData.shipping_address.address}
@@ -341,7 +346,7 @@ export default function EditCustomer() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="shipping_city">City</Label>
+                    <Label htmlFor="shipping_city">{t('City')}</Label>
                     <Input 
                       id="shipping_city" 
                       value={formData.shipping_address.city}
@@ -350,7 +355,7 @@ export default function EditCustomer() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="shipping_state">State/Province</Label>
+                    <Label htmlFor="shipping_state">{t('State/Province')}</Label>
                     <Input 
                       id="shipping_state" 
                       value={formData.shipping_address.state}
@@ -361,7 +366,7 @@ export default function EditCustomer() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="shipping_postal">Postal Code</Label>
+                    <Label htmlFor="shipping_postal">{t('Postal Code')}</Label>
                     <Input 
                       id="shipping_postal" 
                       value={formData.shipping_address.postal_code}
@@ -370,7 +375,7 @@ export default function EditCustomer() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="shipping_country">Country</Label>
+                    <Label htmlFor="shipping_country">{t('Country')}</Label>
                     <Select
                       value={formData.shipping_address.country}
                       onValueChange={(value) => handleAddressSelectChange('shipping_address', 'country', value)}
@@ -380,10 +385,15 @@ export default function EditCustomer() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="us">United States</SelectItem>
-                        <SelectItem value="ca">Canada</SelectItem>
-                        <SelectItem value="uk">United Kingdom</SelectItem>
-                        <SelectItem value="au">Australia</SelectItem>
+                        {countries && countries.length > 0 ? (
+                          countries.map((country: any) => (
+                            <SelectItem key={country.id} value={country.id.toString()}>
+                              {country.name}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <SelectItem value="" disabled>{t('No countries available')}</SelectItem>
+                        )}
                       </SelectContent>
                     </Select>
                   </div>
@@ -395,13 +405,13 @@ export default function EditCustomer() {
           <TabsContent value="preferences" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Communication Preferences</CardTitle>
+                <CardTitle>{t('Communication Preferences')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <Label>Email Marketing</Label>
-                    <p className="text-sm text-muted-foreground">Receive promotional emails</p>
+                    <Label>{t('Email Marketing')}</Label>
+                    <p className="text-sm text-muted-foreground">{t('Receive promotional emails')}</p>
                   </div>
                   <Switch 
                     checked={formData.email_marketing}
@@ -410,8 +420,8 @@ export default function EditCustomer() {
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <Label>SMS Notifications</Label>
-                    <p className="text-sm text-muted-foreground">Receive SMS updates</p>
+                    <Label>{t('SMS Notifications')}</Label>
+                    <p className="text-sm text-muted-foreground">{t('Receive SMS updates')}</p>
                   </div>
                   <Switch 
                     checked={formData.sms_notifications}
@@ -420,8 +430,8 @@ export default function EditCustomer() {
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <Label>Order Updates</Label>
-                    <p className="text-sm text-muted-foreground">Receive order status updates</p>
+                    <Label>{t('Order Updates')}</Label>
+                    <p className="text-sm text-muted-foreground">{t('Receive order status updates')}</p>
                   </div>
                   <Switch 
                     checked={formData.order_updates}
@@ -429,24 +439,29 @@ export default function EditCustomer() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="preferred_language">Preferred Language</Label>
+                  <Label htmlFor="preferred_language">{t('Preferred Language')}</Label>
                   <Select
                     value={formData.preferred_language}
                     onValueChange={(value) => handleSelectChange('preferred_language', value)}
                   >
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder={t('Select language')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="en">English</SelectItem>
-                      <SelectItem value="es">Spanish</SelectItem>
-                      <SelectItem value="fr">French</SelectItem>
-                      <SelectItem value="de">German</SelectItem>
+                      {languages && languages.length > 0 ? (
+                        languages.map((language: any) => (
+                          <SelectItem key={language.code} value={language.code}>
+                            {language.name}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="en">{t('English')}</SelectItem>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="customer_group">Customer Group</Label>
+                  <Label htmlFor="customer_group">{t('Customer Group')}</Label>
                   <Select
                     value={formData.customer_group}
                     onValueChange={(value) => handleSelectChange('customer_group', value)}
@@ -455,9 +470,9 @@ export default function EditCustomer() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="regular">Regular Customer</SelectItem>
-                      <SelectItem value="vip">VIP Customer</SelectItem>
-                      <SelectItem value="wholesale">Wholesale Customer</SelectItem>
+                      <SelectItem value="regular">{t('Regular Customer')}</SelectItem>
+                      <SelectItem value="vip">{t('VIP Customer')}</SelectItem>
+                      <SelectItem value="wholesale">{t('Wholesale Customer')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

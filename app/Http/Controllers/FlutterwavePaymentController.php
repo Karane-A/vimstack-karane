@@ -27,6 +27,8 @@ class FlutterwavePaymentController extends Controller
             curl_setopt_array($curl, array(
                 CURLOPT_URL => "https://api.flutterwave.com/v3/transactions/" . $validated['payment_id'] . "/verify",
                 CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_SSL_VERIFYPEER => true,  // SECURITY FIX: Enable SSL verification
+                CURLOPT_SSL_VERIFYHOST => 2,     // SECURITY FIX: Verify hostname
                 CURLOPT_HTTPHEADER => [
                     "Authorization: Bearer " . $settings['payment_settings']['flutterwave_secret_key'],
                     "Content-Type: application/json",
@@ -38,6 +40,7 @@ class FlutterwavePaymentController extends Controller
             curl_close($curl);
 
             if ($httpCode !== 200) {
+                \Log::error('Flutterwave API error', ['http_code' => $httpCode]);
                 return back()->withErrors(['error' => __('Payment verification failed - API error')]);
             }
 
@@ -48,11 +51,17 @@ class FlutterwavePaymentController extends Controller
             }
 
             if ($result['status'] === 'success' && $result['data']['status'] === 'successful') {
-                // Check if payment amount matches plan price
-                $expectedAmount = $plan->price;
+                // SECURITY FIX: Use pricing with coupon calculation
+                $pricing = calculatePlanPricing($plan, $validated['coupon_code'] ?? null);
+                $expectedAmount = $pricing['final_price'];
                 $paidAmount = $result['data']['amount'];
                 
                 if (abs($paidAmount - $expectedAmount) > 0.01) {
+                    \Log::error('Flutterwave amount mismatch', [
+                        'expected' => $expectedAmount,
+                        'paid' => $paidAmount,
+                        'plan_id' => $plan->id
+                    ]);
                     return back()->withErrors(['error' => __('Payment amount verification failed')]);
                 }
                 

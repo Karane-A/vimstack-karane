@@ -136,7 +136,7 @@ export default function EmailTemplateShow({ template, languages, variables }: Pr
                     id="from"
                     value={fromName}
                     onChange={(e) => setFromName(e.target.value)}
-                    placeholder={t("e.g., StoreGo Support, Your Store Name")}
+                    placeholder={t("e.g., Vimstack Support, Your Store Name")}
                     className="focus:ring-2 focus:ring-primary"
                   />
                   <p className="text-xs text-muted-foreground">{t("This name will appear as the email sender")}</p>
