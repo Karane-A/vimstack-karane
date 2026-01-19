@@ -114,13 +114,13 @@ export default function Settings() {
             <h1 className="text-2xl font-bold text-slate-900">{t('Settings')}</h1>
             <p className="text-sm text-slate-500 mt-1">{t('Configuration & Preferences')}</p>
           </div>
-          <div className="bg-white rounded-2xl border border-slate-200 p-2 shadow-sm">
+          <div className="bg-white rounded-2xl border border-slate-200 p-2 shadow-sm flex lg:flex-col overflow-x-auto lg:overflow-visible gap-2 scrollbar-hide -mx-6 px-6 lg:mx-0 lg:px-2">
             {sidebarNavItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => scrollToSection(item.id)}
                 className={cn(
-                  "w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all group",
+                  "flex-shrink-0 lg:w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all group whitespace-nowrap lg:whitespace-normal",
                   activeSection === item.id
                     ? "bg-indigo-50 text-indigo-600 shadow-sm"
                     : "text-slate-600 hover:bg-slate-50"
@@ -130,7 +130,7 @@ export default function Settings() {
                   <item.icon size={18} className={activeSection === item.id ? "text-indigo-600" : "text-slate-400 group-hover:text-slate-600"} />
                   {item.title}
                 </div>
-                <ChevronRight size={14} className={cn("transition-transform", activeSection === item.id ? "translate-x-0 opacity-100" : "-translate-x-2 opacity-0")} />
+                <ChevronRight size={14} className={cn("hidden lg:block transition-transform", activeSection === item.id ? "translate-x-0 opacity-100" : "-translate-x-2 opacity-0")} />
               </button>
             ))}
           </div>

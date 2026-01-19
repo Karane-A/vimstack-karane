@@ -1,6 +1,6 @@
 import { usePage, router, Link } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
-import { Search, Bell, Settings as SettingsIcon, LogOut, User, Crown } from 'lucide-react';
+import { Search, Settings as SettingsIcon, LogOut, User, Crown } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { StoreSwitcher } from '@/components/store-switcher';
 import { useLayout } from '@/contexts/LayoutContext';
@@ -13,7 +13,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { SidebarTrigger } from '@/components/ui/sidebar';
 
 export function AppSidebarHeader() {
     const { t } = useTranslation();
@@ -31,6 +30,13 @@ export function AppSidebarHeader() {
             <div className="flex items-center gap-4">
                 {/* Sidebar trigger removed as we use mobile bottom nav */}
                 {/* <SidebarTrigger className="-ml-1 md:hidden" /> */}
+
+                {/* Mobile Logo */}
+                <div className="md:hidden">
+                    <Link href={route('dashboard')} className="flex items-center gap-2">
+                        <img src="/images/logos/app-logo.png" alt="Vimstack" className="h-6 w-auto object-contain" />
+                    </Link>
+                </div>
 
                 {/* Store Switcher for non-superadmins */}
                 {user?.type !== 'superadmin' && user?.type !== 'super admin' && !isImpersonating && (
@@ -53,7 +59,7 @@ export function AppSidebarHeader() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                    {/* View Mode Toggle for Superadmins (and Impersonating Admins) */}
+                    {/* View Mode Toggle for Superadmins (and Impersonating Admins) - Hidden on Mobile */}
                     {(user?.type === 'superadmin' || user?.type === 'super admin' || isImpersonating) && (
                         <button
                             onClick={() => {
@@ -68,7 +74,7 @@ export function AppSidebarHeader() {
                                 }
                             }}
                             className={cn(
-                                "h-9 flex items-center gap-2 px-4 rounded-xl transition-all font-bold text-[11px] uppercase tracking-wider",
+                                "hidden md:flex h-9 items-center gap-2 px-4 rounded-xl transition-all font-bold text-[11px] uppercase tracking-wider",
                                 (adminViewMode === 'admin' && !isImpersonating)
                                     ? "bg-slate-100 text-slate-600 hover:bg-slate-200"
                                     : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-200 ring-2 ring-indigo-500/20"

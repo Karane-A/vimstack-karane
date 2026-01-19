@@ -6,19 +6,19 @@ import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { router, usePage } from '@inertiajs/react';
-import { 
-  CheckCircle2, 
-  X, 
-  Pencil, 
-  Trash2, 
-  Globe, 
-  FileText, 
-  Bot, 
-  BarChart2, 
-  Mail, 
-  Box, 
-  Store, 
-  Users, 
+import {
+  CheckCircle2,
+  X,
+  Pencil,
+  Trash2,
+  Globe,
+  FileText,
+  Bot,
+  BarChart2,
+  Mail,
+  Box,
+  Store,
+  Users,
   HardDrive,
   Plus,
   Sparkles,
@@ -53,8 +53,9 @@ interface Plan {
   trial_days: number;
   features: string[];
   stats: {
-    businesses: number | string;
-    users: number | string;
+    stores: number | string;
+    users_per_store: number | string;
+    products_per_store: number | string;
     storage: string;
     templates: number | string;
   };
@@ -63,6 +64,7 @@ interface Plan {
   is_default?: boolean;
   is_current?: boolean;
   is_trial_available?: boolean;
+  paymentMethods?: any[];
 }
 
 interface Props {
@@ -86,24 +88,24 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
   const [planToDelete, setPlanToDelete] = useState<Plan | null>(null);
   const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
-  
+
   const { post, processing } = useForm();
   const lastFlashRef = useRef<string | null>(null);
-  
+
   // Flash messages are handled globally by the flash-messages.ts system
   // Removed manual handling to prevent duplicate messages
-  
+
   // Helper function to safely format currency using superadmin settings
   const formatCurrency = (amount: string | number) => {
     const numericAmount = typeof amount === 'number' ? amount : parseFloat(amount);
     return formatSuperadminCurrency(numericAmount);
   };
-  
+
   // Update plans when initialPlans changes
   useEffect(() => {
     setPlans(initialPlans);
   }, [initialPlans]);
-  
+
   // Show flash messages (disabled to prevent duplicates with global handler)
   // useEffect(() => {
   //   if (flash?.error && flash.error !== lastFlashRef.current) {
@@ -115,18 +117,18 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
   //     lastFlashRef.current = flash.success;
   //   }
   // }, [flash?.error, flash?.success]);
-  
+
   // Function to handle billing cycle change
   const handleBillingCycleChange = (value: 'monthly' | 'yearly') => {
     setBillingCycle(value);
     router.get(route('plans.index'), { billing_cycle: value }, { preserveState: true });
   };
-  
+
   // Company plan actions
   const handlePlanRequest = (planId: number) => {
     router.post(route('plans.request'), {
-      plan_id: planId, 
-      billing_cycle: billingCycle 
+      plan_id: planId,
+      billing_cycle: billingCycle
     }, {
       preserveScroll: true,
       onError: (errors) => {
@@ -138,7 +140,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
 
   const handleStartTrial = (planId: number) => {
     router.post(route('plans.trial'), {
-      plan_id: planId 
+      plan_id: planId
     }, {
       preserveScroll: true,
       onError: (errors) => {
@@ -177,7 +179,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
 
   const formatPaymentMethods = (paymentSettings: any) => {
     const methods = [];
-        
+
     if (paymentSettings?.is_bank_enabled === true || paymentSettings?.is_bank_enabled === '1') {
       methods.push({
         id: 'bank',
@@ -186,7 +188,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_stripe_enabled === true || paymentSettings?.is_stripe_enabled === '1') {
       methods.push({
         id: 'stripe',
@@ -195,7 +197,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_paypal_enabled === true || paymentSettings?.is_paypal_enabled === '1') {
       methods.push({
         id: 'paypal',
@@ -204,7 +206,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_razorpay_enabled === true || paymentSettings?.is_razorpay_enabled === '1') {
       methods.push({
         id: 'razorpay',
@@ -213,7 +215,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if ((paymentSettings?.is_mercadopago_enabled === true || paymentSettings?.is_mercadopago_enabled === '1') && paymentSettings?.mercadopago_access_token) {
       methods.push({
         id: 'mercadopago',
@@ -222,7 +224,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_paystack_enabled === true || paymentSettings?.is_paystack_enabled === '1') {
       methods.push({
         id: 'paystack',
@@ -231,7 +233,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_flutterwave_enabled === true || paymentSettings?.is_flutterwave_enabled === '1') {
       methods.push({
         id: 'flutterwave',
@@ -240,7 +242,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_paytabs_enabled === true || paymentSettings?.is_paytabs_enabled === '1') {
       methods.push({
         id: 'paytabs',
@@ -249,7 +251,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_skrill_enabled === true || paymentSettings?.is_skrill_enabled === '1') {
       methods.push({
         id: 'skrill',
@@ -258,7 +260,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_coingate_enabled === true || paymentSettings?.is_coingate_enabled === '1') {
       methods.push({
         id: 'coingate',
@@ -267,7 +269,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_payfast_enabled === true || paymentSettings?.is_payfast_enabled === '1') {
       methods.push({
         id: 'payfast',
@@ -276,7 +278,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_tap_enabled === true || paymentSettings?.is_tap_enabled === '1') {
       methods.push({
         id: 'tap',
@@ -285,7 +287,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_xendit_enabled === true || paymentSettings?.is_xendit_enabled === '1') {
       methods.push({
         id: 'xendit',
@@ -294,7 +296,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_paytr_enabled === true || paymentSettings?.is_paytr_enabled === '1') {
       methods.push({
         id: 'paytr',
@@ -303,7 +305,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_mollie_enabled === true || paymentSettings?.is_mollie_enabled === '1') {
       methods.push({
         id: 'mollie',
@@ -312,7 +314,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_toyyibpay_enabled === true || paymentSettings?.is_toyyibpay_enabled === '1') {
       methods.push({
         id: 'toyyibpay',
@@ -321,7 +323,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_cashfree_enabled === true || paymentSettings?.is_cashfree_enabled === '1') {
       methods.push({
         id: 'cashfree',
@@ -330,7 +332,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_khalti_enabled === true || paymentSettings?.is_khalti_enabled === '1') {
       methods.push({
         id: 'khalti',
@@ -339,7 +341,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-        
+
     if (paymentSettings?.is_iyzipay_enabled === true || paymentSettings?.is_iyzipay_enabled === '1') {
       methods.push({
         id: 'iyzipay',
@@ -348,7 +350,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_benefit_enabled === true || paymentSettings?.is_benefit_enabled === '1') {
       methods.push({
         id: 'benefit',
@@ -357,7 +359,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_ozow_enabled === true || paymentSettings?.is_ozow_enabled === '1') {
       methods.push({
         id: 'ozow',
@@ -366,7 +368,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_easebuzz_enabled === true || paymentSettings?.is_easebuzz_enabled === '1') {
       methods.push({
         id: 'easebuzz',
@@ -375,7 +377,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_authorizenet_enabled === true || paymentSettings?.is_authorizenet_enabled === '1') {
       methods.push({
         id: 'authorizenet',
@@ -384,7 +386,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_fedapay_enabled === true || paymentSettings?.is_fedapay_enabled === '1') {
       methods.push({
         id: 'fedapay',
@@ -393,7 +395,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_payhere_enabled === true || paymentSettings?.is_payhere_enabled === '1') {
       methods.push({
         id: 'payhere',
@@ -402,7 +404,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_cinetpay_enabled === true || paymentSettings?.is_cinetpay_enabled === '1') {
       methods.push({
         id: 'cinetpay',
@@ -411,7 +413,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_paiement_enabled === true || paymentSettings?.is_paiement_enabled === '1') {
       methods.push({
         id: 'paiement',
@@ -420,7 +422,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_nepalste_enabled === true || paymentSettings?.is_nepalste_enabled === '1') {
       methods.push({
         id: 'nepalste',
@@ -429,7 +431,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_yookassa_enabled === true || paymentSettings?.is_yookassa_enabled === '1') {
       methods.push({
         id: 'yookassa',
@@ -438,7 +440,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_aamarpay_enabled === true || paymentSettings?.is_aamarpay_enabled === '1') {
       methods.push({
         id: 'aamarpay',
@@ -447,7 +449,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_midtrans_enabled === true || paymentSettings?.is_midtrans_enabled === '1') {
       methods.push({
         id: 'midtrans',
@@ -456,7 +458,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_paymentwall_enabled === true || paymentSettings?.is_paymentwall_enabled === '1') {
       methods.push({
         id: 'paymentwall',
@@ -465,7 +467,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     if (paymentSettings?.is_sspay_enabled === true || paymentSettings?.is_sspay_enabled === '1') {
       methods.push({
         id: 'sspay',
@@ -474,10 +476,10 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         enabled: true
       });
     }
-    
+
     return methods;
   };
-  
+
   const getActionButton = (plan: Plan) => {
     // Check if user has active subscription to this plan
     if (currentPlan && currentPlan.id === plan.id && currentPlan.expires_at && new Date(currentPlan.expires_at) > new Date()) {
@@ -488,7 +490,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
         </Button>
       );
     }
-    
+
     if (plan.is_current) {
       return (
         <Button disabled className="w-full">
@@ -546,8 +548,8 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
             disabled={processing || (currentPlan && currentPlan.id === plan.id && currentPlan.expires_at && new Date(currentPlan.expires_at) > new Date())}
             className="w-full"
           >
-            {currentPlan && currentPlan.id === plan.id && currentPlan.expires_at && new Date(currentPlan.expires_at) > new Date() 
-              ? t('Already Subscribed') 
+            {currentPlan && currentPlan.id === plan.id && currentPlan.expires_at && new Date(currentPlan.expires_at) > new Date()
+              ? t('Already Subscribed')
               : t('Subscribe Now')
             }
           </Button>
@@ -560,7 +562,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
       </div>
     );
   };
-  
+
   // Function to get the appropriate icon for a feature
   const getFeatureIcon = (feature: string) => {
     switch (feature) {
@@ -593,7 +595,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
   const isFeatureIncluded = (plan: Plan, feature: string) => {
     return plan.features.includes(feature);
   };
-  
+
   // Function to toggle plan status
   const togglePlanStatus = (planId: number) => {
     // Send request to toggle plan status
@@ -601,13 +603,13 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
       preserveState: true
     });
   };
-  
+
   // Function to handle delete
   const handleDelete = (plan: Plan) => {
     setPlanToDelete(plan);
     setIsDeleteModalOpen(true);
   };
-  
+
   // Function to handle delete confirmation
   const handleDeleteConfirm = () => {
     if (planToDelete) {
@@ -641,73 +643,76 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
   };
 
   return (
-    <PageTemplate 
+    <PageTemplate
       title={t("Plans")}
       description={t("Manage subscription plans for your customers")}
       url="/plans"
     >
       <div className="space-y-8">
         {/* Header with controls */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        {/* Header with controls */}
+        <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-6">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight mb-2">
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 text-slate-900">
               {isAdmin ? t("Subscription Plans") : t("Choose Your Plan")}
             </h1>
-            <p className="text-muted-foreground max-w-2xl">
-              {isAdmin 
-                ? t("Create and manage subscription plans to offer different service tiers to your customers.") 
+            <p className="text-slate-500 max-w-2xl text-sm md:text-base">
+              {isAdmin
+                ? t("Create and manage subscription plans to offer different service tiers to your customers.")
                 : t("Select the perfect plan for your business needs")
               }
             </p>
             {/* Active Plans Count */}
-            <div className="flex items-center gap-2 mt-3">
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium">
-                <Package className="h-4 w-4" />
+            <div className="flex items-center gap-2 mt-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded-full text-xs font-bold uppercase tracking-wide border border-indigo-100">
+                <Package className="h-3.5 w-3.5" />
                 <span>{t("Active Plans")}: {activePlansCount}</span>
               </div>
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <Tabs 
-              value={billingCycle} 
-              onValueChange={(v) => handleBillingCycleChange(v as 'monthly' | 'yearly')} 
-              className="w-full sm:w-[400px]"
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 xl:self-start">
+            <Tabs
+              value={billingCycle}
+              onValueChange={(v) => handleBillingCycleChange(v as 'monthly' | 'yearly')}
+              className="w-full sm:w-[350px]"
             >
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="monthly">{t("Monthly")}</TabsTrigger>
-                <TabsTrigger value="yearly">
-                  {t("Yearly")} 
-                  <Badge variant="outline" className="ml-2 bg-green-100 text-green-800 border-green-200">
-                    {t("Save 20%")}
+              <TabsList className="grid w-full grid-cols-2 h-11 p-1 bg-slate-100/80 rounded-xl">
+                <TabsTrigger value="monthly" className="rounded-lg font-bold text-xs data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm text-slate-500">{t("Monthly")}</TabsTrigger>
+                <TabsTrigger value="yearly" className="rounded-lg font-bold text-xs data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm text-slate-500">
+                  {t("Yearly")}
+                  <Badge variant="outline" className="ml-1.5 bg-emerald-100 text-emerald-700 border-emerald-200 text-[9px] px-1 py-0 h-4 min-w-min">
+                    -20%
                   </Badge>
                 </TabsTrigger>
               </TabsList>
             </Tabs>
             <Permission permission="create-plans">
-              <Button className="w-full sm:w-auto" onClick={() => router.get(route('plans.create'))}>
+              <Button
+                className="h-11 rounded-xl bg-indigo-600 hover:bg-indigo-700 font-bold shadow-lg shadow-indigo-100 w-full sm:w-auto"
+                onClick={() => router.get(route('plans.create'))}
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 {t("Add Plan")}
               </Button>
             </Permission>
           </div>
         </div>
-        
+
         {/* Plans grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 md:gap-8">
           {plans.map((plan) => (
-            <div 
-              key={plan.id} 
-              className={`group relative h-full flex flex-col ${
-                plan.recommended 
-                  ? 'z-10 scale-[1.02]' 
-                  : ''
-              }`}
+            <div
+              key={plan.id}
+              className={`group relative h-full flex flex-col ${plan.recommended
+                ? 'z-10 scale-[1.02]'
+                : ''
+                }`}
             >
               {/* Card with decorative elements */}
               <div className={`
                 absolute inset-0 rounded-2xl 
-                ${plan.recommended 
-                  ? 'bg-gradient-to-br from-primary/20 via-primary/10 to-transparent border-primary/30' 
+                ${plan.recommended
+                  ? 'bg-gradient-to-br from-primary/20 via-primary/10 to-transparent border-primary/30'
                   : 'bg-gradient-to-br from-gray-100/80 via-gray-50/50 to-transparent border-gray-200/80'
                 } 
                 border shadow-lg transition-all duration-300 
@@ -718,7 +723,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/10 to-transparent rounded-full -mr-16 -mt-16 opacity-70"></div>
                 <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-primary/10 to-transparent rounded-full -ml-12 -mb-12 opacity-50"></div>
               </div>
-              
+
               {/* Recommended indicator */}
               {plan.recommended && (
                 <div className="absolute -top-4 left-0 right-0 flex justify-center z-20">
@@ -728,7 +733,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
                   </div>
                 </div>
               )}
-              
+
               {/* Status indicator - Admin only */}
               {isAdmin && (
                 <div className="absolute top-4 right-4 z-10 flex gap-2">
@@ -739,8 +744,8 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
                   )}
                   <div className={`
                     flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium
-                    ${plan.status 
-                      ? 'bg-emerald-100 text-emerald-700' 
+                    ${plan.status
+                      ? 'bg-emerald-100 text-emerald-700'
                       : 'bg-red-100 text-red-700'
                     }
                   `}>
@@ -752,7 +757,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
                   </div>
                 </div>
               )}
-              
+
               {/* Current plan indicator - Company only */}
               {!isAdmin && plan.is_current && (
                 <div className="absolute top-4 right-4 z-10">
@@ -762,7 +767,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
                   </div>
                 </div>
               )}
-              
+
               {/* Content container */}
               <div className="relative z-10 flex flex-col h-full p-6 pt-8">
                 {/* Plan header */}
@@ -794,7 +799,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
                     </div>
                   )}
                 </div>
-                
+
                 {/* Divider with icon */}
                 <div className="relative flex items-center my-4">
                   <div className="flex-grow border-t border-gray-200"></div>
@@ -803,7 +808,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
                   </div>
                   <div className="flex-grow border-t border-gray-200"></div>
                 </div>
-                
+
                 {/* Features */}
                 <div className="mb-6 flex-1">
                   <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">
@@ -831,7 +836,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
                     })}
                   </ul>
                 </div>
-                
+
                 {/* Usage limits */}
                 <div className="mb-6">
                   <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">
@@ -912,14 +917,14 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Actions */}
                 <div className="mt-auto pt-4 border-t border-gray-200">
                   <Permission permission="manage-plans" fallback={getActionButton(plan)}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <Switch 
-                          checked={plan.status} 
+                        <Switch
+                          checked={plan.status}
                           onCheckedChange={() => togglePlanStatus(plan.id)}
                           className={plan.status ? "data-[state=checked]:bg-primary" : ""}
                         />
@@ -929,8 +934,8 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
                       </div>
                       <div className="flex items-center gap-2">
                         <Permission permission="edit-plans">
-                          <Button 
-                            variant="outline" 
+                          <Button
+                            variant="outline"
                             size="sm"
                             className="h-9 w-9 p-0 border-gray-200 hover:border-primary hover:text-primary"
                             title={t("Edit")}
@@ -939,11 +944,11 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
                             <Pencil className="h-4 w-4" />
                           </Button>
                         </Permission>
-                        
+
                         {!plan.is_default && (
                           <Permission permission="delete-plans">
-                            <Button 
-                              variant="outline" 
+                            <Button
+                              variant="outline"
                               size="sm"
                               className="h-9 w-9 p-0 border-gray-200 hover:border-red-400 hover:text-red-600"
                               title={t("Delete")}
@@ -961,7 +966,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
             </div>
           ))}
         </div>
-        
+
         {/* Delete Modal - Admin only */}
         {isAdmin && (
           <CrudDeleteModal
@@ -972,7 +977,7 @@ export default function Plans({ plans: initialPlans, billingCycle: initialBillin
             entityName="plan"
           />
         )}
-        
+
         {/* Subscription Modal - Company only */}
         {!isAdmin && selectedPlan && (
           <PlanSubscriptionModal

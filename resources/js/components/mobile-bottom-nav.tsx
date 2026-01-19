@@ -1,17 +1,21 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Home, ShoppingCart, Package, Menu } from 'lucide-react';
+import { Home, ShoppingCart, Package, Menu, Building2, LayoutPanelLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { useNavigationItems } from '@/hooks/use-navigation-items';
 import { NavMain } from '@/components/nav-main';
+import { useLayout } from '@/contexts/LayoutContext';
 
 export function MobileBottomNav() {
     const { t } = useTranslation();
     const { url } = usePage();
+    const { adminViewMode } = useLayout();
     const navigationItems = useNavigationItems();
 
-    const navItems = [
+    const isCompanyView = adminViewMode === 'company';
+
+    const navItems = isCompanyView ? [
         {
             title: t('Home'),
             href: route('dashboard'),
@@ -29,6 +33,25 @@ export function MobileBottomNav() {
             href: route('products.index'),
             icon: Package,
             isActive: url.startsWith('/products')
+        },
+    ] : [
+        {
+            title: t('Home'),
+            href: route('dashboard'),
+            icon: Home,
+            isActive: url === '/dashboard'
+        },
+        {
+            title: t('Companies'),
+            href: route('companies.index'),
+            icon: Building2,
+            isActive: url.startsWith('/companies')
+        },
+        {
+            title: t('Plans'),
+            href: route('plans.index'),
+            icon: LayoutPanelLeft,
+            isActive: url.startsWith('/plans')
         },
     ];
 

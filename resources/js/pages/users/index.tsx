@@ -19,6 +19,7 @@ import { CrudDeleteModal } from '@/components/CrudDeleteModal';
 import { toast } from '@/components/custom-toast';
 import { useInitials } from '@/hooks/use-initials';
 import { useTranslation } from 'react-i18next';
+import { cn } from '@/lib/utils';
 
 export default function Users() {
   const { t } = useTranslation();
@@ -26,7 +27,7 @@ export default function Users() {
   const permissions = auth?.permissions || [];
   const { hasPermission: checkPermission, canPerformCrudOperation } = usePermissions();
   const getInitials = useInitials();
-  
+
   // State
   const [activeView, setActiveView] = useState('list');
   const [searchTerm, setSearchTerm] = useState(pageFilters.search || '');
@@ -37,91 +38,91 @@ export default function Users() {
   const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] = useState(false);
   const [currentItem, setCurrentItem] = useState<any>(null);
   const [formMode, setFormMode] = useState<'create' | 'edit' | 'view'>('create');
-  
+
   // Check if any filters are active
   const hasActiveFilters = () => {
     return selectedRole !== 'all' || searchTerm !== '';
   };
-  
+
   // Count active filters
   const activeFilterCount = () => {
     return (selectedRole !== 'all' ? 1 : 0) + (searchTerm ? 1 : 0);
   };
-  
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     applyFilters();
   };
-  
+
   const applyFilters = () => {
     const params: any = { page: 1 };
-    
+
     if (searchTerm) {
       params.search = searchTerm;
     }
-    
+
     if (selectedRole !== 'all') {
       params.role = selectedRole;
     }
-    
+
     // Add per_page if it exists
     if (pageFilters.per_page) {
       params.per_page = pageFilters.per_page;
     }
-    
+
     router.get(route('users.index'), params, { preserveState: true, preserveScroll: true });
   };
-  
+
   const handleRoleFilter = (value: string) => {
     setSelectedRole(value);
-    
+
     const params: any = { page: 1 };
-    
+
     if (searchTerm) {
       params.search = searchTerm;
     }
-    
+
     if (value !== 'all') {
       params.role = value;
     }
-    
+
     // Add per_page if it exists
     if (pageFilters.per_page) {
       params.per_page = pageFilters.per_page;
     }
-    
+
     router.get(route('users.index'), params, { preserveState: true, preserveScroll: true });
   };
-  
+
   const handleSort = (field: string) => {
     const direction = pageFilters.sort_field === field && pageFilters.sort_direction === 'asc' ? 'desc' : 'asc';
-    
-    const params: any = { 
-      sort_field: field, 
-      sort_direction: direction, 
-      page: 1 
+
+    const params: any = {
+      sort_field: field,
+      sort_direction: direction,
+      page: 1
     };
-    
+
     // Add search and filters
     if (searchTerm) {
       params.search = searchTerm;
     }
-    
+
     if (selectedRole !== 'all') {
       params.role = selectedRole;
     }
-    
+
     // Add per_page if it exists
     if (pageFilters.per_page) {
       params.per_page = pageFilters.per_page;
     }
-    
+
     router.get(route('users.index'), params, { preserveState: true, preserveScroll: true });
   };
-  
+
   const handleAction = (action: string, item: any) => {
     setCurrentItem(item);
-    
+
     switch (action) {
       case 'view':
         setFormMode('view');
@@ -144,22 +145,22 @@ export default function Users() {
         break;
     }
   };
-  
+
   const handleAddNew = () => {
     setCurrentItem(null);
     setFormMode('create');
     setIsFormModalOpen(true);
   };
-  
+
   const handleFormSubmit = (formData: any) => {
     // Keep roles as single string value, not array
     if (formData.roles && Array.isArray(formData.roles)) {
       formData.roles = formData.roles[0];
     }
-    
+
     if (formMode === 'create') {
       toast.loading(t('Creating user...'));
-      
+
       router.post(route('users.store'), formData, {
         onSuccess: () => {
           setIsFormModalOpen(false);
@@ -173,7 +174,7 @@ export default function Users() {
       });
     } else if (formMode === 'edit') {
       toast.loading(t('Updating user...'));
-      
+
       router.put(route("users.update", currentItem.id), formData, {
         onSuccess: () => {
           setIsFormModalOpen(false);
@@ -187,10 +188,10 @@ export default function Users() {
       });
     }
   };
-  
+
   const handleDeleteConfirm = () => {
     toast.loading(t('Deleting user...'));
-    
+
     router.delete(route("users.destroy", currentItem.id), {
       onSuccess: () => {
         setIsDeleteModalOpen(false);
@@ -203,10 +204,10 @@ export default function Users() {
       }
     });
   };
-  
+
   const handleResetPasswordConfirm = (data: { password: string, password_confirmation: string }) => {
     toast.loading(t('Resetting password...'));
-    
+
     router.put(route('users.reset-password', currentItem.id), data, {
       onSuccess: () => {
         setIsResetPasswordModalOpen(false);
@@ -219,11 +220,11 @@ export default function Users() {
       }
     });
   };
-  
+
   const handleToggleStatus = (user: any) => {
     const newStatus = user.status === 'active' ? 'inactive' : 'active';
     toast.loading(`${newStatus === 'active' ? t('Activating') : t('Deactivating')} user...`);
-    
+
     router.put(route('users.toggle-status', user.id), {}, {
       onSuccess: () => {
         toast.dismiss();
@@ -235,21 +236,21 @@ export default function Users() {
       }
     });
   };
-  
+
   const handleResetFilters = () => {
     setSelectedRole('all');
     setSearchTerm('');
     setShowFilters(false);
-    
-    router.get(route('users.index'), { 
-      page: 1, 
-      per_page: pageFilters.per_page 
+
+    router.get(route('users.index'), {
+      page: 1,
+      per_page: pageFilters.per_page
     }, { preserveState: true, preserveScroll: true });
   };
 
   // Define page actions
   const pageActions = [];
-  
+
   // Add the "Add New User" button if user has permission and within limits
   if (checkPermission('create-users')) {
     const canCreate = !planLimits || planLimits.can_create;
@@ -270,9 +271,9 @@ export default function Users() {
 
   // Define table columns
   const columns = [
-    { 
-      key: 'name', 
-      label: t('Name'), 
+    {
+      key: 'name',
+      label: t('Name'),
       sortable: true,
       render: (value: any, row: any) => {
         return (
@@ -288,20 +289,20 @@ export default function Users() {
         );
       }
     },
-    { 
-      key: 'roles', 
+    {
+      key: 'roles',
       label: t('Roles'),
       render: (value: any) => {
         if (!value || !value.length) return <span className="text-muted-foreground">No roles assigned</span>;
-        
+
         return value.map((role: any) => {
           return <span key={role.id} className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 mr-1">{role.label || role.name}</span>;
         });
       }
     },
-    { 
-      key: 'created_at', 
-      label: t('Joined'), 
+    {
+      key: 'created_at',
+      label: t('Joined'),
       sortable: true,
       render: (value: string) => window.appSettings?.formatDateTime(value, false) || new Date(value).toLocaleDateString()
     }
@@ -309,147 +310,153 @@ export default function Users() {
 
   // Define table actions
   const actions = [
-    { 
-      label: t('View'), 
-      icon: 'Eye', 
-      action: 'view', 
+    {
+      label: t('View'),
+      icon: 'Eye',
+      action: 'view',
       className: 'text-blue-500',
       requiredPermission: 'view-users'
     },
-    { 
-      label: t('Edit'), 
-      icon: 'Edit', 
-      action: 'edit', 
+    {
+      label: t('Edit'),
+      icon: 'Edit',
+      action: 'edit',
       className: 'text-amber-500',
       requiredPermission: 'edit-users'
     },
-    { 
-      label: t('Reset Password'), 
-      icon: 'KeyRound', 
-      action: 'reset-password', 
+    {
+      label: t('Reset Password'),
+      icon: 'KeyRound',
+      action: 'reset-password',
       className: 'text-blue-500',
       requiredPermission: 'reset-password-users'
     },
-    { 
-      label: t('Toggle Status'), 
-      icon: 'Lock', 
-      action: 'toggle-status', 
+    {
+      label: t('Toggle Status'),
+      icon: 'Lock',
+      action: 'toggle-status',
       className: 'text-amber-500',
       requiredPermission: 'toggle-status-users'
     },
-    { 
-      label: t('Delete'), 
-      icon: 'Trash2', 
-      action: 'delete', 
+    {
+      label: t('Delete'),
+      icon: 'Trash2',
+      action: 'delete',
       className: 'text-red-500',
       requiredPermission: 'delete-users'
     }
   ];
 
   return (
-    <PageTemplate 
-      title={t("Users Management")} 
+    <PageTemplate
+      title={t("Users Management")}
+      description={t("Manage system users and their roles")}
       url="/users"
-      actions={pageActions}
+      actions={pageActions as any}
       breadcrumbs={breadcrumbs}
       noPadding
     >
       {/* Search and filters section */}
-      <div className="bg-white rounded-lg shadow mb-4">
-        <div className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <form onSubmit={handleSearch} className="flex gap-2">
-                <div className="relative w-64">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 mb-6 overflow-hidden">
+        <div className="p-4 sm:p-6">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <form onSubmit={handleSearch} className="flex flex-1 gap-2">
+                <div className="relative flex-1 group">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
                   <Input
                     placeholder={t("Search users...")}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-9"
+                    className="w-full pl-10 h-11 rounded-xl border-slate-200 focus:ring-indigo-600 focus:border-indigo-600"
                   />
                 </div>
-                <Button type="submit" size="sm">
-                  <Search className="h-4 w-4 mr-1.5" />
-                  {t("Search")}
+                <Button type="submit" className="h-11 rounded-xl bg-indigo-600 hover:bg-indigo-700 px-6 font-bold shadow-lg shadow-indigo-100">
+                  <Search className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">{t("Search")}</span>
                 </Button>
               </form>
-              
-              <div className="ml-2">
-                <Button 
-                  variant={hasActiveFilters() ? "default" : "outline"}
-                  size="sm" 
-                  className="h-8 px-2 py-1"
-                  onClick={() => setShowFilters(!showFilters)}
-                >
-                  <Filter className="h-3.5 w-3.5 mr-1.5" />
-                  {showFilters ? 'Hide Filters' : 'Filters'}
-                  {hasActiveFilters() && (
-                    <span className="ml-1 bg-primary-foreground text-primary rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                      {activeFilterCount()}
-                    </span>
-                  )}
-                </Button>
-              </div>
+
+              <Button
+                variant={hasActiveFilters() ? "default" : "outline"}
+                className={cn(
+                  "h-11 px-4 rounded-xl flex items-center justify-center gap-2 font-bold transition-all",
+                  hasActiveFilters() ? "bg-indigo-600 shadow-lg shadow-indigo-100 border-indigo-600" : "border-slate-200 text-slate-600"
+                )}
+                onClick={() => setShowFilters(!showFilters)}
+              >
+                <Filter className="h-4 w-4" />
+                <span className="text-sm">{showFilters ? t('Hide Filters') : t('Filters')}</span>
+                {hasActiveFilters() && (
+                  <span className="ml-1 bg-white text-indigo-600 rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-black">
+                    {activeFilterCount()}
+                  </span>
+                )}
+              </Button>
             </div>
-            
-            <div className="flex items-center gap-2">
-              <div className="border rounded-md p-0.5 mr-2">
-                <Button 
-                  size="sm" 
+
+            <div className="hidden lg:flex items-center gap-4">
+              <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+                <Button
+                  size="sm"
                   variant={activeView === 'list' ? "default" : "ghost"}
-                  className="h-7 px-2"
+                  className={cn(
+                    "h-8 px-4 rounded-lg text-xs font-bold transition-all",
+                    activeView === 'list' ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-900"
+                  )}
                   onClick={() => setActiveView('list')}
                 >
-                  <List className="h-4 w-4" />
+                  <List className="h-4 w-4 mr-2" />
+                  {t('List')}
                 </Button>
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   variant={activeView === 'grid' ? "default" : "ghost"}
-                  className="h-7 px-2"
+                  className={cn(
+                    "h-8 px-4 rounded-lg text-xs font-bold transition-all",
+                    activeView === 'grid' ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-900"
+                  )}
                   onClick={() => setActiveView('grid')}
                 >
-                  <LayoutGrid className="h-4 w-4" />
+                  <LayoutGrid className="h-4 w-4 mr-2" />
+                  {t('Grid')}
                 </Button>
               </div>
-              
-              <Label className="text-xs text-muted-foreground">{t("Per Page:")}</Label>
-              <Select 
-                value={pageFilters.per_page?.toString() || "10"} 
-                onValueChange={(value) => {
-                  const params: any = { page: 1, per_page: parseInt(value) };
-                  
-                  if (searchTerm) {
-                    params.search = searchTerm;
-                  }
-                  
-                  if (selectedRole !== 'all') {
-                    params.role = selectedRole;
-                  }
-                  
-                  router.get(route('users.index'), params, { preserveState: true, preserveScroll: true });
-                }}
-              >
-                <SelectTrigger className="w-16 h-8">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="25">25</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
-                  <SelectItem value="100">100</SelectItem>
-                </SelectContent>
-              </Select>
+
+              <div className="h-8 w-[1px] bg-slate-200"></div>
+
+              <div className="flex items-center gap-3">
+                <Label className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t("Show")}</Label>
+                <Select
+                  value={pageFilters.per_page?.toString() || "10"}
+                  onValueChange={(value) => {
+                    const params: any = { page: 1, per_page: parseInt(value) };
+                    if (searchTerm) params.search = searchTerm;
+                    if (selectedRole !== 'all') params.role = selectedRole;
+                    router.get(route('users.index'), params, { preserveState: true, preserveScroll: true });
+                  }}
+                >
+                  <SelectTrigger className="w-20 h-10 rounded-xl border-slate-200 focus:ring-indigo-600">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl">
+                    <SelectItem value="10" className="rounded-lg">10</SelectItem>
+                    <SelectItem value="25" className="rounded-lg">25</SelectItem>
+                    <SelectItem value="50" className="rounded-lg">50</SelectItem>
+                    <SelectItem value="100" className="rounded-lg">100</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
-          
+
           {showFilters && (
             <div className="w-full mt-3 p-4 bg-gray-50 border rounded-md">
               <div className="flex flex-wrap gap-4 items-end">
                 <div className="space-y-2">
                   <Label>{t("Role")}</Label>
-                  <Select 
-                    value={selectedRole} 
+                  <Select
+                    value={selectedRole}
                     onValueChange={handleRoleFilter}
                   >
                     <SelectTrigger className="w-40">
@@ -465,9 +472,9 @@ export default function Users() {
                     </SelectContent>
                   </Select>
                 </div>
-                
-                <Button 
-                  variant="outline" 
+
+                <Button
+                  variant="outline"
                   size="sm"
                   className="h-9"
                   onClick={handleResetFilters}
@@ -496,7 +503,6 @@ export default function Users() {
             permissions={permissions}
             entityPermissions={{
               view: 'view-users',
-              create: 'create-users',
               edit: 'edit-users',
               delete: 'delete-users'
             }}
@@ -507,13 +513,13 @@ export default function Users() {
             <div className="text-sm text-muted-foreground">
               {t("Showing")} <span className="font-medium">{users?.from || 0}</span> {t("to")} <span className="font-medium">{users?.to || 0}</span> {t("of")} <span className="font-medium">{users?.total || 0}</span> {t("users")}
             </div>
-            
+
             <div className="flex gap-1">
               {users?.links?.map((link: any, i: number) => {
                 // Check if the link is "Next" or "Previous" to use text instead of icon
                 const isTextLink = link.label === "&laquo; Previous" || link.label === "Next &raquo;";
                 const label = link.label.replace("&laquo; ", "").replace(" &raquo;", "");
-                
+
                 return (
                   <Button
                     key={i}
@@ -569,9 +575,9 @@ export default function Users() {
                   <Permission permission="view-users">
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => handleAction('view', user)}
                           className="text-blue-500 hover:text-blue-700"
                         >
@@ -584,9 +590,9 @@ export default function Users() {
                   <Permission permission="edit-users">
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => handleAction('edit', user)}
                           className="text-amber-500 hover:text-amber-700"
                         >
@@ -599,9 +605,9 @@ export default function Users() {
                   <Permission permission="reset-password-users">
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => handleAction('reset-password', user)}
                           className="text-blue-500 hover:text-blue-700"
                         >
@@ -614,9 +620,9 @@ export default function Users() {
                   <Permission permission="toggle-status-users">
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => handleAction('toggle-status', user)}
                           className="text-amber-500 hover:text-amber-700"
                         >
@@ -629,8 +635,8 @@ export default function Users() {
                   <Permission permission="delete-users">
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button 
-                          variant="ghost" 
+                        <Button
+                          variant="ghost"
                           size="icon"
                           className="text-red-500 hover:text-red-700"
                           onClick={() => handleAction('delete', user)}
@@ -645,18 +651,18 @@ export default function Users() {
               </Card>
             ))}
           </div>
-          
+
           {/* Pagination for grid view */}
           <div className="mt-6 bg-white p-4 rounded-lg shadow flex items-center justify-between">
             <div className="text-sm text-muted-foreground">
               {t("Showing")} <span className="font-medium">{users?.from || 0}</span> {t("to")} <span className="font-medium">{users?.to || 0}</span> {t("of")} <span className="font-medium">{users?.total || 0}</span> {t("users")}
             </div>
-            
+
             <div className="flex gap-1">
               {users?.links?.map((link: any, i: number) => {
                 const isTextLink = link.label === "&laquo; Previous" || link.label === "Next &raquo;";
                 const label = link.label.replace("&laquo; ", "").replace(" &raquo;", "");
-                
+
                 return (
                   <Button
                     key={i}
@@ -684,24 +690,24 @@ export default function Users() {
           fields: [
             { name: 'name', label: t('Name'), type: 'text', required: true },
             { name: 'email', label: t('Email'), type: 'email', required: true },
-            { 
-              name: 'password', 
-              label: t('Password'), 
+            {
+              name: 'password',
+              label: t('Password'),
               type: 'password',
               required: true,
               conditional: (mode) => mode === 'create'
             },
-            { 
-              name: 'password_confirmation', 
-              label: t('Confirm Password'), 
+            {
+              name: 'password_confirmation',
+              label: t('Confirm Password'),
               type: 'password',
               required: true,
               conditional: (mode) => mode === 'create'
             },
-            { 
-              name: 'roles', 
-              label: t('Role'), 
-              type: 'select', 
+            {
+              name: 'roles',
+              label: t('Role'),
+              type: 'select',
               options: roles ? roles.map((role: any) => ({
                 value: role.id.toString(),
                 label: role.label || role.name
@@ -716,10 +722,10 @@ export default function Users() {
           roles: currentItem.roles && currentItem.roles.length > 0 ? currentItem.roles[0].id.toString() : ''
         } : null}
         title={
-          formMode === 'create' 
-            ? t('Add New User') 
-            : formMode === 'edit' 
-              ? t('Edit User') 
+          formMode === 'create'
+            ? t('Add New User')
+            : formMode === 'edit'
+              ? t('Edit User')
               : t('View User')
         }
         mode={formMode}
