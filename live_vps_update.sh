@@ -6,7 +6,7 @@
 set -e
 
 # Configuration
-PROJECT_ROOT="/home/yourdomain.com/public_html" # UPDATE THIS if different
+PROJECT_ROOT=$(pwd) # Automatically detects the current directory
 
 # Move to project root
 cd "$PROJECT_ROOT"
