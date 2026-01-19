@@ -28,6 +28,8 @@ npm install
 
 # 3. Build production assets
 echo "✨ Building production assets..."
+# Fix permissions for node_modules binaries (common on some VPS)
+chmod -R +x node_modules/.bin
 npm run build
 
 # 4. Clear/Reset Caches
