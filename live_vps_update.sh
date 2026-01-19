@@ -27,9 +27,10 @@ echo "🏗️ Updating Node dependencies..."
 npm install
 
 # 3. Build production assets
-echo "✨ Building production assets..."
-# Fix permissions for node_modules binaries (common on some VPS)
-chmod -R +x node_modules/.bin
+echo "✨ Fixing permissions and building production assets..."
+# Aggressively fix permissions for all binaries in node_modules
+chmod -R +x node_modules/.bin/
+[ -f node_modules/.bin/vite ] && chmod +x node_modules/.bin/vite
 npm run build
 
 # 4. Clear/Reset Caches
