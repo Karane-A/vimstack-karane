@@ -102,8 +102,8 @@ export default function CreateProduct() {
       </div>
 
       <Tabs defaultValue="general" className="w-full">
-        <div className="bg-white p-2 rounded-2xl border border-slate-200 mb-8 inline-block shadow-sm">
-          <TabsList className="bg-transparent gap-2 h-auto p-0">
+        <div className="bg-white p-1 rounded-2xl border border-slate-200 mb-8 shadow-sm overflow-hidden">
+          <TabsList className="bg-transparent gap-1 h-auto p-0 w-full justify-start">
             {[
               { id: 'general', label: t('General'), icon: Package },
               { id: 'pricing', label: t('Pricing'), icon: DollarSign },
@@ -115,9 +115,9 @@ export default function CreateProduct() {
               <TabsTrigger
                 key={tab.id}
                 value={tab.id}
-                className="rounded-xl px-6 py-3 data-[state=active]:bg-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-md transition-all font-bold gap-2 text-slate-500 hover:text-slate-900"
+                className="rounded-xl px-4 py-2.5 data-[state=active]:bg-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-md transition-all font-bold gap-2 text-slate-500 hover:text-slate-900 text-xs sm:text-sm whitespace-nowrap"
               >
-                <tab.icon size={16} />
+                <tab.icon size={14} className="sm:size-4" />
                 {tab.label}
               </TabsTrigger>
             ))}

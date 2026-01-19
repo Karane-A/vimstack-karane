@@ -16,6 +16,7 @@ import VariantSelector from './components/VariantSelector';
 import { formatCurrency } from '@/utils/helpers';
 import { Permission } from '@/components/Permission';
 import { usePermissions } from '@/hooks/usePermissions';
+import { cn } from '@/lib/utils';
 
 export default function POS() {
   const { t } = useTranslation();
@@ -23,7 +24,7 @@ export default function POS() {
   const [cart, setCart] = useState<any[]>([]);
 
   const { hasPermission } = usePermissions();
-  
+
   // Load cart from localStorage on component mount
   useEffect(() => {
     const savedCart = localStorage.getItem('pos_cart');
@@ -35,7 +36,7 @@ export default function POS() {
         localStorage.removeItem('pos_cart');
       }
     }
-    
+
     // Load selected customer
     const savedCustomer = localStorage.getItem('pos_customer');
     if (savedCustomer) {
@@ -48,7 +49,7 @@ export default function POS() {
       }
     }
   }, []);
-  
+
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState('walk-in');
@@ -57,7 +58,7 @@ export default function POS() {
   const [showVariantDialog, setShowVariantDialog] = useState(false);
   const [savedCarts, setSavedCarts] = useState<any[]>([]);
   const [showSavedCarts, setShowSavedCarts] = useState(false);
-  
+
   // Load saved carts from localStorage
   useEffect(() => {
     const saved = localStorage.getItem('pos_saved_carts');
@@ -66,7 +67,7 @@ export default function POS() {
     }
   }, []);
 
-  const handleCustomerChange = (customerId) => {
+  const handleCustomerChange = (customerId: any) => {
     setSelectedCustomer(customerId);
     const customer = customers.find(c => c.id === customerId);
     if (customer) {
@@ -82,41 +83,41 @@ export default function POS() {
       alert(t('This product is out of stock'));
       return;
     }
-    
+
     if (product.hasVariants && !variant) {
       setSelectedProduct(product);
       setShowVariantDialog(true);
       return;
     }
-    
+
     const itemId = variant ? variant.id : product.id;
     const itemPrice = variant ? variant.price : product.price;
     const itemName = variant ? `${product.name} (${variant.name})` : product.name;
-    
+
     const existingItem = cart.find(item => item.id === itemId);
     let updatedCart;
-    
+
     if (existingItem) {
-      updatedCart = cart.map(item => 
-        item.id === itemId 
-          ? { ...item, quantity: item.quantity + 1 } 
+      updatedCart = cart.map(item =>
+        item.id === itemId
+          ? { ...item, quantity: item.quantity + 1 }
           : item
       );
       setCart(updatedCart);
     } else {
-      const newItem = { 
-        id: itemId, 
+      const newItem = {
+        id: itemId,
         productId: product.id,
-        name: itemName, 
-        price: itemPrice, 
+        name: itemName,
+        price: itemPrice,
         image: product.image,
         variant: variant || null,
-        quantity: 1 
+        quantity: 1
       };
       updatedCart = [...cart, newItem];
       setCart(updatedCart);
     }
-    
+
     // Save to localStorage
     localStorage.setItem('pos_cart', JSON.stringify(updatedCart));
   };
@@ -126,19 +127,19 @@ export default function POS() {
       removeFromCart(id);
       return;
     }
-    
+
     // Find the item in cart
     const item = cart.find(item => item.id === id);
     if (!item) return;
-    
+
     // Find the product to check stock
     const product = products.find(p => p.id === item.productId);
     if (product && quantity > product.stock) {
       alert(t('Only {{count}} items available in stock', { count: product.stock }));
       return;
     }
-    
-    const updatedCart = cart.map(item => 
+
+    const updatedCart = cart.map(item =>
       item.id === id ? { ...item, quantity } : item
     );
     setCart(updatedCart);
@@ -155,10 +156,10 @@ export default function POS() {
     setCart([]);
     localStorage.removeItem('pos_cart');
   };
-  
+
   const saveCart = () => {
     if (cart.length === 0) return;
-    
+
     const savedCart = {
       id: Date.now(),
       items: cart,
@@ -166,15 +167,15 @@ export default function POS() {
       timestamp: new Date().toLocaleString(),
       total: calculateTotal()
     };
-    
+
     const updatedSavedCarts = [...savedCarts, savedCart];
     setSavedCarts(updatedSavedCarts);
     localStorage.setItem('pos_saved_carts', JSON.stringify(updatedSavedCarts));
-    
+
     clearCart();
     alert(t('Cart saved successfully'));
   };
-  
+
   const loadSavedCart = (savedCart: any) => {
     setCart(savedCart.items);
     setSelectedCustomer(savedCart.customer?.id || 'walk-in');
@@ -182,7 +183,7 @@ export default function POS() {
     if (savedCart.customer) {
       localStorage.setItem('pos_customer', JSON.stringify(savedCart.customer));
     }
-    
+
     // Remove from saved carts
     const updatedSavedCarts = savedCarts.filter(c => c.id !== savedCart.id);
     setSavedCarts(updatedSavedCarts);
@@ -208,20 +209,21 @@ export default function POS() {
     .filter(product => {
       // Filter by category
       const categoryMatch = activeCategory === 'all' || product.category === activeCategory;
-      
+
       // Filter by search query
-      const searchMatch = searchQuery === '' || 
+      const searchMatch = searchQuery === '' ||
         product.name.toLowerCase().includes(searchQuery.toLowerCase());
-      
+
       return categoryMatch && searchMatch;
     });
 
-    console.log(formatCurrency(calculateSubtotal()));
-    
+  console.log(formatCurrency(calculateSubtotal()));
+
 
   return (
-    <PageTemplate 
+    <PageTemplate
       title={t('Point of Sale (POS)')}
+      description={t('Manage your store sales and transactions')}
       url="/pos"
       breadcrumbs={[
         { title: t('Dashboard'), href: route('dashboard') },
@@ -231,37 +233,40 @@ export default function POS() {
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Left Side - Products */}
         <div className="lg:w-2/3 space-y-4">
-          <div className="flex flex-col md:flex-row gap-2 md:items-center">
-            <div className="relative flex-1">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder={t('Search products...')}
-                className="pl-8"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <div className="flex gap-2">
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-col sm:flex-row gap-2 md:items-center">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder={t('Search products...')}
+                  className="pl-9 h-11 rounded-xl"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
               <Select value={selectedCustomer} onValueChange={handleCustomerChange}>
-                <SelectTrigger className="w-[200px]">
+                <SelectTrigger className="w-full sm:w-[200px] h-11 rounded-xl">
                   <SelectValue placeholder={t('Select customer')} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-xl">
                   {customers.map((customer) => (
-                    <SelectItem key={customer.id} value={customer.id}>
+                    <SelectItem key={customer.id} value={customer.id} className="rounded-lg">
                       {customer.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
               <Dialog open={showInventory} onOpenChange={setShowInventory}>
                 <DialogTrigger asChild>
-                  <Button variant="outline">
+                  <Button variant="outline" className="h-10 rounded-xl flex-1 sm:flex-none">
                     <Package className="h-4 w-4 mr-2" />
                     {t('Inventory')}
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[600px] max-h-[80vh] flex flex-col">
+                <DialogContent className="sm:max-w-[600px] max-h-[80vh] flex flex-col rounded-2xl">
                   <DialogHeader className="flex-shrink-0">
                     <DialogTitle>{t('Inventory Management')}</DialogTitle>
                   </DialogHeader>
@@ -281,7 +286,7 @@ export default function POS() {
                               <td className="py-2 px-2">{product.name}</td>
                               <td className="text-center py-2 px-2">{product.stock}</td>
                               <td className="text-right py-2 px-2">
-                                <Badge variant="outline" className={product.stock > 0 ? "bg-green-50 text-green-700 hover:bg-green-50" : "bg-red-50 text-red-700 hover:bg-red-50"}>
+                                <Badge variant="outline" className={cn("rounded-lg", product.stock > 0 ? "bg-green-50 text-green-700 border-green-200" : "bg-red-50 text-red-700 border-red-200")}>
                                   {product.stock > 0 ? t('In Stock') : t('Out of Stock')}
                                 </Badge>
                               </td>
@@ -293,29 +298,29 @@ export default function POS() {
                   </div>
                 </DialogContent>
               </Dialog>
-              
+
               {savedCarts.length > 0 && (
                 <Dialog open={showSavedCarts} onOpenChange={setShowSavedCarts}>
                   <DialogTrigger asChild>
-                    <Button variant="outline">
+                    <Button variant="outline" className="h-10 rounded-xl flex-1 sm:flex-none">
                       <Receipt className="h-4 w-4 mr-2" />
                       {t('Saved')} ({savedCarts.length})
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-[500px] max-h-[80vh] flex flex-col">
+                  <DialogContent className="sm:max-w-[500px] max-h-[80vh] flex flex-col rounded-2xl">
                     <DialogHeader className="flex-shrink-0">
                       <DialogTitle>{t('Saved Carts')}</DialogTitle>
                     </DialogHeader>
                     <div className="flex-1 overflow-hidden">
                       <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-2">
                         {savedCarts.map((savedCart) => (
-                          <div key={savedCart.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                          <div key={savedCart.id} className="flex items-center justify-between p-3 border rounded-xl hover:bg-muted/50 transition-colors">
                             <div className="flex-1 min-w-0">
-                              <p className="font-medium truncate">{savedCart.customer?.name || t('Walk-in Customer')}</p>
-                              <p className="text-sm text-muted-foreground">{savedCart.timestamp}</p>
-                              <p className="text-sm font-medium">{formatCurrency(savedCart.total)}</p>
+                              <p className="font-bold truncate">{savedCart.customer?.name || t('Walk-in Customer')}</p>
+                              <p className="text-xs text-muted-foreground">{savedCart.timestamp}</p>
+                              <p className="text-sm font-bold text-indigo-600">{formatCurrency(savedCart.total)}</p>
                             </div>
-                            <Button size="sm" onClick={() => {
+                            <Button size="sm" className="rounded-lg bg-indigo-600 hover:bg-indigo-700" onClick={() => {
                               loadSavedCart(savedCart);
                               setShowSavedCarts(false);
                             }}>
@@ -328,8 +333,9 @@ export default function POS() {
                   </DialogContent>
                 </Dialog>
               )}
+
               <Permission permission="manage-settings-pos">
-                <Button variant="outline" onClick={() => router.visit(route('pos.settings'))}>
+                <Button variant="outline" className="h-10 rounded-xl flex-1 sm:flex-none" onClick={() => router.visit(route('pos.settings'))}>
                   <Settings className="h-4 w-4 mr-2" />
                   {t('Settings')}
                 </Button>
@@ -337,12 +343,21 @@ export default function POS() {
             </div>
           </div>
 
-          <div className="flex overflow-x-auto pb-2 space-x-2">
+          <div className="flex overflow-x-auto pb-2 space-x-2 scrollbar-hide -mx-1 px-1">
+            <Button
+              variant={activeCategory === 'all' ? "default" : "outline"}
+              size="sm"
+              className="rounded-xl px-4 py-2 h-auto text-xs font-bold whitespace-nowrap data-[state=active]:bg-indigo-600 shadow-sm"
+              onClick={() => setActiveCategory('all')}
+            >
+              {t('All Items')}
+            </Button>
             {categories.map(category => (
               <Button
                 key={category.id}
                 variant={activeCategory === category.id ? "default" : "outline"}
                 size="sm"
+                className="rounded-xl px-4 py-2 h-auto text-xs font-bold whitespace-nowrap data-[state=active]:bg-indigo-600 shadow-sm"
                 onClick={() => setActiveCategory(category.id)}
               >
                 {category.name}
@@ -352,8 +367,8 @@ export default function POS() {
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {filteredProducts.map(product => (
-              <Card 
-                key={product.id} 
+              <Card
+                key={product.id}
                 className={`${product.stock > 0 ? 'cursor-pointer hover:border-primary' : 'opacity-60'} transition-colors`}
                 onClick={() => product.stock > 0 && addToCart(product)}
               >
@@ -433,26 +448,26 @@ export default function POS() {
                           </div>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <Button 
-                            size="icon" 
-                            variant="outline" 
+                          <Button
+                            size="icon"
+                            variant="outline"
                             className="h-7 w-7"
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
                           >
                             <Minus className="h-3 w-3" />
                           </Button>
                           <span className="w-8 text-center">{item.quantity}</span>
-                          <Button 
-                            size="icon" 
-                            variant="outline" 
+                          <Button
+                            size="icon"
+                            variant="outline"
                             className="h-7 w-7"
                             onClick={() => updateQuantity(item.id, item.quantity + 1)}
                           >
                             <Plus className="h-3 w-3" />
                           </Button>
-                          <Button 
-                            size="icon" 
-                            variant="ghost" 
+                          <Button
+                            size="icon"
+                            variant="ghost"
                             className="h-7 w-7 text-red-500"
                             onClick={() => removeFromCart(item.id)}
                           >
@@ -484,8 +499,8 @@ export default function POS() {
 
                 <div className="space-y-2 pt-4">
                   <Permission permission="process-transactions-pos">
-                    <Button 
-                      className="w-full" 
+                    <Button
+                      className="w-full"
                       disabled={cart.length === 0}
                       onClick={() => router.visit(route('pos.checkout'))}
                     >
@@ -494,8 +509,8 @@ export default function POS() {
                     </Button>
                   </Permission>
                   <div className="grid grid-cols-3 gap-2">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       disabled={cart.length === 0}
                       onClick={saveCart}
                     >
@@ -503,16 +518,16 @@ export default function POS() {
                       {t('Save')}
                     </Button>
                     <Permission permission="view-transactions-pos">
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         onClick={() => router.visit(route('pos.transactions'))}
                       >
                         <Receipt className="mr-2 h-4 w-4" />
                         {t('Transactions')}
                       </Button>
                     </Permission>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       disabled={cart.length === 0}
                       onClick={clearCart}
                       className="text-red-500 hover:text-red-700"

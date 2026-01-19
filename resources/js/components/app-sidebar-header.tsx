@@ -29,7 +29,8 @@ export function AppSidebarHeader() {
     return (
         <header className="flex h-16 shrink-0 items-center justify-between border-b bg-white px-8 transition-all sticky top-0 z-20">
             <div className="flex items-center gap-4">
-                <SidebarTrigger className="-ml-1 md:hidden" />
+                {/* Sidebar trigger removed as we use mobile bottom nav */}
+                {/* <SidebarTrigger className="-ml-1 md:hidden" /> */}
 
                 {/* Store Switcher for non-superadmins */}
                 {user?.type !== 'superadmin' && user?.type !== 'super admin' && !isImpersonating && (

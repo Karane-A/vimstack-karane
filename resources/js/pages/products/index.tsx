@@ -58,25 +58,25 @@ export default function Products() {
     <div className="p-8 space-y-8 max-w-[1400px] mx-auto">
       <Head title={t('Products')} />
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">{t('Products')}</h1>
+          <h1 className="text-xl md:text-2xl font-bold text-slate-900">{t('Products')}</h1>
           <p className="text-sm text-slate-500 mt-1">{t('Manage your product catalog and inventory')}</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           {hasPermission('create-products') && (
-            <Button variant="outline" className="rounded-lg h-9" onClick={() => setShowImportDialog(true)}>
-              <Upload className="h-4 w-4 mr-2" /> {t('Import CSV')}
+            <Button variant="outline" className="rounded-lg h-9 text-xs sm:text-sm px-2 sm:px-4" onClick={() => setShowImportDialog(true)}>
+              <Upload className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> {t('Import')}
             </Button>
           )}
           {hasPermission('export-products') && (
-            <Button variant="outline" className="rounded-lg h-9" onClick={() => window.open(route('products.export'), '_blank')}>
-              <Download className="h-4 w-4 mr-2" /> {t('Export')}
+            <Button variant="outline" className="rounded-lg h-9 text-xs sm:text-sm px-2 sm:px-4" onClick={() => window.open(route('products.export'), '_blank')}>
+              <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> {t('Export')}
             </Button>
           )}
           {hasPermission('create-products') && (
-            <Button variant="default" className="rounded-lg h-9 bg-indigo-600 hover:bg-indigo-700 font-bold" onClick={() => router.visit(route('products.create'))}>
-              <Plus className="h-4 w-4 mr-2" /> {t('Add Product')}
+            <Button variant="default" className="rounded-lg h-9 text-xs sm:text-sm px-2 sm:px-4 bg-indigo-600 hover:bg-indigo-700 font-bold ml-auto sm:ml-0" onClick={() => router.visit(route('products.create'))}>
+              <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" /> {t('Add')}
             </Button>
           )}
         </div>
