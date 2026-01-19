@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { PageTemplate } from '@/components/page-template';
-import { ArrowLeft, Save, Plus, Trash2 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowLeft, Save, Plus, Trash2, ChevronLeft, Package, DollarSign, Info, Layers, ListChecks } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -9,29 +7,18 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
-import { router, usePage } from '@inertiajs/react';
+import { router, usePage, Head, Link } from '@inertiajs/react';
 import MediaPicker from '@/components/MediaPicker';
 import { RichTextEditor } from '@/components/ui/rich-text-editor';
-
-import { ResponsiveWrapper } from '@/components/mobile/responsive-wrapper';
-import { 
-  Form as MobileForm, 
-  Input as MobileInput, 
-  Selector as MobileSelector,
-  Switch as MobileSwitch,
-  Button as MobileButton,
-  TextArea as MobileTextArea,
-  Space as MobileSpace,
-  Toast,
-  NavBar,
-  Picker,
-  Stepper
-} from 'antd-mobile';
+import AppSidebarLayout from '@/layouts/app/app-sidebar-layout';
+import { cn } from '@/lib/utils';
+import { Separator } from '@/components/ui/separator';
+import { showToast } from '@/components/ui/toast-notification';
 
 export default function EditProduct() {
   const { t } = useTranslation();
   const { product, categories, taxes } = usePage().props as any;
-  
+
   const [formData, setFormData] = useState({
     name: product.name || '',
     sku: product.sku || '',
@@ -72,16 +59,16 @@ export default function EditProduct() {
       });
     }
   }, [product]);
-  
+
   const [customFields, setCustomFields] = useState(
-    product.custom_fields && product.custom_fields.length > 0 
-      ? product.custom_fields 
+    product.custom_fields && product.custom_fields.length > 0
+      ? product.custom_fields
       : [{ name: '', value: '' }]
   );
-  
+
   const [variants, setVariants] = useState(
-    product.variants && product.variants.length > 0 
-      ? product.variants 
+    product.variants && product.variants.length > 0
+      ? product.variants
       : [{ name: '', values: [''] }]
   );
 
@@ -108,482 +95,447 @@ export default function EditProduct() {
   };
 
   const handleSubmit = () => {
-    // Convert variants and custom fields to the format expected by the backend
     const productData = {
       ...formData,
-      variants: variants.filter(v => v.name.trim() !== ''),
-      custom_fields: customFields.filter(f => f.name.trim() !== '')
+      variants: variants.filter((v: any) => v.name.trim() !== ''),
+      custom_fields: customFields.filter((f: any) => f.name.trim() !== '')
     };
-    
+
     router.put(route('products.update', product.id), productData, {
-      onSuccess: () => {
-        Toast.show({
-          icon: 'success',
-          content: t('Product updated successfully'),
-        });
-      }
+      onSuccess: () => showToast(t('Product updated successfully'), 'success'),
+      onError: () => showToast(t('Failed to update product'), 'error'),
     });
   };
 
-  const renderMobileEdit = () => (
-    <div className="flex flex-col h-full bg-white pb-20">
-      <MobileForm
-        layout="vertical"
-        onFinish={handleSubmit}
-        footer={
-          <MobileButton block type="submit" color="primary" size="large">
-            {t('Update Product')}
-          </MobileButton>
-        }
-      >
-        <MobileForm.Header>{t('Product Information')}</MobileForm.Header>
-        <MobileForm.Item name="name" label={t('Product Name')} rules={[{ required: true }]}>
-          <MobileInput 
-            placeholder={t('Enter product name')} 
-            value={formData.name}
-            onChange={(val) => setFormData({...formData, name: val})}
-          />
-        </MobileForm.Item>
-        <MobileForm.Item name="sku" label={t('SKU')} rules={[{ required: true }]}>
-          <MobileInput 
-            placeholder={t('Product SKU')} 
-            value={formData.sku}
-            onChange={(val) => setFormData({...formData, sku: val})}
-          />
-        </MobileForm.Item>
-        
-        <MobileForm.Item name="category_id" label={t('Category')}>
-          <MobileSelector
-            options={categories?.map((c: any) => ({ label: c.name, value: String(c.id) })) || []}
-            value={[formData.category_id]}
-            onChange={(val) => setFormData({...formData, category_id: val[0] || ''})}
-          />
-        </MobileForm.Item>
+  return (
+    <div className="p-8 space-y-8 max-w-[1200px] mx-auto pb-32">
+      <Head title={t('Edit Product')} />
 
-        <MobileForm.Item name="cover_image" label={t('Cover Image')}>
-          <MediaPicker
-            value={formData.cover_image}
-            onChange={(value) => handleSelectChange('cover_image', value)}
-            placeholder={t('Select cover image...')}
-          />
-        </MobileForm.Item>
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sticky top-0 z-10 bg-slate-50/80 backdrop-blur-md py-4 -mx-4 px-4 rounded-b-2xl">
+        <div className="flex items-center gap-4">
+          <Link
+            href={route('products.index')}
+            className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition-colors bg-white"
+          >
+            <ChevronLeft size={20} className="text-slate-600" />
+          </Link>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">{t('Edit Product')}</h1>
+            <p className="text-sm text-slate-500">{product.name} (SKU: {product.sku})</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button variant="outline" className="rounded-xl h-11 px-6 font-bold" onClick={() => router.visit(route('products.index'))}>
+            {t('Cancel')}
+          </Button>
+          <Button variant="default" className="rounded-xl h-11 bg-indigo-600 hover:bg-indigo-700 font-bold px-8 shadow-lg shadow-indigo-100" onClick={handleSubmit}>
+            <Save className="h-4 w-4 mr-2" /> {t('Update Product')}
+          </Button>
+        </div>
+      </div>
 
-        <MobileForm.Header>{t('Pricing & Inventory')}</MobileForm.Header>
-        <MobileForm.Item name="price" label={t('Price')} rules={[{ required: true }]}>
-          <MobileInput 
-            type="number"
-            placeholder="0.00" 
-            value={formData.price}
-            onChange={(val) => setFormData({...formData, price: val})}
-          />
-        </MobileForm.Item>
-        <MobileForm.Item name="stock" label={t('Stock Quantity')}>
-          <Stepper
-            value={formData.stock}
-            onChange={(val) => setFormData({...formData, stock: val})}
-          />
-        </MobileForm.Item>
+      <Tabs defaultValue="general" className="w-full">
+        <div className="bg-white p-2 rounded-2xl border border-slate-200 mb-8 inline-block shadow-sm">
+          <TabsList className="bg-transparent gap-2 h-auto p-0">
+            {[
+              { id: 'general', label: t('General'), icon: Package },
+              { id: 'pricing', label: t('Pricing'), icon: DollarSign },
+              { id: 'inventory', label: t('Inventory'), icon: ListChecks },
+              { id: 'content', label: t('Content'), icon: Info },
+              { id: 'variants', label: t('Variants'), icon: Layers },
+              { id: 'advanced', label: t('Advanced'), icon: Layers },
+            ].map(tab => (
+              <TabsTrigger
+                key={tab.id}
+                value={tab.id}
+                className="rounded-xl px-6 py-3 data-[state=active]:bg-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-md transition-all font-bold gap-2 text-slate-500 hover:text-slate-900"
+              >
+                <tab.icon size={16} />
+                {tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
 
-        <MobileForm.Header>{t('Content')}</MobileForm.Header>
-        <MobileForm.Item name="description" label={t('Description')}>
-          <RichTextEditor
-            key={`description-mobile-${product.id}`}
-            value={formData.description}
-            onChange={(value) => handleSelectChange('description', value)}
-            placeholder={t('Enter product description...')}
-          />
-        </MobileForm.Item>
-
-        <MobileForm.Item label={t('Active')} layout="horizontal">
-          <MobileSwitch 
-            checked={formData.is_active}
-            onChange={(checked) => handleSwitchChange('is_active', checked)}
-          />
-        </MobileForm.Item>
-      </MobileForm>
-    </div>
-  );
-
-  const renderDesktopEdit = () => {
-    const pageActions = [
-      {
-        label: t('Back'),
-        icon: <ArrowLeft className="h-4 w-4" />,
-        variant: 'outline' as const,
-        onClick: () => router.visit(route('products.index'))
-      },
-      {
-        label: t('Update Product'),
-        icon: <Save className="h-4 w-4" />,
-        variant: 'default' as const,
-        onClick: handleSubmit
-      }
-    ];
-
-    return (
-      <PageTemplate 
-        title={t('Edit Product')}
-        url="/products/edit"
-        actions={pageActions}
-        breadcrumbs={[
-          { title: 'Dashboard', href: route('dashboard') },
-          { title: 'Products', href: route('products.index') },
-          { title: 'Edit Product' }
-        ]}
-      >
-        <div className="space-y-6">
-          <Tabs defaultValue="general" className="w-full">
-            <TabsList className="grid w-full grid-cols-6">
-              <TabsTrigger value="general">{t('General')}</TabsTrigger>
-              <TabsTrigger value="pricing">{t('Pricing')}</TabsTrigger>
-              <TabsTrigger value="inventory">{t('Inventory')}</TabsTrigger>
-              <TabsTrigger value="content">{t('Content')}</TabsTrigger>
-              <TabsTrigger value="variants">{t('Variants')}</TabsTrigger>
-              <TabsTrigger value="advanced">{t('Advanced')}</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="general" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('Product Information')}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="name">{t('Product Name *')}</Label>
-                      <Input 
-                        id="name" 
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        placeholder={t('Enter product name')} 
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="sku">{t('SKU *')}</Label>
-                      <Input 
-                        id="sku" 
-                        name="sku"
-                        value={formData.sku}
-                        onChange={handleChange}
-                        placeholder={t('Product SKU')} 
-                      />
-                    </div>
+        <div className="bg-white rounded-[32px] border border-slate-200 p-10 shadow-sm min-h-[500px]">
+          <TabsContent value="general" className="mt-0 outline-none space-y-10">
+            <div className="max-w-3xl space-y-8">
+              <section className="grid gap-6">
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="name" className="text-sm font-bold text-slate-700 uppercase tracking-widest">{t('Product Name')} <span className="text-rose-500">*</span></Label>
+                    <Input
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      placeholder={t('Enter product name')}
+                      className="h-12 rounded-xl border-slate-200 focus:ring-indigo-600 focus:border-indigo-600"
+                    />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="category_id">{t('Category *')}</Label>
-                      <Select 
-                        value={formData.category_id} 
-                        onValueChange={(value) => handleSelectChange('category_id', value)}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder={t('Select category')} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {categories?.map((category: any) => (
-                            <SelectItem key={category.id} value={String(category.id)}>
-                              {category.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="tax_id">{t('Product Tax')}</Label>
-                      <Select 
-                        value={formData.tax_id} 
-                        onValueChange={(value) => handleSelectChange('tax_id', value)}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder={t('Select tax class')} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {taxes?.map((tax: any) => (
-                            <SelectItem key={tax.id} value={String(tax.id)}>
-                              {tax.name} ({tax.rate}%)
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="sku" className="text-sm font-bold text-slate-700 uppercase tracking-widest">{t('SKU')} <span className="text-rose-500">*</span></Label>
+                    <Input
+                      id="sku"
+                      name="sku"
+                      value={formData.sku}
+                      onChange={handleChange}
+                      placeholder={t('Product SKU')}
+                      className="h-12 rounded-xl border-slate-200 focus:ring-indigo-600 focus:border-indigo-600"
+                    />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="category_id" className="text-sm font-bold text-slate-700 uppercase tracking-widest">{t('Category')} <span className="text-rose-500">*</span></Label>
+                    <Select
+                      value={formData.category_id}
+                      onValueChange={(value) => handleSelectChange('category_id', value)}
+                    >
+                      <SelectTrigger className="h-12 rounded-xl border-slate-200">
+                        <SelectValue placeholder={t('Select category')} />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-xl">
+                        {categories?.map((category: any) => (
+                          <SelectItem key={category.id} value={String(category.id)} className="rounded-lg">
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="tax_id" className="text-sm font-bold text-slate-700 uppercase tracking-widest">{t('Product Tax')}</Label>
+                    <Select
+                      value={formData.tax_id}
+                      onValueChange={(value) => handleSelectChange('tax_id', value)}
+                    >
+                      <SelectTrigger className="h-12 rounded-xl border-slate-200">
+                        <SelectValue placeholder={t('Select tax class')} />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-xl">
+                        {taxes?.map((tax: any) => (
+                          <SelectItem key={tax.id} value={String(tax.id)} className="rounded-lg">
+                            {tax.name} ({tax.rate}%)
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </section>
+
+              <Separator className="bg-slate-100" />
+
+              <section className="grid gap-8">
+                <div className="grid grid-cols-2 gap-8">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-bold text-slate-700 uppercase tracking-widest">{t('Cover Image')} <span className="text-rose-500">*</span></Label>
+                    <div className="bg-slate-50 rounded-2xl p-4 border-2 border-dashed border-slate-200 transition-colors hover:bg-slate-100">
                       <MediaPicker
-                        label={t('Cover Image *')}
                         value={formData.cover_image}
                         onChange={(value) => handleSelectChange('cover_image', value)}
-                        placeholder={t('Select cover image...')}
+                        placeholder={t('Choose cover...')}
                       />
                     </div>
-                    <div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-bold text-slate-700 uppercase tracking-widest">{t('Gallery Images')}</Label>
+                    <div className="bg-slate-50 rounded-2xl p-4 border-2 border-dashed border-slate-200 transition-colors hover:bg-slate-100">
                       <MediaPicker
-                        label={t('Product Images')}
                         value={formData.images}
                         onChange={(value) => handleSelectChange('images', value)}
                         multiple={true}
-                        placeholder={t('Select product images...')}
+                        placeholder={t('Add images...')}
                       />
                     </div>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label>{t('Product Display')}</Label>
-                      <p className="text-sm text-muted-foreground">{t('Show product on store')}</p>
-                    </div>
-                    <Switch 
-                      checked={formData.is_active}
-                      onCheckedChange={(checked) => handleSwitchChange('is_active', checked)}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+                </div>
 
-            <TabsContent value="pricing" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('Pricing Information')}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="price">{t('Price *')}</Label>
-                      <Input 
-                        id="price" 
-                        name="price"
-                        type="number" 
-                        step="0.01" 
-                        value={formData.price}
-                        onChange={handleChange}
-                        placeholder="0.00" 
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="sale_price">{t('Sale Price')}</Label>
-                      <Input 
-                        id="sale_price" 
-                        name="sale_price"
-                        type="number" 
-                        step="0.01" 
-                        value={formData.sale_price}
-                        onChange={handleChange}
-                        placeholder="0.00" 
-                      />
-                    </div>
+                <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 flex items-center justify-between">
+                  <div className="space-y-1">
+                    <h4 className="font-bold text-slate-900">{t('Product Display Status')}</h4>
+                    <p className="text-sm text-slate-500">{t('Toggle whether this product is visible in your storefront')}</p>
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+                  <Switch
+                    checked={formData.is_active}
+                    onCheckedChange={(checked) => handleSwitchChange('is_active', checked)}
+                    className="data-[state=checked]:bg-indigo-600"
+                  />
+                </div>
+              </section>
+            </div>
+          </TabsContent>
 
-            <TabsContent value="inventory" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('Inventory Management')}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label htmlFor="stock">{t('Stock Quantity *')}</Label>
-                    <Input 
-                      id="stock" 
-                      name="stock"
-                      type="number" 
-                      value={formData.stock}
+          <TabsContent value="pricing" className="mt-0 outline-none space-y-8">
+            <div className="max-w-2xl space-y-8">
+              <div className="grid grid-cols-2 gap-8">
+                <div className="space-y-3">
+                  <Label htmlFor="price" className="text-sm font-bold text-slate-700 uppercase tracking-widest">{t('Regular Price')} <span className="text-rose-500">*</span></Label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400 font-bold">$</div>
+                    <Input
+                      id="price"
+                      name="price"
+                      type="number"
+                      step="0.01"
+                      value={formData.price}
                       onChange={handleChange}
-                      placeholder="0" 
+                      placeholder="0.00"
+                      className="h-14 pl-10 rounded-xl border-slate-200 text-lg font-black"
                     />
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label>{t('Downloadable Product')}</Label>
-                      <p className="text-sm text-muted-foreground">{t('Is this a digital product?')}</p>
-                    </div>
-                    <Switch 
-                      checked={formData.is_downloadable}
-                      onCheckedChange={(checked) => handleSwitchChange('is_downloadable', checked)}
+                </div>
+                <div className="space-y-3">
+                  <Label htmlFor="sale_price" className="text-sm font-bold text-slate-700 uppercase tracking-widest">{t('Sale Price')}</Label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400 font-bold">$</div>
+                    <Input
+                      id="sale_price"
+                      name="sale_price"
+                      type="number"
+                      step="0.01"
+                      value={formData.sale_price}
+                      onChange={handleChange}
+                      placeholder="0.00"
+                      className="h-14 pl-10 rounded-xl border-slate-200 text-lg font-black text-indigo-600"
                     />
                   </div>
-                  <div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{t('Leave empty if not on sale')}</p>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="inventory" className="mt-0 outline-none space-y-8">
+            <div className="max-w-2xl space-y-8">
+              <div className="space-y-3">
+                <Label htmlFor="stock" className="text-sm font-bold text-slate-700 uppercase tracking-widest">{t('Available Stock')} <span className="text-rose-500">*</span></Label>
+                <Input
+                  id="stock"
+                  name="stock"
+                  type="number"
+                  value={formData.stock}
+                  onChange={handleChange}
+                  placeholder="0"
+                  className="h-14 rounded-xl border-slate-200 text-lg font-black"
+                />
+              </div>
+
+              <div className="bg-indigo-50 rounded-3xl p-8 border border-indigo-100 space-y-6">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <h4 className="font-bold text-indigo-900">{t('Digital Product')}</h4>
+                    <p className="text-sm text-indigo-700/70">{t('Is this a downloadable digital product?')}</p>
+                  </div>
+                  <Switch
+                    checked={formData.is_downloadable}
+                    onCheckedChange={(checked) => handleSwitchChange('is_downloadable', checked)}
+                    className="data-[state=checked]:bg-indigo-600"
+                  />
+                </div>
+
+                {formData.is_downloadable && (
+                  <div className="pt-4 border-t border-indigo-100">
+                    <Label className="text-xs font-bold text-indigo-900 uppercase tracking-widest mb-3 block">{t('Source File')}</Label>
                     <MediaPicker
-                      label={t('Downloadable File')}
                       value={formData.downloadable_file}
                       onChange={(value) => handleSelectChange('downloadable_file', value)}
-                      placeholder={t('Select downloadable file...')}
+                      placeholder={t('Upload or select file...')}
                     />
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+                )}
+              </div>
+            </div>
+          </TabsContent>
 
-            <TabsContent value="content" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('Product Content')}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label>{t('Product Description')}</Label>
-                    <RichTextEditor
-                      key={`description-${product.id}`}
-                      value={formData.description}
-                      onChange={(value) => handleSelectChange('description', value)}
-                      placeholder={t('Enter product description...')}
-                    />
-                  </div>
-                  <div>
-                    <Label>{t('Product Specifications')}</Label>
+          <TabsContent value="content" className="mt-0 outline-none space-y-10">
+            <div className="space-y-8">
+              <div className="space-y-3">
+                <Label className="text-sm font-bold text-slate-700 uppercase tracking-widest">{t('Product Description')}</Label>
+                <div className="bg-slate-50 rounded-2xl border border-slate-200 overflow-hidden">
+                  <RichTextEditor
+                    key={`description-${product.id}`}
+                    value={formData.description}
+                    onChange={(value) => handleSelectChange('description', value)}
+                    placeholder={t('Write a compelling description...')}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-8">
+                <div className="space-y-3">
+                  <Label className="text-sm font-bold text-slate-700 uppercase tracking-widest">{t('Technical Specifications')}</Label>
+                  <div className="bg-slate-50 rounded-2xl border border-slate-200 overflow-hidden">
                     <RichTextEditor
                       key={`specifications-${product.id}`}
                       value={formData.specifications}
                       onChange={(value) => handleSelectChange('specifications', value)}
-                      placeholder={t('Enter product specifications...')}
+                      placeholder={t('Technical details, materials...')}
                     />
                   </div>
-                  <div>
-                    <Label>{t('Product Details')}</Label>
+                </div>
+                <div className="space-y-3">
+                  <Label className="text-sm font-bold text-slate-700 uppercase tracking-widest">{t('Additional Details')}</Label>
+                  <div className="bg-slate-50 rounded-2xl border border-slate-200 overflow-hidden">
                     <RichTextEditor
                       key={`details-${product.id}`}
                       value={formData.details}
                       onChange={(value) => handleSelectChange('details', value)}
-                      placeholder={t('Enter additional product details...')}
+                      placeholder={t('Shipping info, care instructions...')}
                     />
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
 
-            <TabsContent value="variants" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle>{t('Product Variants')}</CardTitle>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setVariants([...variants, { name: '', values: [''] }])}
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      {t('Add Variant')}
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {variants.map((variant, index) => (
-                    <div key={index} className="border rounded-lg p-4 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <Input
-                          placeholder={t('Variant name (e.g., Color, Size)')}
-                          value={variant.name}
-                          onChange={(e) => {
-                            const newVariants = [...variants];
-                            newVariants[index].name = e.target.value;
-                            setVariants(newVariants);
-                          }}
-                        />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setVariants(variants.filter((_, i) => i !== index))}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <div className="space-y-2">
-                        {variant.values.map((value, valueIndex) => (
-                          <div key={valueIndex} className="flex items-center space-x-2">
+          <TabsContent value="variants" className="mt-0 outline-none space-y-8">
+            <div className="flex items-center justify-between mb-2">
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">{t('Product Variations')}</h3>
+                <p className="text-sm text-slate-500">{t('Manage different sizes, colors, or options')}</p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-xl border-indigo-200 text-indigo-600 hover:bg-indigo-50 font-bold"
+                onClick={() => setVariants([...variants, { name: '', values: [''] }])}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                {t('Add Variant')}
+              </Button>
+            </div>
+
+            <div className="grid gap-6">
+              {variants.map((variant: any, index: number) => (
+                <div key={index} className="bg-slate-50 rounded-[24px] p-6 border border-slate-200 relative group">
+                  <button
+                    type="button"
+                    className="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-rose-100 hover:text-rose-600 shadow-sm"
+                    onClick={() => setVariants(variants.filter((_: any, i: number) => i !== index))}
+                  >
+                    <Trash2 size={14} />
+                  </button>
+
+                  <div className="grid gap-6">
+                    <div className="max-w-md">
+                      <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">{t('Variant Name')}</Label>
+                      <Input
+                        placeholder={t('e.g., Color, Size')}
+                        value={variant.name}
+                        onChange={(e) => {
+                          const newVariants = [...variants];
+                          newVariants[index].name = e.target.value;
+                          setVariants(newVariants);
+                        }}
+                        className="h-11 rounded-xl border-slate-200"
+                      />
+                    </div>
+
+                    <div className="space-y-3">
+                      <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">{t('Variant Values')}</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {variant.values.map((value: string, valueIndex: number) => (
+                          <div key={valueIndex} className="flex items-center gap-2">
                             <Input
-                              placeholder={t('Variant value')}
+                              placeholder={t('Value')}
                               value={value}
                               onChange={(e) => {
                                 const newVariants = [...variants];
                                 newVariants[index].values[valueIndex] = e.target.value;
                                 setVariants(newVariants);
                               }}
+                              className="h-10 rounded-xl border-slate-200 w-32"
                             />
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                const newVariants = [...variants];
-                                newVariants[index].values.push('');
-                                setVariants(newVariants);
-                              }}
-                            >
-                              <Plus className="h-4 w-4" />
-                            </Button>
                           </div>
                         ))}
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-10 w-10 p-0 rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100"
+                          onClick={() => {
+                            const newVariants = [...variants];
+                            newVariants[index].values.push('');
+                            setVariants(newVariants);
+                          }}
+                        >
+                          <Plus size={16} />
+                        </Button>
                       </div>
                     </div>
-                  ))}
-                </CardContent>
-              </Card>
-            </TabsContent>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </TabsContent>
 
-            <TabsContent value="advanced" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle>{t('Custom Fields')}</CardTitle>
+          <TabsContent value="advanced" className="mt-0 outline-none space-y-8">
+            <div className="flex items-center justify-between mb-2">
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">{t('Custom Metadata')}</h3>
+                <p className="text-sm text-slate-500">{t('Add custom key-value pairs for additional information')}</p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-xl border-indigo-200 text-indigo-600 hover:bg-indigo-50 font-bold"
+                onClick={() => setCustomFields([...customFields, { name: '', value: '' }])}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                {t('Add Field')}
+              </Button>
+            </div>
+
+            <div className="bg-slate-50 rounded-[32px] p-8 border border-slate-200">
+              <div className="space-y-4">
+                {customFields.map((field: any, index: number) => (
+                  <div key={index} className="flex items-center gap-4 group">
+                    <Input
+                      placeholder={t('Field name')}
+                      value={field.name}
+                      onChange={(e) => {
+                        const newFields = [...customFields];
+                        newFields[index].name = e.target.value;
+                        setCustomFields(newFields);
+                      }}
+                      className="h-11 rounded-xl border-slate-200 bg-white"
+                    />
+                    <Input
+                      placeholder={t('Field value')}
+                      value={field.value}
+                      onChange={(e) => {
+                        const newFields = [...customFields];
+                        newFields[index].value = e.target.value;
+                        setCustomFields(newFields);
+                      }}
+                      className="h-11 rounded-xl border-slate-200 bg-white"
+                    />
                     <Button
                       type="button"
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
-                      onClick={() => setCustomFields([...customFields, { name: '', value: '' }])}
+                      className="h-11 w-11 p-0 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50"
+                      onClick={() => setCustomFields(customFields.filter((_: any, i: number) => i !== index))}
                     >
-                      <Plus className="h-4 w-4 mr-2" />
-                      {t('Add Field')}
+                      <Trash2 size={16} />
                     </Button>
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {customFields.map((field, index) => (
-                    <div key={index} className="flex items-center space-x-2">
-                      <Input
-                        placeholder={t('Field name')}
-                        value={field.name}
-                        onChange={(e) => {
-                          const newFields = [...customFields];
-                          newFields[index].name = e.target.value;
-                          setCustomFields(newFields);
-                        }}
-                      />
-                      <Input
-                        placeholder={t('Field value')}
-                        value={field.value}
-                        onChange={(e) => {
-                          const newFields = [...customFields];
-                          newFields[index].value = e.target.value;
-                          setCustomFields(newFields);
-                        }}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setCustomFields(customFields.filter((_, i) => i !== index))}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+                ))}
+                {customFields.length === 0 && (
+                  <div className="text-center py-10">
+                    <p className="text-slate-400 font-bold">{t('No custom fields added yet')}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </TabsContent>
         </div>
-      </PageTemplate>
-    );
-  };
-
-  return (
-    <ResponsiveWrapper
-      mobileComponent={renderMobileEdit()}
-      desktopComponent={renderDesktopEdit()}
-    />
+      </Tabs>
+    </div>
   );
 }
+
+EditProduct.layout = (page: React.ReactNode) => <AppSidebarLayout>{page}</AppSidebarLayout>;

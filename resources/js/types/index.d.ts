@@ -3,9 +3,11 @@ import * as LucidIcons from 'lucide-react';
 
 export interface NavItem {
   title: string;
-  href: string;
-  icon: LucideIcon;
+  href?: string;
+  icon?: LucideIcon;
   permission?: string;
+  isLabel?: boolean;
+  children?: NavItem[];
 }
 
 export interface TableColumn {

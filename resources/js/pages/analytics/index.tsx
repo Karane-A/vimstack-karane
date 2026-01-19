@@ -1,14 +1,15 @@
 import React from 'react';
-import { PageTemplate } from '@/components/page-template';
-import { RefreshCw, Download, BarChart, TrendingUp, Users, ShoppingCart, DollarSign, Eye } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Download, Users, ShoppingCart, DollarSign, TrendingUp, ArrowUpRight, ArrowDownRight, Package, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { useTranslation } from 'react-i18next';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart as RechartsBarChart, Bar } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart as RechartsBarChart, Bar, AreaChart, Area } from 'recharts';
 import { formatCurrency } from '@/utils/helpers';
-import { Permission } from '@/components/Permission';
 import { usePermissions } from '@/hooks/usePermissions';
+import { Head, Link } from '@inertiajs/react';
+import AppSidebarLayout from '@/layouts/app/app-sidebar-layout';
+import { MetricCard } from '@/components/ui/metric-card';
+import { StatusBadge } from '@/components/ui/status-badge';
+import { cn } from '@/lib/utils';
 
 interface Props {
   analytics: {
@@ -23,189 +24,255 @@ interface Props {
 
 export default function Analytics({ analytics }: Props) {
   const { t } = useTranslation();
-
   const { hasPermission } = usePermissions();
 
-  const pageActions = hasPermission('export-analytics') ? [
-    {
-      label: t('Export Report'),
-      icon: <Download className="h-4 w-4" />,
-      variant: 'default' as const,
-      onClick: () => window.open(route('analytics.export'), '_blank')
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-3 border border-slate-200 shadow-xl rounded-xl">
+          <p className="text-xs font-bold text-slate-500 mb-1">{label}</p>
+          <p className="text-sm font-bold text-indigo-600">
+            {payload[0].name === 'Revenue' ? formatCurrency(payload[0].value) : payload[0].value}
+          </p>
+        </div>
+      );
     }
-  ] : [];
+    return null;
+  };
 
   return (
-    <PageTemplate 
-      title={t('Analytics & Reporting')}
-      url="/analytics"
-      actions={pageActions}
-      breadcrumbs={[
-        { title: 'Dashboard', href: route('dashboard') },
-        { title: 'Analytics & Reporting' }
-      ]}
-    >
-      <div className="space-y-6">
-        {/* Key Metrics */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(analytics.metrics.revenue.current)}</div>
-              <p className="text-xs text-muted-foreground">
-                {analytics.metrics.revenue.change >= 0 ? '+' : ''}{analytics.metrics.revenue.change.toFixed(1)}% from last month
-              </p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-              <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{analytics.metrics.orders.current.toLocaleString()}</div>
-              <p className="text-xs text-muted-foreground">
-                {analytics.metrics.orders.change >= 0 ? '+' : ''}{analytics.metrics.orders.change} from last month
-              </p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{analytics.metrics.customers.total.toLocaleString()}</div>
-              <p className="text-xs text-muted-foreground">
-                +{analytics.metrics.customers.new} new this month
-              </p>
-            </CardContent>
-          </Card>
-          
+    <div className="p-8 space-y-8 max-w-[1400px] mx-auto">
+      <Head title={t('Analytics & Reporting')} />
 
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">{t('Analytics')}</h1>
+          <p className="text-sm text-slate-500 mt-1">{t('In-depth overview of your business performance')}</p>
         </div>
-
-        {/* Charts Section */}
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Revenue Overview</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <RechartsBarChart data={analytics.revenueChart}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip formatter={(value) => [`${formatCurrency(value)}`, 'Revenue']} />
-                    <Bar dataKey="revenue" fill="#3b82f6" />
-                  </RechartsBarChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Sales Trend</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={analytics.salesChart}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip formatter={(value) => [`${value}`, 'Orders']} />
-                    <Line type="monotone" dataKey="orders" stroke="#10b981" strokeWidth={2} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="flex items-center gap-3">
+          {hasPermission('export-analytics') && (
+            <Button variant="default" className="rounded-lg h-9 bg-indigo-600 hover:bg-indigo-700 font-bold" onClick={() => window.open(route('analytics.export'), '_blank')}>
+              <Download className="h-4 w-4 mr-2" /> {t('Export Report')}
+            </Button>
+          )}
         </div>
-
-        {/* Top Products & Customers */}
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Top Selling Products</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {analytics.topProducts.map((product, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <p className="font-medium">{product.name}</p>
-                      <p className="text-sm text-muted-foreground">{product.sales} units sold</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-green-600">{typeof product.revenue === 'number' ? formatCurrency(product.revenue) : product.revenue}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Top Customers</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {analytics.topCustomers.map((customer, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <p className="font-medium">{customer.name}</p>
-                      <p className="text-sm text-muted-foreground">{customer.orders} orders</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-green-600">{typeof customer.spent === 'number' ? formatCurrency(customer.spent) : customer.spent}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Recent Activity */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {analytics.recentActivity.map((activity, index) => (
-                <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                      {activity.type === 'Order' && <ShoppingCart className="h-4 w-4 text-primary" />}
-                      {activity.type === 'Customer' && <Users className="h-4 w-4 text-primary" />}
-                      {activity.type === 'Product' && <Eye className="h-4 w-4 text-primary" />}
-                      {activity.type === 'Payment' && <DollarSign className="h-4 w-4 text-primary" />}
-                    </div>
-                    <div>
-                      <p className="font-medium">{activity.description}</p>
-                      <p className="text-sm text-muted-foreground">{activity.time}</p>
-                    </div>
-                  </div>
-                  {activity.amount && (
-                    <Badge variant="outline">{typeof activity.amount === 'number' ? formatCurrency(activity.amount) : activity.amount}</Badge>
-                  )}
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
       </div>
-    </PageTemplate>
+
+      {/* Metrics Grid */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <MetricCard
+          title={t('Total Revenue')}
+          value={formatCurrency(analytics.metrics.revenue.current)}
+          icon={DollarSign}
+          trend={{
+            value: `${Math.abs(analytics.metrics.revenue.change).toFixed(1)}%`,
+            isUp: analytics.metrics.revenue.change >= 0,
+            label: 'vs last month'
+          }}
+        />
+        <MetricCard
+          title={t('Total Orders')}
+          value={analytics.metrics.orders.current.toLocaleString()}
+          icon={ShoppingCart}
+          trend={{
+            value: `${Math.abs(analytics.metrics.orders.change)}`,
+            isUp: analytics.metrics.orders.change >= 0,
+            label: 'vs last month'
+          }}
+        />
+        <MetricCard
+          title={t('Total Customers')}
+          value={analytics.metrics.customers.total.toLocaleString()}
+          icon={Users}
+          trend={{
+            value: `${analytics.metrics.customers.new}`,
+            isUp: true,
+            label: 'new this month'
+          }}
+        />
+      </div>
+
+      {/* Charts Grid */}
+      <div className="grid gap-8 lg:grid-cols-2">
+        {/* Revenue Chart */}
+        <div className="bg-white p-8 rounded-[24px] border border-slate-200 shadow-sm">
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="font-bold text-slate-900">{t('Revenue Overview')}</h3>
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-indigo-500"></span>
+              <span className="text-xs text-slate-500">{t('Revenue')}</span>
+            </div>
+          </div>
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={analytics.revenueChart}>
+                <defs>
+                  <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1} />
+                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <XAxis
+                  dataKey="date"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#94a3b8', fontSize: 12 }}
+                  dy={10}
+                />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#94a3b8', fontSize: 12 }}
+                  tickFormatter={(value) => `$${value}`}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Area
+                  type="monotone"
+                  dataKey="revenue"
+                  name="Revenue"
+                  stroke="#6366f1"
+                  strokeWidth={3}
+                  fillOpacity={1}
+                  fill="url(#colorRevenue)"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Sales Chart */}
+        <div className="bg-white p-8 rounded-[24px] border border-slate-200 shadow-sm">
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="font-bold text-slate-900">{t('Sales Trend')}</h3>
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-emerald-500"></span>
+              <span className="text-xs text-slate-500">{t('Orders')}</span>
+            </div>
+          </div>
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <RechartsBarChart data={analytics.salesChart}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <XAxis
+                  dataKey="date"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#94a3b8', fontSize: 12 }}
+                  dy={10}
+                />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#94a3b8', fontSize: 12 }}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar
+                  dataKey="orders"
+                  name="Orders"
+                  fill="#10b981"
+                  radius={[4, 4, 0, 0]}
+                  barSize={30}
+                />
+              </RechartsBarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid gap-8 lg:grid-cols-2">
+        {/* Top Products */}
+        <div className="bg-white rounded-[24px] border border-slate-200 overflow-hidden shadow-sm">
+          <div className="p-6 border-b border-slate-50">
+            <h3 className="font-bold text-slate-900">{t('Top Selling Products')}</h3>
+          </div>
+          <div className="p-0">
+            {analytics.topProducts.map((product, index) => (
+              <div key={index} className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
+                    <Package className="w-5 h-5 text-indigo-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-slate-900">{product.name}</p>
+                    <p className="text-xs text-slate-500">{t('{{count}} items sold', { count: product.sales })}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-bold text-slate-900">
+                    {typeof product.revenue === 'number' ? formatCurrency(product.revenue) : product.revenue}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Top Customers */}
+        <div className="bg-white rounded-[24px] border border-slate-200 overflow-hidden shadow-sm">
+          <div className="p-6 border-b border-slate-50">
+            <h3 className="font-bold text-slate-900">{t('Top Customers')}</h3>
+          </div>
+          <div className="p-0">
+            {analytics.topCustomers.map((customer, index) => (
+              <div key={index} className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+                    <User className="w-5 h-5 text-slate-500" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-slate-900">{customer.name}</p>
+                    <p className="text-xs text-slate-500">{t('{{count}} orders placed', { count: customer.orders })}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-bold text-emerald-600">
+                    {typeof customer.spent === 'number' ? formatCurrency(customer.spent) : customer.spent}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Activity List */}
+      <div className="bg-white rounded-[24px] border border-slate-200 overflow-hidden shadow-sm">
+        <div className="p-6 border-b border-slate-50">
+          <h3 className="font-bold text-slate-900">{t('Recent Activity')}</h3>
+        </div>
+        <div className="p-0">
+          {analytics.recentActivity.map((activity, index) => (
+            <div key={index} className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0">
+              <div className="flex items-center gap-4">
+                <div className={cn(
+                  "w-10 h-10 rounded-xl flex items-center justify-center",
+                  activity.type === 'Order' ? "bg-emerald-50 text-emerald-600" :
+                    activity.type === 'Customer' ? "bg-indigo-50 text-indigo-600" :
+                      activity.type === 'Product' ? "bg-amber-50 text-amber-600" :
+                        "bg-slate-50 text-slate-600"
+                )}>
+                  {activity.type === 'Order' && <ShoppingCart className="h-5 w-5" />}
+                  {activity.type === 'Customer' && <Users className="h-5 w-5" />}
+                  {activity.type === 'Product' && <Package className="h-5 w-5" />}
+                  {activity.type === 'Payment' && <DollarSign className="h-5 w-5" />}
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-slate-900">{activity.description}</p>
+                  <p className="text-xs text-slate-500">{activity.time}</p>
+                </div>
+              </div>
+              {activity.amount && (
+                <div className="px-3 py-1 bg-slate-50 text-slate-700 rounded-full text-xs font-bold">
+                  {typeof activity.amount === 'number' ? formatCurrency(activity.amount) : activity.amount}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
+
+Analytics.layout = (page: React.ReactNode) => <AppSidebarLayout>{page}</AppSidebarLayout>;

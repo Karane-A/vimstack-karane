@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 
-const MOBILE_BREAKPOINT = 768;
+// True mobile devices only (< 640px)
+// Tablets (640px-1024px) should use desktop layout
+const MOBILE_BREAKPOINT = 640;
 const TABLET_BREAKPOINT = 1024;
 
 export function useIsMobile() {

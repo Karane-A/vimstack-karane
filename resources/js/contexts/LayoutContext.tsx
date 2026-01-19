@@ -5,12 +5,18 @@ export type LayoutPosition = 'left' | 'right';
 type LayoutContextType = {
     position: LayoutPosition;
     updatePosition: (val: LayoutPosition) => void;
+    adminViewMode: 'admin' | 'company';
+    toggleAdminViewMode: () => void;
 };
 
 const LayoutContext = createContext<LayoutContextType | undefined>(undefined);
 
 export const LayoutProvider = ({ children }: { children: ReactNode }) => {
     const [position, setPosition] = useState<LayoutPosition>('left');
+    const [adminViewMode, setAdminViewMode] = useState<'admin' | 'company'>(() => {
+        const stored = localStorage.getItem('admin_view_mode');
+        return (stored === 'admin' || stored === 'company') ? stored : 'admin';
+    });
 
     useEffect(() => {
         const storedPosition = localStorage.getItem('layoutPosition') as LayoutPosition;
@@ -25,7 +31,17 @@ export const LayoutProvider = ({ children }: { children: ReactNode }) => {
         localStorage.setItem('layoutPosition', val);
     };
 
-    return <LayoutContext.Provider value={{ position, updatePosition }}>{children}</LayoutContext.Provider>;
+    const toggleAdminViewMode = () => {
+        const newMode = adminViewMode === 'admin' ? 'company' : 'admin';
+        setAdminViewMode(newMode);
+        localStorage.setItem('admin_view_mode', newMode);
+    };
+
+    return (
+        <LayoutContext.Provider value={{ position, updatePosition, adminViewMode, toggleAdminViewMode }}>
+            {children}
+        </LayoutContext.Provider>
+    );
 };
 
 export const useLayout = () => {

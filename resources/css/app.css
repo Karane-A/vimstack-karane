@@ -4,61 +4,62 @@
 @plugin 'tailwind-scrollbar';
 
 @import './rtl.css';
+@import './design-system.css';
 
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 
 
 @theme {
-    --font-sans:
-        'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-sans:
+    'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
-    --radius-lg: var(--radius);
-    --radius-md: calc(var(--radius) - 2px);
-    --radius-sm: calc(var(--radius) - 4px);
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
 
-    --color-background: var(--background);
-    --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
 
-    --color-card: var(--card);
-    --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
 
-    --color-popover: var(--popover);
-    --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
 
-    --color-primary: var(--primary);
-    --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
 
-    --color-secondary: var(--secondary);
-    --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
 
-    --color-muted: var(--muted);
-    --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
 
-    --color-accent: var(--accent);
-    --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
 
-    --color-destructive: var(--destructive);
-    --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
 
-    --color-border: var(--border);
-    --color-input: var(--input);
-    --color-ring: var(--ring);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
 
-    --color-chart-1: var(--chart-1);
-    --color-chart-2: var(--chart-2);
-    --color-chart-3: var(--chart-3);
-    --color-chart-4: var(--chart-4);
-    --color-chart-5: var(--chart-5);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
 
-    --color-sidebar: var(--sidebar);
-    --color-sidebar-foreground: var(--sidebar-foreground);
-    --color-sidebar-primary: var(--sidebar-primary);
-    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-    --color-sidebar-accent: var(--sidebar-accent);
-    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-    --color-sidebar-border: var(--sidebar-border);
-    --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }
 
 /*
@@ -70,86 +71,87 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
-    *,
-    ::after,
-    ::before,
-    ::backdrop,
-    ::file-selector-button {
-        border-color: var(--color-gray-200, currentColor);
-    }
+
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
 }
 
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --destructive-foreground: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.87 0 0);
-    --chart-1: oklch(0.646 0.222 41.116);
-    --chart-2: oklch(0.6 0.118 184.704);
-    --chart-3: oklch(0.398 0.07 227.392);
-    --chart-4: oklch(0.828 0.189 84.429);
-    --chart-5: oklch(0.769 0.188 70.08);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.87 0 0);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.87 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.87 0 0);
 }
 
 
 @layer base {
-    * {
-        @apply border-border;
-    }
+  * {
+    @apply border-border;
+  }
 
-    body {
-        @apply bg-background text-foreground;
-    }
-    
-    /* Custom thin scrollbar */
-    * {
-        scrollbar-width: thin;
-        scrollbar-color: #9ca3af #f3f4f6;
-    }
-    
-    *::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
-    }
-    
-    *::-webkit-scrollbar-track {
-        background: #f3f4f6;
-        border-radius: 3px;
-    }
-    
-    *::-webkit-scrollbar-thumb {
-        background: #9ca3af;
-        border-radius: 3px;
-    }
-    
-    *::-webkit-scrollbar-thumb:hover {
-        background: #6b7280;
-    }
-    
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* Custom thin scrollbar */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #9ca3af #f3f4f6;
+  }
+
+  *::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 3px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: #9ca3af;
+    border-radius: 3px;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
+  }
+
 }
 
 /* Theme color variables */
@@ -226,7 +228,7 @@ a:hover,
   .iyzipay-checkout-form {
     min-height: 500px;
   }
-  
+
   .iyzipay-checkout-form iframe {
     min-height: 500px;
   }
@@ -251,24 +253,31 @@ a:hover,
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-  .scrollbar-custom::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
+.scrollbar-custom::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
 
-  .scrollbar-custom::-webkit-scrollbar-track {
-    background-color: #f9fafb; /* Tailwind: gray-50 */
-  }
+.scrollbar-custom::-webkit-scrollbar-track {
+  background-color: #f9fafb;
+  /* Tailwind: gray-50 */
+}
 
-  .scrollbar-custom::-webkit-scrollbar-thumb {
-    background-color: #d1d5db; /* Tailwind: gray-300 */
-    border-radius: 9999px;
-    border: 2px solid #f9fafb;
-  }
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  /* Tailwind: gray-300 */
+  border-radius: 9999px;
+  border: 2px solid #f9fafb;
+}
 
 /* Theme Preview Hover Effect */
 .theme-preview-container {
@@ -335,6 +344,7 @@ a:hover,
     opacity: 0;
     transform: translateX(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -343,8 +353,9 @@ a:hover,
 
 /* Mobile-Friendly Touch Interactions */
 @media (hover: none) and (pointer: coarse) {
+
   /* Increase touch target sizes for mobile */
-  button, 
+  button,
   a,
   [role="button"],
   input[type="checkbox"],
@@ -353,12 +364,12 @@ a:hover,
     min-height: 44px;
     min-width: 44px;
   }
-  
+
   /* Remove hover states on touch devices */
   .hover\:shadow-md:hover {
     box-shadow: none;
   }
-  
+
   /* Add active states for better feedback */
   button:active,
   a:active,
@@ -374,13 +385,13 @@ a:hover,
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
   }
-  
+
   .safe-area-inset {
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
     padding-bottom: env(safe-area-inset-bottom);
   }
-  
+
   .scrollable-mobile {
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
@@ -395,7 +406,7 @@ a:hover,
     height: 100vh;
     height: 100dvh;
   }
-  
+
   /* Prevent body scroll when sidebar is open */
   body:has([data-sidebar="sidebar"][data-state="expanded"]) {
     overflow: hidden;
@@ -412,6 +423,7 @@ a:hover,
 
 /* Mobile form inputs */
 @media (max-width: 640px) {
+
   input[type="text"],
   input[type="email"],
   input[type="password"],
@@ -421,14 +433,15 @@ a:hover,
   input[type="search"],
   textarea,
   select {
-    font-size: 16px; /* Prevents zoom on iOS */
+    font-size: 16px;
+    /* Prevents zoom on iOS */
   }
-  
+
   /* Stack form labels and inputs vertically */
   .form-group {
     flex-direction: column;
   }
-  
+
   /* Full-width buttons on mobile */
   .mobile-full-width {
     width: 100%;
@@ -442,32 +455,32 @@ a:hover,
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
-  
+
   .responsive-table thead {
     display: none;
   }
-  
+
   .responsive-table tbody,
   .responsive-table tr,
   .responsive-table td {
     display: block;
     width: 100%;
   }
-  
+
   .responsive-table tr {
     margin-bottom: 1rem;
     border: 1px solid #e5e7eb;
     border-radius: 0.5rem;
     padding: 0.75rem;
   }
-  
+
   .responsive-table td {
     text-align: right;
     padding: 0.5rem 0;
     position: relative;
     padding-left: 50%;
   }
-  
+
   .responsive-table td:before {
     content: attr(data-label);
     position: absolute;
@@ -481,13 +494,14 @@ a:hover,
 
 /* Mobile-friendly modals and dialogs */
 @media (max-width: 640px) {
+
   [role="dialog"],
   .dialog-content {
     max-width: calc(100vw - 2rem);
     max-height: calc(100vh - 2rem);
     margin: 1rem;
   }
-  
+
   .dialog-overlay {
     padding: 0;
   }
@@ -499,7 +513,7 @@ a:hover,
     max-width: 100%;
     height: auto;
   }
-  
+
   .product-image,
   .order-image {
     width: 100%;
@@ -521,7 +535,7 @@ a:hover,
     z-index: 50;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
   }
-  
+
   .mobile-nav-item {
     flex: 1;
     display: flex;
@@ -537,7 +551,7 @@ a:hover,
   body {
     overflow-x: hidden;
   }
-  
+
   * {
     max-width: 100%;
   }
@@ -549,8 +563,28 @@ a:hover,
     padding: 0.75rem;
     gap: 0.75rem;
   }
-  
-  .mobile-spacing > * + * {
+
+  .mobile-spacing>*+* {
     margin-top: 0.75rem;
+  }
+}
+
+/* Fix sidebar navigation colors - override any blue defaults */
+[data-sidebar="sidebar"] a,
+[data-sidebar="sidebar"] button,
+[data-sidebar="sidebar"] [role="button"] {
+  color: inherit !important;
+}
+
+[data-sidebar="sidebar"] a:hover,
+[data-sidebar="sidebar"] button:hover,
+[data-sidebar="sidebar"] [role="button"]:hover {
+  color: var(--color-primary, hsl(var(--primary))) !important;
+}
+
+/* Ensure sidebar works on tablets - use desktop layout */
+@media (min-width: 640px) {
+  [data-sidebar="sidebar"] {
+    display: block !important;
   }
 }

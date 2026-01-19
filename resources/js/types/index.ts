@@ -23,6 +23,7 @@ export interface NavItem {
     permission?: string;
     children?: NavItem[];
     target?: string;
+    isLabel?: boolean;
 }
 
 export interface BreadcrumbItem {

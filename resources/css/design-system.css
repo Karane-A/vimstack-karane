@@ -1,0 +1,248 @@
+/**
+ * Vimstack Design System - Figma Reference Implementation
+ * Clean, professional dashboard design
+ * Reference: https://grain-tempo-52237463.figma.site/
+ */
+
+:root {
+  /* ===== Color Palette ===== */
+
+  /* Primary Colors */
+  --ds-primary-dark: rgb(3, 2, 19);
+  /* Navy/Near-Black for primary elements */
+  --ds-primary-indigo: oklch(0.51 0.26 277);
+  /* Indigo for active states & accents */
+  --ds-primary-indigo-light: oklch(0.96 0.018 272);
+  /* Very light indigo background */
+
+  /* Neutrals */
+  --ds-background: rgb(249, 250, 251);
+  /* Very light gray page background */
+  --ds-surface: #FFFFFF;
+  /* Pure white surfaces (cards, header) */
+  --ds-sidebar-bg: rgb(249, 250, 251);
+  /* Sidebar background */
+  --ds-border: rgba(0, 0, 0, 0.1);
+  /* Thin border used in design (0.8px) */
+  --ds-border-light: rgba(0, 0, 0, 0.05);
+
+  /* Text Colors */
+  --ds-text-primary: oklch(0.21 0.034 264);
+  /* Deep charcoal for main headings */
+  --ds-text-body: rgb(55, 65, 81);
+  /* Professional gray for body text */
+  --ds-text-muted: rgb(156, 163, 175);
+  /* Muted icons and secondary labels */
+  --ds-text-on-primary: #FFFFFF;
+
+  /* Status Colors (Figma Specific) */
+  --ds-status-success-bg: rgb(220, 252, 231);
+  --ds-status-success-text: rgb(22, 101, 52);
+  --ds-status-warning-bg: rgb(254, 243, 199);
+  --ds-status-warning-text: rgb(146, 64, 14);
+  --ds-status-error-bg: rgb(254, 226, 226);
+  --ds-status-error-text: rgb(153, 27, 27);
+  --ds-status-info-bg: rgb(219, 234, 254);
+  --ds-status-info-text: rgb(30, 64, 175);
+
+  /* ===== Typography ===== */
+
+  --ds-font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  --ds-text-xs: 12px;
+  --ds-text-sm: 14px;
+  --ds-text-base: 15px;
+  --ds-text-lg: 18px;
+  --ds-text-xl: 20px;
+  --ds-text-2xl: 24px;
+
+  --ds-font-regular: 400;
+  --ds-font-medium: 500;
+  --ds-font-semibold: 600;
+  --ds-font-bold: 700;
+
+  /* ===== Spacing & Sizing ===== */
+
+  --ds-sidebar-width: 256px;
+  --ds-header-height: 64px;
+
+  --ds-gap-sm: 16px;
+  --ds-gap-md: 24px;
+  --ds-gap-lg: 32px;
+
+  --ds-card-padding: 20px;
+
+  --ds-radius-btn: 8px;
+  --ds-radius-card: 14px;
+  --ds-radius-pill: 9999px;
+
+  /* ===== Shadows ===== */
+  --ds-shadow-subtle: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* ===== Global Resets (Figma Aesthetic) ===== */
+
+body {
+  background-color: var(--ds-background);
+  color: var(--ds-text-body);
+  font-family: var(--ds-font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Metric Card - Updated for Figma Styles */
+.ds-metric-card {
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-radius-card);
+  padding: var(--ds-card-padding);
+  display: flex;
+  flex-direction: column;
+}
+
+.ds-metric-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.ds-metric-title {
+  font-size: var(--ds-text-sm);
+  font-weight: var(--ds-font-medium);
+  color: var(--ds-text-muted);
+}
+
+.ds-metric-icon {
+  color: var(--ds-text-muted);
+}
+
+.ds-metric-value {
+  font-size: var(--ds-text-2xl);
+  font-weight: var(--ds-font-bold);
+  color: var(--ds-text-primary);
+  margin-bottom: 4px;
+}
+
+.ds-trend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--ds-text-xs);
+  font-weight: var(--ds-font-medium);
+}
+
+.ds-trend-up {
+  color: var(--ds-status-success-text);
+}
+
+.ds-trend-down {
+  color: var(--ds-status-error-text);
+}
+
+/* Sidebar Customization */
+.ds-sidebar {
+  width: var(--ds-sidebar-width);
+  background-color: var(--ds-sidebar-bg);
+  border-right: 1px solid var(--ds-border);
+  padding: 24px 16px;
+}
+
+.ds-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--ds-text-body);
+  font-size: var(--ds-text-sm);
+  font-weight: var(--ds-font-medium);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.ds-nav-item:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.ds-nav-item-active {
+  background-color: var(--ds-primary-indigo-light);
+  color: var(--ds-primary-indigo);
+}
+
+/* Buttons */
+.ds-btn-primary {
+  background-color: var(--ds-primary-dark);
+  color: white;
+  border-radius: var(--ds-radius-btn);
+  font-weight: var(--ds-font-medium);
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+}
+
+.ds-btn-outline {
+  background-color: white;
+  border: 1px solid var(--ds-primary-dark);
+  color: var(--ds-primary-dark);
+  border-radius: var(--ds-radius-btn);
+  font-weight: var(--ds-font-medium);
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+/* Status Badges */
+.ds-badge {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: var(--ds-font-medium);
+  display: inline-flex;
+  align-items: center;
+}
+
+.ds-badge-success {
+  background: var(--ds-status-success-bg);
+  color: var(--ds-status-success-text);
+}
+
+.ds-badge-warning {
+  background: var(--ds-status-warning-bg);
+  color: var(--ds-status-warning-text);
+}
+
+.ds-badge-error {
+  background: var(--ds-status-error-bg);
+  color: var(--ds-status-error-text);
+}
+
+.ds-badge-info {
+  background: var(--ds-status-info-bg);
+  color: var(--ds-status-info-text);
+}
+
+/* Table Styling */
+.ds-table-container {
+  background: white;
+  border-radius: var(--ds-radius-card);
+  border: 1px solid var(--ds-border);
+  overflow: hidden;
+}
+
+.ds-table th {
+  text-align: left;
+  padding: 14px 16px;
+  font-size: var(--ds-text-sm);
+  font-weight: var(--ds-font-medium);
+  color: var(--ds-text-muted);
+  border-bottom: 1px solid var(--ds-border);
+}
+
+.ds-table td {
+  padding: 14px 16px;
+  font-size: var(--ds-text-sm);
+  border-bottom: 1px solid var(--ds-border-light);
+}
+
+.ds-table tr:last-child td {
+  border-bottom: none;
+}
