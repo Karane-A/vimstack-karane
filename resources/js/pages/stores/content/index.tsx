@@ -27,7 +27,7 @@ export default function StoreContentIndex({ stores }: Props) {
   const pageActions = [];
 
   return (
-    <PageTemplate 
+    <PageTemplate
       title={t('Store Content Management')}
       url="/stores/content"
       actions={pageActions}
@@ -57,28 +57,44 @@ export default function StoreContentIndex({ stores }: Props) {
           ) : (
             <div className="space-y-4">
               {stores.map((store) => (
-                <div key={store.id} className="flex items-center justify-between p-4 border rounded-lg">
+                <div key={store.id} className="flex flex-col md:flex-row md:items-center md:justify-between p-4 md:p-4 border rounded-lg space-y-4 md:space-y-0">
                   <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                      <Store className="h-6 w-6 text-primary" />
+                    <div className="w-16 h-16 md:w-12 md:h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Store className="h-8 w-8 md:h-6 md:w-6 text-primary" />
                     </div>
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <h3 className="font-semibold">{store.name}</h3>
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 flex-wrap">
+                        <h3 className="font-semibold text-base md:text-sm">{store.name}</h3>
                         <Badge variant={store.is_active ? 'default' : 'secondary'}>
                           {store.is_active ? t('Active') : t('Inactive')}
                         </Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-muted-foreground hidden md:block">
                         {store.description || t('No description available')}
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
+
+                  {/* Mobile: Full-width button */}
+                  <div className="md:hidden w-full">
                     <Permission permission="edit-store-content">
-                      <Button 
-                        variant="default" 
-                        size="sm" 
+                      <Button
+                        variant="default"
+                        className="w-full h-11"
+                        onClick={() => router.visit(route('stores.content.show', store.id))}
+                      >
+                        <Settings className="h-4 w-4 mr-2" />
+                        {t('Manage Content')}
+                      </Button>
+                    </Permission>
+                  </div>
+
+                  {/* Desktop: Regular button */}
+                  <div className="hidden md:flex items-center space-x-2">
+                    <Permission permission="edit-store-content">
+                      <Button
+                        variant="default"
+                        size="sm"
                         onClick={() => router.visit(route('stores.content.show', store.id))}
                       >
                         <Settings className="h-4 w-4 mr-2" />

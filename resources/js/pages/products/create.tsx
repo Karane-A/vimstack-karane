@@ -87,16 +87,16 @@ export default function CreateProduct() {
             <ChevronLeft size={20} className="text-slate-600" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">{t('Create New Product')}</h1>
-            <p className="text-sm text-slate-500">{t('Add a new item to your store inventory')}</p>
+            <h1 className="text-xl md:text-2xl font-bold text-slate-900">{t('Create New Product')}</h1>
+            <p className="text-sm text-slate-500 hidden md:block">{t('Add a new item to your store inventory')}</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <Button variant="outline" className="rounded-xl h-11 px-6 font-bold" onClick={() => router.visit(route('products.index'))}>
+        <div className="flex items-center gap-2 md:gap-3 w-full md:w-auto">
+          <Button variant="outline" className="rounded-xl h-11 px-4 md:px-6 font-bold flex-1 md:flex-none" onClick={() => router.visit(route('products.index'))}>
             {t('Cancel')}
           </Button>
-          <Button variant="default" className="rounded-xl h-11 bg-indigo-600 hover:bg-indigo-700 font-bold px-8 shadow-lg shadow-indigo-100" onClick={handleSubmit}>
-            <Save className="h-4 w-4 mr-2" /> {t('Save Product')}
+          <Button variant="default" className="rounded-xl h-11 bg-indigo-600 hover:bg-indigo-700 font-bold px-4 md:px-8 shadow-lg shadow-indigo-100 flex-1 md:flex-none" onClick={handleSubmit}>
+            <Save className="h-4 w-4 md:mr-2" /> <span className="hidden md:inline">{t('Save Product')}</span>
           </Button>
         </div>
       </div>

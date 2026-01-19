@@ -77,7 +77,7 @@ export function BottomNavigation({ className }: BottomNavigationProps) {
                 <TabBar.Item
                     key="home"
                     icon={<AppOutline />}
-                    title="Dashboard"
+                    title="Home"
                 />
                 <TabBar.Item
                     key="products"
@@ -88,11 +88,6 @@ export function BottomNavigation({ className }: BottomNavigationProps) {
                     key="orders"
                     icon={<ShopbagOutline />}
                     title="Orders"
-                />
-                <TabBar.Item
-                    key="customers"
-                    icon={<UnorderedListOutline />}
-                    title="Customers"
                 />
                 <TabBar.Item
                     key="more"

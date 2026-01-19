@@ -11,9 +11,14 @@ export function MobileBottomNav() {
     const { t } = useTranslation();
     const { url } = usePage();
     const { adminViewMode } = useLayout();
+    const { auth, isImpersonating } = usePage().props as any;
     const navigationItems = useNavigationItems();
 
-    const isCompanyView = adminViewMode === 'company';
+    // Show company/vendor view if:
+    // 1. User is actually a company/vendor
+    // 2. Superadmin is in company view mode
+    // 3. Superadmin is impersonating
+    const isCompanyView = auth?.user?.type === 'company' || adminViewMode === 'company' || isImpersonating;
 
     const navItems = isCompanyView ? [
         {
@@ -23,16 +28,16 @@ export function MobileBottomNav() {
             isActive: url === '/dashboard'
         },
         {
-            title: t('Orders'),
-            href: route('orders.index'),
-            icon: ShoppingCart,
-            isActive: url.startsWith('/orders')
-        },
-        {
             title: t('Products'),
             href: route('products.index'),
             icon: Package,
             isActive: url.startsWith('/products')
+        },
+        {
+            title: t('Orders'),
+            href: route('orders.index'),
+            icon: ShoppingCart,
+            isActive: url.startsWith('/orders')
         },
     ] : [
         {

@@ -44,15 +44,15 @@ export default function Analytics({ analytics }: Props) {
     <div className="p-8 space-y-8 max-w-[1400px] mx-auto">
       <Head title={t('Analytics & Reporting')} />
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">{t('Analytics')}</h1>
-          <p className="text-sm text-slate-500 mt-1">{t('In-depth overview of your business performance')}</p>
+          <p className="text-sm text-slate-500 mt-1 hidden md:block">{t('In-depth overview of your business performance')}</p>
         </div>
         <div className="flex items-center gap-3">
           {hasPermission('export-analytics') && (
-            <Button variant="default" className="rounded-lg h-9 bg-indigo-600 hover:bg-indigo-700 font-bold" onClick={() => window.open(route('analytics.export'), '_blank')}>
-              <Download className="h-4 w-4 mr-2" /> {t('Export Report')}
+            <Button variant="default" className="rounded-lg h-9 bg-indigo-600 hover:bg-indigo-700 font-bold w-full md:w-auto" onClick={() => window.open(route('analytics.export'), '_blank')}>
+              <Download className="h-4 w-4 md:mr-2" /> <span className="hidden md:inline">{t('Export Report')}</span>
             </Button>
           )}
         </div>

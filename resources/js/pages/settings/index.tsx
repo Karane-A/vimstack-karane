@@ -104,46 +104,69 @@ export default function Settings() {
   };
 
   return (
-    <div className="p-8 max-w-[1400px] mx-auto">
+    <div className="p-4 md:p-6 lg:p-8 max-w-[1400px] mx-auto">
       <Head title={t('Settings')} />
 
-      <div className="flex flex-col lg:flex-row gap-8 items-start">
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
         {/* Settings Sidebar */}
-        <div className="lg:w-72 w-full lg:sticky lg:top-8 space-y-2">
-          <div className="mb-6 px-4">
-            <h1 className="text-2xl font-bold text-slate-900">{t('Settings')}</h1>
+        <div className="lg:w-80 w-full lg:sticky lg:top-24 space-y-3">
+          <div className="mb-4 md:mb-6 px-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-slate-900">{t('Settings')}</h1>
             <p className="text-sm text-slate-500 mt-1">{t('Configuration & Preferences')}</p>
           </div>
-          <div className="bg-white rounded-2xl border border-slate-200 p-2 shadow-sm flex lg:flex-col overflow-x-auto lg:overflow-visible gap-2 scrollbar-hide -mx-6 px-6 lg:mx-0 lg:px-2">
+
+          {/* Mobile: Grid-based Navigation */}
+          <div className="lg:hidden bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
+            <div className="grid grid-cols-2 gap-2">
+              {sidebarNavItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => scrollToSection(item.id)}
+                  className={cn(
+                    "flex flex-col items-center justify-center gap-2 p-4 rounded-xl text-xs font-medium transition-all min-h-[80px]",
+                    activeSection === item.id
+                      ? "bg-primary text-primary-foreground shadow-md"
+                      : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                  )}
+                >
+                  <item.icon size={20} strokeWidth={2} />
+                  <span className="text-center leading-tight">{item.title}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Desktop: Vertical Navigation */}
+          <div className="hidden lg:block bg-white rounded-2xl border border-slate-200 p-2 shadow-sm">
             {sidebarNavItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => scrollToSection(item.id)}
                 className={cn(
-                  "flex-shrink-0 lg:w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all group whitespace-nowrap lg:whitespace-normal",
+                  "w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all group mb-1",
                   activeSection === item.id
-                    ? "bg-indigo-50 text-indigo-600 shadow-sm"
-                    : "text-slate-600 hover:bg-slate-50"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-foreground hover:bg-muted"
                 )}
               >
                 <div className="flex items-center gap-3">
-                  <item.icon size={18} className={activeSection === item.id ? "text-indigo-600" : "text-slate-400 group-hover:text-slate-600"} />
+                  <item.icon size={18} className={activeSection === item.id ? "" : "text-muted-foreground group-hover:text-foreground"} />
                   {item.title}
                 </div>
-                <ChevronRight size={14} className={cn("hidden lg:block transition-transform", activeSection === item.id ? "translate-x-0 opacity-100" : "-translate-x-2 opacity-0")} />
+                <ChevronRight size={16} className={cn("transition-all", activeSection === item.id ? "translate-x-0 opacity-100" : "-translate-x-1 opacity-0 group-hover:translate-x-0 group-hover:opacity-50")} />
               </button>
             ))}
           </div>
         </div>
 
         {/* Settings Content */}
-        <div className="flex-1 space-y-12">
+        <div className="flex-1 space-y-8 md:space-y-12 w-full min-w-0">
           {sidebarNavItems.map((item) => (
             <section key={item.id} id={item.id} ref={sectionRefs[item.id]} className="scroll-mt-24">
-              <div className="mb-4 px-2">
-                <h2 className="text-lg font-bold text-slate-900">{item.title}</h2>
+              <div className="mb-3 md:mb-4 px-1">
+                <h2 className="text-xl md:text-2xl font-bold text-slate-900">{item.title}</h2>
               </div>
-              <div className="bg-white rounded-[24px] border border-slate-200 p-8 shadow-sm hover:shadow-md transition-shadow">
+              <div className="bg-white rounded-2xl md:rounded-[28px] border border-slate-200 p-5 md:p-8 shadow-sm hover:shadow-md transition-shadow">
                 {item.id === 'system-settings' && (
                   <SystemSettings settings={systemSettings} timezones={timezones} dateFormats={dateFormats} timeFormats={timeFormats} />
                 )}

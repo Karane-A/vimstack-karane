@@ -36,18 +36,18 @@ export default function Orders({ orders = [], stats }: OrdersProps) {
     <div className="p-8 space-y-8 max-w-[1400px] mx-auto">
       <Head title={t('Order Management')} />
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">{t('Orders')}</h1>
-          <p className="text-sm text-slate-500 mt-1">{t('Manage and track your customer orders')}</p>
+          <p className="text-sm text-slate-500 mt-1 hidden md:block">{t('Manage and track your customer orders')}</p>
         </div>
-        <div className="flex items-center gap-3">
-          <Button variant="outline" className="rounded-lg h-9" onClick={() => router.reload()}>
-            <RefreshCw className="h-4 w-4 mr-2" /> {t('Refresh')}
+        <div className="flex items-center gap-2 md:gap-3">
+          <Button variant="outline" className="rounded-lg h-9 flex-1 md:flex-none" onClick={() => router.reload()}>
+            <RefreshCw className="h-4 w-4 md:mr-2" /> <span className="hidden md:inline">{t('Refresh')}</span>
           </Button>
           {hasPermission('export-orders') && (
-            <Button variant="outline" className="rounded-lg h-9" onClick={() => window.open(route('orders.export'), '_blank')}>
-              <Download className="h-4 w-4 mr-2" /> {t('Export')}
+            <Button variant="outline" className="rounded-lg h-9 flex-1 md:flex-none" onClick={() => window.open(route('orders.export'), '_blank')}>
+              <Download className="h-4 w-4 md:mr-2" /> <span className="hidden md:inline">{t('Export')}</span>
             </Button>
           )}
         </div>

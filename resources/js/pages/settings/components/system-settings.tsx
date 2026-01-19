@@ -17,15 +17,15 @@ interface SystemSettingsProps {
   timeFormats?: Record<string, string>;
 }
 
-export default function SystemSettings({ 
-  settings = {}, 
-  timezones = {}, 
-  dateFormats = {}, 
-  timeFormats = {} 
+export default function SystemSettings({
+  settings = {},
+  timezones = {},
+  dateFormats = {},
+  timeFormats = {}
 }: SystemSettingsProps) {
   const { t } = useTranslation();
   const pageProps = usePage().props as any;
-  
+
   // Default settings
   const defaultSettings = {
     defaultLanguage: 'en',
@@ -35,10 +35,10 @@ export default function SystemSettings({
     defaultTimezone: 'UTC',
     emailVerification: false
   };
-  
+
   // Get settings data from page props - prioritize systemSettings
   const settingsData = pageProps.systemSettings || settings || pageProps.globalSettings || {};
-  
+
   // Initialize state with merged settings
   const [systemSettings, setSystemSettings] = useState(() => ({
     defaultLanguage: settingsData.defaultLanguage || defaultSettings.defaultLanguage,
@@ -48,7 +48,7 @@ export default function SystemSettings({
     defaultTimezone: settingsData.defaultTimezone || defaultSettings.defaultTimezone,
     emailVerification: settingsData.emailVerification === 'true' || settingsData.emailVerification === true || defaultSettings.emailVerification
   }));
-  
+
   // Update state when settings change
   useEffect(() => {
     if (Object.keys(settingsData).length > 0) {
@@ -57,7 +57,7 @@ export default function SystemSettings({
         acc[key] = settingsData[key] || defaultSettings[key];
         return acc;
       }, {} as Record<string, string>);
-      
+
       setSystemSettings(prevSettings => ({
         ...prevSettings,
         ...mergedSettings,
@@ -78,7 +78,7 @@ export default function SystemSettings({
   // Handle system settings form submission
   const submitSystemSettings = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Create clean settings object
     const cleanSettings = {
       defaultLanguage: systemSettings.defaultLanguage,
@@ -88,7 +88,7 @@ export default function SystemSettings({
       defaultTimezone: systemSettings.defaultTimezone,
       emailVerification: Boolean(systemSettings.emailVerification)
     };
-    
+
     // Submit to backend using Inertia
     router.post(route('settings.system.update'), cleanSettings, {
       preserveScroll: true,
@@ -104,18 +104,18 @@ export default function SystemSettings({
       title={t("System Settings")}
       description={t("Configure system-wide settings for your application")}
       action={
-        <Button type="submit" form="system-settings-form" size="sm">
+        <Button type="submit" form="system-settings-form" size="sm" className="w-full md:w-auto">
           <Save className="h-4 w-4 mr-2" />
           {t("Save Changes")}
         </Button>
       }
     >
-      <form id="system-settings-form" onSubmit={submitSystemSettings} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <form id="system-settings-form" onSubmit={submitSystemSettings} className="space-y-5 md:space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5">
           <div className="grid gap-2">
             <Label htmlFor="defaultLanguage">{t("Default Language")}</Label>
-            <Select 
-              value={systemSettings.defaultLanguage} 
+            <Select
+              value={systemSettings.defaultLanguage}
               onValueChange={(value) => handleSystemSettingsChange('defaultLanguage', value)}
             >
               <SelectTrigger>
@@ -123,16 +123,16 @@ export default function SystemSettings({
                   {systemSettings.defaultLanguage && (() => {
                     const selectedLang = languageData.find(lang => lang.code === systemSettings.defaultLanguage);
                     return selectedLang ? <div className="flex items-center space-x-2">
-                                        <ReactCountryFlag
-                                            countryCode={selectedLang.countryCode}
-                                            svg
-                                            style={{
-                                                width: '1.2em',
-                                                height: '1.2em',
-                                            }}
-                                        /> <span>
-                                            {selectedLang.name}
-                                        </span> </div> : t("Select language");
+                      <ReactCountryFlag
+                        countryCode={selectedLang.countryCode}
+                        svg
+                        style={{
+                          width: '1.2em',
+                          height: '1.2em',
+                        }}
+                      /> <span>
+                        {selectedLang.name}
+                      </span> </div> : t("Select language");
                   })()}
                 </SelectValue>
               </SelectTrigger>
@@ -140,16 +140,16 @@ export default function SystemSettings({
                 {languageData.map((language) => (
                   <SelectItem key={language.code} value={language.code}>
                     <div className="flex items-center space-x-2">
-                       <ReactCountryFlag
-                                            countryCode={language.countryCode}
-                                            svg
-                                            style={{
-                                                width: '1.2em',
-                                                height: '1.2em',
-                                            }}
-                                        /> <span>
-                                            {language.name}
-                                        </span> 
+                      <ReactCountryFlag
+                        countryCode={language.countryCode}
+                        svg
+                        style={{
+                          width: '1.2em',
+                          height: '1.2em',
+                        }}
+                      /> <span>
+                        {language.name}
+                      </span>
                     </div>
                   </SelectItem>
                 ))}
@@ -159,15 +159,15 @@ export default function SystemSettings({
 
           <div className="grid gap-2">
             <Label htmlFor="dateFormat">{t("Date Format")}</Label>
-            <Select 
-              value={systemSettings.dateFormat} 
+            <Select
+              value={systemSettings.dateFormat}
               onValueChange={(value) => handleSystemSettingsChange('dateFormat', value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder={t("Select date format")} />
               </SelectTrigger>
               <SelectContent>
-                {Object.keys(dateFormats).length > 0 ? 
+                {Object.keys(dateFormats).length > 0 ?
                   Object.entries(dateFormats).map(([format, example]) => (
                     <SelectItem key={format} value={format}>
                       <div className="flex items-center justify-between w-full">
@@ -190,15 +190,15 @@ export default function SystemSettings({
 
           <div className="grid gap-2">
             <Label htmlFor="timeFormat">{t("Time Format")}</Label>
-            <Select 
-              value={systemSettings.timeFormat} 
+            <Select
+              value={systemSettings.timeFormat}
               onValueChange={(value) => handleSystemSettingsChange('timeFormat', value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder={t("Select time format")} />
               </SelectTrigger>
               <SelectContent>
-                {Object.keys(timeFormats).length > 0 ? 
+                {Object.keys(timeFormats).length > 0 ?
                   Object.entries(timeFormats).map(([format, example]) => (
                     <SelectItem key={format} value={format}>
                       <div className="flex items-center justify-between w-full">
@@ -220,8 +220,8 @@ export default function SystemSettings({
 
           <div className="grid gap-2">
             <Label htmlFor="calendarStartDay">{t("Calendar Start Day")}</Label>
-            <Select 
-              value={systemSettings.calendarStartDay} 
+            <Select
+              value={systemSettings.calendarStartDay}
               onValueChange={(value) => handleSystemSettingsChange('calendarStartDay', value)}
             >
               <SelectTrigger>
@@ -234,17 +234,17 @@ export default function SystemSettings({
             </Select>
           </div>
 
-          <div className="grid gap-2 md:col-span-2">
+          <div className="grid gap-2 lg:col-span-2">
             <Label htmlFor="defaultTimezone">{t("Default Timezone")}</Label>
-            <Select 
-              value={systemSettings.defaultTimezone} 
+            <Select
+              value={systemSettings.defaultTimezone}
               onValueChange={(value) => handleSystemSettingsChange('defaultTimezone', value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder={t("Select timezone")} />
               </SelectTrigger>
               <SelectContent>
-                {Object.keys(timezones).length > 0 ? 
+                {Object.keys(timezones).length > 0 ?
                   Object.entries(timezones).map(([timezone, description]) => (
                     <SelectItem key={timezone} value={timezone}>
                       {description}
@@ -264,10 +264,10 @@ export default function SystemSettings({
 
           {pageProps.auth?.user?.type === 'superadmin' && (
             <>
-              <div className="grid gap-2 md:col-span-2">
-                <div className="flex items-center justify-between">
+              <div className="grid gap-2 lg:col-span-2">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 bg-slate-50 rounded-xl border border-slate-100">
                   <div className="space-y-0.5">
-                    <Label htmlFor="emailVerification">{t("Email Verification")}</Label>
+                    <Label htmlFor="emailVerification" className="text-base">{t("Email Verification")}</Label>
                     <p className="text-sm text-muted-foreground">
                       {t("Require users to verify their email addresses")}
                     </p>
@@ -278,9 +278,6 @@ export default function SystemSettings({
                     onCheckedChange={(checked) => handleSystemSettingsChange('emailVerification', checked)}
                   />
                 </div>
-              </div>
-
-              <div className="grid gap-2 md:col-span-2">
               </div>
             </>
           )}

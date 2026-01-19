@@ -37,20 +37,20 @@ export default function Customers() {
     <div className="p-8 space-y-8 max-w-[1400px] mx-auto">
       <Head title={t('Customer Management')} />
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">{t('Customers')}</h1>
-          <p className="text-sm text-slate-500 mt-1">{t('Maintain relationships and view customer insights')}</p>
+          <p className="text-sm text-slate-500 mt-1 hidden md:block">{t('Maintain relationships and view customer insights')}</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 md:gap-3">
           {hasPermission('export-customers') && (
-            <Button variant="outline" className="rounded-lg h-9" onClick={() => window.open(route('customers.export'), '_blank')}>
-              <Download className="h-4 w-4 mr-2" /> {t('Export')}
+            <Button variant="outline" className="rounded-lg h-9 flex-1 md:flex-none" onClick={() => window.open(route('customers.export'), '_blank')}>
+              <Download className="h-4 w-4 md:mr-2" /> <span className="hidden md:inline">{t('Export')}</span>
             </Button>
           )}
           {hasPermission('create-customers') && (
-            <Button variant="default" className="rounded-lg h-9 bg-indigo-600 hover:bg-indigo-700 font-bold" onClick={() => router.visit(route('customers.create'))}>
-              <Plus className="h-4 w-4 mr-2" /> {t('Add Member')}
+            <Button variant="default" className="rounded-lg h-9 bg-indigo-600 hover:bg-indigo-700 font-bold flex-1 md:flex-none" onClick={() => router.visit(route('customers.create'))}>
+              <Plus className="h-4 w-4 md:mr-2" /> <span className="hidden md:inline">{t('Add Member')}</span>
             </Button>
           )}
         </div>

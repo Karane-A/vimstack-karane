@@ -25,7 +25,7 @@ export default function Categories() {
   };
 
   const pageActions = [];
-  
+
   if (hasPermission('export-categories')) {
     pageActions.push({
       label: t('Export'),
@@ -34,7 +34,7 @@ export default function Categories() {
       onClick: () => window.open(route('categories.export'), '_blank')
     });
   }
-  
+
   if (hasPermission('create-categories')) {
     pageActions.push({
       label: t('Create Category'),
@@ -45,7 +45,7 @@ export default function Categories() {
   }
 
   return (
-    <PageTemplate 
+    <PageTemplate
       title={t('Categories')}
       url="/categories"
       actions={pageActions}
@@ -67,7 +67,7 @@ export default function Categories() {
               <p className="text-xs text-muted-foreground">{t('All categories')}</p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">{t('Active Categories')}</CardTitle>
@@ -80,7 +80,7 @@ export default function Categories() {
               </p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">{t('Parent Categories')}</CardTitle>
@@ -91,7 +91,7 @@ export default function Categories() {
               <p className="text-xs text-muted-foreground">{t('Main categories')}</p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">{t('Sub Categories')}</CardTitle>
@@ -116,9 +116,9 @@ export default function Categories() {
                   <Folder className="h-12 w-12 mx-auto text-muted-foreground opacity-50" />
                   <p className="mt-2 text-muted-foreground">{t('No categories found')}</p>
                   <Permission permission="create-categories">
-                    <Button 
-                      variant="outline" 
-                      className="mt-4" 
+                    <Button
+                      variant="outline"
+                      className="mt-4"
                       onClick={() => router.visit(route('categories.create'))}
                     >
                       <Plus className="h-4 w-4 mr-2" />
@@ -128,9 +128,9 @@ export default function Categories() {
                 </div>
               ) : (
                 categories.map((category: any) => (
-                  <div key={category.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div key={category.id} className="flex flex-col md:flex-row md:items-center md:justify-between p-4 md:p-4 border rounded-lg space-y-4 md:space-y-0">
                     <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 rounded-lg overflow-hidden border">
+                      <div className="w-20 h-20 md:w-12 md:h-12 rounded-lg overflow-hidden border flex-shrink-0">
                         {category.image ? (
                           <img
                             src={getImageUrl(category.image)}
@@ -139,53 +139,89 @@ export default function Categories() {
                           />
                         ) : (
                           <div className="w-full h-full bg-primary/10 flex items-center justify-center">
-                            <Folder className="h-6 w-6 text-primary" />
+                            <Folder className="h-8 w-8 md:h-6 md:w-6 text-primary" />
                           </div>
                         )}
                       </div>
-                      <div>
-                        <div className="flex items-center space-x-2">
-                          <h3 className="font-semibold">{category.name}</h3>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 flex-wrap">
+                          <h3 className="font-semibold text-base md:text-sm">{category.name}</h3>
                           <Badge variant={category.is_active ? 'default' : 'secondary'}>
                             {category.is_active ? t('Active') : t('Inactive')}
                           </Badge>
                         </div>
-                        <p className="text-sm text-muted-foreground">/{category.slug}</p>
+                        <p className="text-sm text-muted-foreground hidden md:block">/{category.slug}</p>
                         <div className="flex items-center space-x-4 mt-1">
                           <span className="text-xs text-muted-foreground">
                             {t('{{count}} products', { count: category.products_count || 0 })}
                           </span>
                           {category.parent && (
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-xs text-muted-foreground hidden md:inline">
                               {t('Parent: {{name}}', { name: category.parent.name })}
                             </span>
                           )}
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
+
+                    {/* Mobile: Full-width action buttons */}
+                    <div className="flex md:hidden items-center gap-2 w-full">
                       <Permission permission="view-categories">
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
+                        <Button
+                          variant="outline"
+                          className="flex-1 h-11"
+                          onClick={() => router.visit(route('categories.show', category.id))}
+                        >
+                          <Eye className="h-4 w-4 mr-2" />
+                          {t('View')}
+                        </Button>
+                      </Permission>
+                      <Permission permission="edit-categories">
+                        <Button
+                          variant="default"
+                          className="flex-1 h-11"
+                          onClick={() => router.visit(route('categories.edit', category.id))}
+                        >
+                          <Edit className="h-4 w-4 mr-2" />
+                          {t('Edit')}
+                        </Button>
+                      </Permission>
+                      <Permission permission="delete-categories">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-11 w-11 text-red-500 hover:text-red-600 hover:bg-red-50"
+                          onClick={() => setCategoryToDelete(category.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </Permission>
+                    </div>
+
+                    {/* Desktop: Icon buttons */}
+                    <div className="hidden md:flex items-center space-x-2">
+                      <Permission permission="view-categories">
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => router.visit(route('categories.show', category.id))}
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
                       </Permission>
                       <Permission permission="edit-categories">
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => router.visit(route('categories.edit', category.id))}
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
                       </Permission>
                       <Permission permission="delete-categories">
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => setCategoryToDelete(category.id)}
                         >
                           <Trash2 className="h-4 w-4" />

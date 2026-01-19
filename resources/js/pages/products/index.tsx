@@ -61,7 +61,7 @@ export default function Products() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl md:text-2xl font-bold text-slate-900">{t('Products')}</h1>
-          <p className="text-sm text-slate-500 mt-1">{t('Manage your product catalog and inventory')}</p>
+          <p className="text-sm text-slate-500 mt-1 hidden md:block">{t('Manage your product catalog and inventory')}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           {hasPermission('create-products') && (

@@ -13,6 +13,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export function AppSidebarHeader() {
     const { t } = useTranslation();
@@ -34,7 +35,7 @@ export function AppSidebarHeader() {
                 {/* Mobile Logo */}
                 <div className="md:hidden">
                     <Link href={route('dashboard')} className="flex items-center gap-2">
-                        <img src="/images/logos/app-logo.png" alt="Vimstack" className="h-6 w-auto object-contain" />
+                        <img src="/images/logos/app-logo.png" alt="Vimstack" className="h-3.5 w-auto object-contain" />
                     </Link>
                 </div>
 
@@ -59,42 +60,26 @@ export function AppSidebarHeader() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                    {/* View Mode Toggle for Superadmins (and Impersonating Admins) - Hidden on Mobile */}
-                    {(user?.type === 'superadmin' || user?.type === 'super admin' || isImpersonating) && (
-                        <button
-                            onClick={() => {
-                                if (isImpersonating) {
-                                    router.post(route('impersonate.leave'));
-                                } else {
-                                    toggleAdminViewMode();
-                                    // Redirect to dashboard if switching back to admin to ensure they land on the right page
-                                    if (adminViewMode === 'company') {
-                                        router.visit(route('dashboard'));
-                                    }
-                                }
-                            }}
-                            className={cn(
-                                "hidden md:flex h-9 items-center gap-2 px-4 rounded-xl transition-all font-bold text-[11px] uppercase tracking-wider",
-                                (adminViewMode === 'admin' && !isImpersonating)
-                                    ? "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                                    : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-200 ring-2 ring-indigo-500/20"
-                            )}
-                        >
-                            <Crown size={16} strokeWidth={2.5} />
-                            <span>
-                                {isImpersonating
-                                    ? t('Back to Admin')
-                                    : (adminViewMode === 'admin' ? t('Admin View') : t('Back to Admin'))
-                                }
-                            </span>
-                        </button>
+                    {/* Impersonation Exit Button - Only visible when impersonating */}
+                    {isImpersonating && (
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <button
+                                        onClick={() => {
+                                            router.post(route('impersonate.leave'));
+                                        }}
+                                        className="flex h-9 w-9 items-center justify-center rounded-xl transition-all bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-200 ring-2 ring-indigo-500/20"
+                                    >
+                                        <Crown size={18} strokeWidth={2.5} />
+                                    </button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>{t('Back to Admin')}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
                     )}
-
-                    <button className="p-2 text-slate-500 hover:bg-slate-50 rounded-full transition-colors" onClick={() => router.visit(route('settings'))}>
-                        <SettingsIcon size={20} strokeWidth={1.5} />
-                    </button>
-
-                    <div className="h-8 w-[1px] bg-slate-100 mx-1"></div>
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
