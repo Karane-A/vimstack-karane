@@ -168,15 +168,21 @@ body {
 }
 
 .ds-nav-item-active {
-  background-color: var(--ds-primary-indigo-light);
-  color: var(--ds-primary-indigo);
+  background-color: color-mix(in srgb, var(--theme-color, var(--ds-primary-indigo)) 10%, transparent);
+  color: var(--theme-color, var(--ds-primary-indigo));
   font-weight: 600;
 }
 
 .ds-nav-item-sub {
-  color: rgb(100, 116, 139);
+  color: rgb(107, 114, 128);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 400;
+  transition: all 0.15s ease;
+}
+
+.ds-nav-item-sub:hover {
+  color: var(--theme-color, var(--ds-primary-indigo));
+  background-color: rgb(249, 250, 251);
 }
 
 /* Buttons */

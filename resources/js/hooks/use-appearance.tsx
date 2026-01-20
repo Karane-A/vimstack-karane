@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 export type Appearance = 'light' | 'dark' | 'system';
-export type ThemeColor = 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'custom';
+export type ThemeColor = 'sky' | 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'custom';
 
 export interface ThemeSettings {
     appearance: Appearance;
@@ -17,7 +17,8 @@ const DEFAULT_THEME: ThemeSettings = {
 
 // Preset theme colors
 export const THEME_COLORS = {
-    blue: '#0e7490',
+    sky: '#0ea5e9',
+    blue: '#3b82f6',
     green: '#10b981',
     purple: '#8b5cf6',
     orange: '#f97316',

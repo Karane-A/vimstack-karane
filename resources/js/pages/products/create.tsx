@@ -26,8 +26,6 @@ export default function CreateProduct() {
     name: '',
     sku: '',
     description: '',
-    specifications: '',
-    details: '',
     price: '',
     sale_price: '',
     stock: 0,
@@ -118,9 +116,8 @@ export default function CreateProduct() {
                 { id: 'general', label: t('General'), icon: Package },
                 { id: 'pricing', label: t('Pricing'), icon: DollarSign },
                 { id: 'inventory', label: t('Stock'), icon: ListChecks },
-                { id: 'content', label: t('Story'), icon: Info },
+                { id: 'content', label: t('Description'), icon: Info },
                 { id: 'variants', label: t('Variants'), icon: Layers },
-                { id: 'advanced', label: t('Extra'), icon: Layers },
               ].map(tab => (
                 <TabsTrigger
                   key={tab.id}
@@ -395,50 +392,24 @@ export default function CreateProduct() {
             </TabsContent>
 
             <TabsContent value="content" className="mt-0 outline-none animate-in fade-in slide-in-from-bottom-2">
-              <div className="space-y-6">
-                <div className="bg-white rounded-[40px] border border-slate-200/60 p-6 md:p-10 shadow-sm space-y-8">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
-                      <Info size={16} />
-                    </div>
-                    <h3 className="font-bold text-slate-900 text-lg">{t('Product Story')}</h3>
+              <div className="bg-white rounded-[40px] border border-slate-200/60 p-6 md:p-10 shadow-sm space-y-8 max-w-4xl">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+                    <Info size={16} />
                   </div>
-
-                  <div className="space-y-3">
-                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-1">{t('The Narrative')}</Label>
-                    <div className="bg-slate-50/50 rounded-2xl border border-slate-200/60 overflow-hidden shadow-inner">
-                      <RichTextEditor
-                        value={formData.description}
-                        onChange={(value) => handleSelectChange('description', value)}
-                        placeholder={t('Start writing your product story...')}
-                      />
-                    </div>
-                  </div>
+                  <h3 className="font-bold text-slate-900 text-lg">{t('Product Description')}</h3>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-white rounded-[32px] border border-slate-200/60 p-6 md:p-8 shadow-sm space-y-4">
-                    <div className="flex items-center gap-2">
-                      <Layers size={14} className="text-slate-400" />
-                      <h4 className="font-bold text-slate-900 text-sm">{t('Technical Specs')}</h4>
-                    </div>
+                <div className="space-y-3">
+                  <Label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-1">{t('Description')}</Label>
+                  <div className="bg-slate-50/50 rounded-2xl border border-slate-200/60 overflow-hidden shadow-inner">
                     <RichTextEditor
-                      value={formData.specifications}
-                      onChange={(value) => handleSelectChange('specifications', value)}
-                      placeholder={t('Weight, Dimensions, CPU...')}
+                      value={formData.description}
+                      onChange={(value) => handleSelectChange('description', value)}
+                      placeholder={t('Write a detailed product description...')}
                     />
                   </div>
-                  <div className="bg-white rounded-[32px] border border-slate-200/60 p-6 md:p-8 shadow-sm space-y-4">
-                    <div className="flex items-center gap-2">
-                      <Package size={14} className="text-slate-400" />
-                      <h4 className="font-bold text-slate-900 text-sm">{t('Package Details')}</h4>
-                    </div>
-                    <RichTextEditor
-                      value={formData.details}
-                      onChange={(value) => handleSelectChange('details', value)}
-                      placeholder={t('What is inside the box?')}
-                    />
-                  </div>
+                  <p className="text-[10px] text-slate-400 px-1 font-medium italic">{t('Include features, benefits, and specifications')}</p>
                 </div>
               </div>
             </TabsContent>
@@ -538,62 +509,7 @@ export default function CreateProduct() {
               </div>
             </TabsContent>
 
-            <TabsContent value="advanced" className="mt-0 outline-none animate-in fade-in slide-in-from-bottom-2">
-              {/* Similar redesign for Advanced tab */}
-              <div className="bg-white rounded-[40px] border border-slate-200/60 p-8 md:p-12 shadow-sm space-y-10">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                  <div>
-                    <h3 className="text-2xl font-black text-slate-900 tracking-tight">{t('Custom Meta')}</h3>
-                    <p className="text-slate-400 text-sm font-medium mt-1 uppercase tracking-widest text-[10px]">{t('Property attributes')}</p>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="rounded-2xl border-indigo-200 text-indigo-600 hover:bg-indigo-50 font-bold h-12 px-6 shadow-sm shadow-indigo-50"
-                    onClick={() => setCustomFields([...customFields, { name: '', value: '' }])}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    {t('New Meta Field')}
-                  </Button>
-                </div>
 
-                <div className="space-y-4 max-w-2xl">
-                  {customFields.map((field, index) => (
-                    <div key={index} className="flex items-center gap-4 animate-in fade-in slide-in-from-left-2">
-                      <Input
-                        placeholder={t('Key')}
-                        value={field.name}
-                        onChange={(e) => {
-                          const newFields = [...customFields];
-                          newFields[index].name = e.target.value;
-                          setCustomFields(newFields);
-                        }}
-                        className="h-14 rounded-2xl border-slate-200 bg-slate-50/50"
-                      />
-                      <Input
-                        placeholder={t('Value')}
-                        value={field.value}
-                        onChange={(e) => {
-                          const newFields = [...customFields];
-                          newFields[index].value = e.target.value;
-                          setCustomFields(newFields);
-                        }}
-                        className="h-14 rounded-2xl border-slate-200 bg-slate-50/50"
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="h-14 w-14 p-0 rounded-2xl text-slate-300 hover:text-rose-600 hover:bg-rose-50 shrink-0"
-                        onClick={() => setCustomFields(customFields.filter((_: any, i: number) => i !== index))}
-                      >
-                        <Trash2 size={18} />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </TabsContent>
           </div>
         </Tabs>
       </div>

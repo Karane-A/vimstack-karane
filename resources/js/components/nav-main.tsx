@@ -63,7 +63,7 @@ export function NavMain({ items = [], position }: { items: NavItem[]; position: 
                         href={item.href || '#'}
                         className={`${isSubItem ? 'ds-nav-item-sub py-1.5 px-3 rounded-lg text-sm ml-6 pl-4' : 'ds-nav-item w-full'} ${isActive(item.href) ? 'ds-nav-item-active font-bold bg-primary/10 text-primary' : (isSubItem ? 'text-slate-500 hover:text-primary hover:bg-slate-50' : '')}`}
                     >
-                        {item.icon && <item.icon size={isSubItem ? 16 : 18} strokeWidth={isActive(item.href) ? 2 : 1.5} />}
+                        {!isSubItem && item.icon && <item.icon size={18} strokeWidth={isActive(item.href) ? 2 : 1.5} />}
                         {!isCollapsed && <span>{item.title}</span>}
                         {isCollapsed && <span className="sr-only">{item.title}</span>}
                     </Link>

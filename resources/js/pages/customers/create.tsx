@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTranslation } from 'react-i18next';
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import MediaPicker from '@/components/MediaPicker';
 import { usePermissions } from '@/hooks/usePermissions';
 
@@ -105,7 +105,7 @@ export default function CreateCustomer() {
       ...formData,
       avatar
     };
-    
+
     router.post(route('customers.store'), submitData);
   };
 
@@ -117,7 +117,7 @@ export default function CreateCustomer() {
       onClick: () => router.visit(route('customers.index'))
     }
   ];
-  
+
   if (hasPermission('create-customers')) {
     pageActions.push({
       label: t('Save Customer'),
@@ -128,7 +128,7 @@ export default function CreateCustomer() {
   }
 
   return (
-    <PageTemplate 
+    <PageTemplate
       title={t('Add Customer')}
       url="/customers/create"
       actions={pageActions}
@@ -145,7 +145,7 @@ export default function CreateCustomer() {
             <TabsTrigger value="address">{t('Address')}</TabsTrigger>
             <TabsTrigger value="preferences">{t('Preferences')}</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="personal" className="space-y-4">
             <Card>
               <CardHeader>
@@ -163,55 +163,55 @@ export default function CreateCustomer() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="first_name">{t('First Name *')}</Label>
-                    <Input 
-                      id="first_name" 
+                    <Input
+                      id="first_name"
                       name="first_name"
                       value={formData.first_name}
                       onChange={handleInputChange}
-                      placeholder={t('Enter first name')} 
+                      placeholder={t('Enter first name')}
                     />
                   </div>
                   <div>
                     <Label htmlFor="last_name">{t('Last Name *')}</Label>
-                    <Input 
-                      id="last_name" 
+                    <Input
+                      id="last_name"
                       name="last_name"
                       value={formData.last_name}
                       onChange={handleInputChange}
-                      placeholder={t('Enter last name')} 
+                      placeholder={t('Enter last name')}
                     />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="email">{t('Email Address *')}</Label>
-                    <Input 
-                      id="email" 
+                    <Input
+                      id="email"
                       name="email"
-                      type="email" 
+                      type="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      placeholder={t('customer@example.com')} 
+                      placeholder={t('customer@example.com')}
                     />
                   </div>
                   <div>
                     <Label htmlFor="phone">{t('Phone Number')}</Label>
-                    <Input 
-                      id="phone" 
+                    <Input
+                      id="phone"
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      placeholder={t('+1 (555) 123-4567')} 
+                      placeholder={t('+1 (555) 123-4567')}
                     />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="date_of_birth">{t('Date of Birth')}</Label>
-                    <Input 
-                      id="date_of_birth" 
+                    <Input
+                      id="date_of_birth"
                       name="date_of_birth"
-                      type="date" 
+                      type="date"
                       value={formData.date_of_birth}
                       onChange={handleInputChange}
                     />
@@ -236,12 +236,12 @@ export default function CreateCustomer() {
                 </div>
                 <div>
                   <Label htmlFor="notes">{t('Notes')}</Label>
-                  <Textarea 
-                    id="notes" 
+                  <Textarea
+                    id="notes"
                     name="notes"
                     value={formData.notes}
                     onChange={handleInputChange}
-                    placeholder={t('Customer notes...')} 
+                    placeholder={t('Customer notes...')}
                   />
                 </div>
                 <div className="flex items-center justify-between">
@@ -249,7 +249,7 @@ export default function CreateCustomer() {
                     <Label>{t('Customer Status')}</Label>
                     <p className="text-sm text-muted-foreground">{t('Enable or disable customer account')}</p>
                   </div>
-                  <Switch 
+                  <Switch
                     checked={formData.is_active}
                     onCheckedChange={(checked) => handleSwitchChange('is_active', checked)}
                   />
@@ -266,41 +266,41 @@ export default function CreateCustomer() {
               <CardContent className="space-y-4">
                 <div>
                   <Label htmlFor="billing_address">{t('Street Address')}</Label>
-                  <Input 
-                    id="billing_address" 
+                  <Input
+                    id="billing_address"
                     value={formData.billing_address.address}
                     onChange={(e) => handleAddressChange('billing_address', 'address', e.target.value)}
-                    placeholder={t('123 Main Street')} 
+                    placeholder={t('123 Main Street')}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="billing_city">{t('City')}</Label>
-                    <Input 
-                      id="billing_city" 
+                    <Input
+                      id="billing_city"
                       value={formData.billing_address.city}
                       onChange={(e) => handleAddressChange('billing_address', 'city', e.target.value)}
-                      placeholder={t('New York')} 
+                      placeholder={t('New York')}
                     />
                   </div>
                   <div>
                     <Label htmlFor="billing_state">{t('State/Province')}</Label>
-                    <Input 
-                      id="billing_state" 
+                    <Input
+                      id="billing_state"
                       value={formData.billing_address.state}
                       onChange={(e) => handleAddressChange('billing_address', 'state', e.target.value)}
-                      placeholder={t('NY')} 
+                      placeholder={t('NY')}
                     />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="billing_postal">{t('Postal Code')}</Label>
-                    <Input 
-                      id="billing_postal" 
+                    <Input
+                      id="billing_postal"
                       value={formData.billing_address.postal_code}
                       onChange={(e) => handleAddressChange('billing_address', 'postal_code', e.target.value)}
-                      placeholder={t('10001')} 
+                      placeholder={t('10001')}
                     />
                   </div>
                   <div>
@@ -334,7 +334,7 @@ export default function CreateCustomer() {
                 <div className="flex items-center justify-between">
                   <CardTitle>{t('Shipping Address')}</CardTitle>
                   <div className="flex items-center space-x-2">
-                    <Switch 
+                    <Switch
                       checked={formData.same_as_billing}
                       onCheckedChange={(checked) => handleSwitchChange('same_as_billing', checked)}
                     />
@@ -345,45 +345,45 @@ export default function CreateCustomer() {
               <CardContent className="space-y-4">
                 <div>
                   <Label htmlFor="shipping_address">Street Address</Label>
-                  <Input 
-                    id="shipping_address" 
+                  <Input
+                    id="shipping_address"
                     value={formData.shipping_address.address}
                     onChange={(e) => handleAddressChange('shipping_address', 'address', e.target.value)}
                     disabled={formData.same_as_billing}
-                    placeholder="123 Main Street" 
+                    placeholder="123 Main Street"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="shipping_city">City</Label>
-                    <Input 
-                      id="shipping_city" 
+                    <Input
+                      id="shipping_city"
                       value={formData.shipping_address.city}
                       onChange={(e) => handleAddressChange('shipping_address', 'city', e.target.value)}
                       disabled={formData.same_as_billing}
-                      placeholder="New York" 
+                      placeholder="New York"
                     />
                   </div>
                   <div>
                     <Label htmlFor="shipping_state">State/Province</Label>
-                    <Input 
-                      id="shipping_state" 
+                    <Input
+                      id="shipping_state"
                       value={formData.shipping_address.state}
                       onChange={(e) => handleAddressChange('shipping_address', 'state', e.target.value)}
                       disabled={formData.same_as_billing}
-                      placeholder="NY" 
+                      placeholder="NY"
                     />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="shipping_postal">Postal Code</Label>
-                    <Input 
-                      id="shipping_postal" 
+                    <Input
+                      id="shipping_postal"
                       value={formData.shipping_address.postal_code}
                       onChange={(e) => handleAddressChange('shipping_address', 'postal_code', e.target.value)}
                       disabled={formData.same_as_billing}
-                      placeholder="10001" 
+                      placeholder="10001"
                     />
                   </div>
                   <div>
@@ -425,7 +425,7 @@ export default function CreateCustomer() {
                     <Label>{t('Email Marketing')}</Label>
                     <p className="text-sm text-muted-foreground">{t('Receive promotional emails')}</p>
                   </div>
-                  <Switch 
+                  <Switch
                     checked={formData.email_marketing}
                     onCheckedChange={(checked) => handleSwitchChange('email_marketing', checked)}
                   />
@@ -435,7 +435,7 @@ export default function CreateCustomer() {
                     <Label>{t('SMS Notifications')}</Label>
                     <p className="text-sm text-muted-foreground">{t('Receive SMS updates')}</p>
                   </div>
-                  <Switch 
+                  <Switch
                     checked={formData.sms_notifications}
                     onCheckedChange={(checked) => handleSwitchChange('sms_notifications', checked)}
                   />
@@ -445,7 +445,7 @@ export default function CreateCustomer() {
                     <Label>{t('Order Updates')}</Label>
                     <p className="text-sm text-muted-foreground">{t('Receive order status updates')}</p>
                   </div>
-                  <Switch 
+                  <Switch
                     checked={formData.order_updates}
                     onCheckedChange={(checked) => handleSwitchChange('order_updates', checked)}
                   />

@@ -12,7 +12,7 @@ import {
     Megaphone, FileText, Image,
     Truck, Landmark, Mail, Star,
     ShieldCheck, UserPlus, CreditCard,
-    Boxes
+    Boxes, Shield, Receipt
 } from 'lucide-react';
 
 export function useNavigationItems() {
@@ -147,10 +147,13 @@ export function useNavigationItems() {
         // Content Group
         const contentChildren = [];
         if (userRole === 'company' || hasPermission(permissions, 'view-store-content')) {
-            contentChildren.push({ title: t('Store Pages'), href: route('stores.content.index'), icon: FileText });
+            contentChildren.push({ title: t('Store Content'), href: route('stores.content.index'), icon: FileText });
         }
         if (hasPermission(permissions, 'manage-blog') && hasFeatureAccess('blog')) {
             contentChildren.push({ title: t('Blog'), href: route('blog.index'), icon: FileText });
+        }
+        if (userRole === 'company' || hasPermission(permissions, 'view-custom-pages')) {
+            contentChildren.push({ title: t('Custom Pages'), href: route('custom-pages.index'), icon: FileText });
         }
 
         if (contentChildren.length > 0) {
@@ -163,18 +166,27 @@ export function useNavigationItems() {
 
         // Settings Group
         const settingsChildren = [];
+        // General - Account Settings (always visible for company users)
+        if (userRole === 'company' && auth.user?.company_id) {
+            settingsChildren.push({ title: t('General'), href: route('stores.settings', auth.user.company_id), icon: SettingsIcon });
+        }
         if (hasPermission(permissions, 'manage-users')) {
             settingsChildren.push({ title: t('Staff'), href: route('users.index'), icon: UserPlus });
         }
-        if (hasPermission(permissions, 'manage-shipping') || hasPermission(permissions, 'manage-tax')) {
-            settingsChildren.push({ 
-                title: t('Shipping & Tax'), 
-                href: hasPermission(permissions, 'manage-shipping') ? route('shipping.index') : route('tax.index'), 
-                icon: Truck 
-            });
+        if (hasPermission(permissions, 'manage-roles') || hasPermission(permissions, 'view-roles')) {
+            settingsChildren.push({ title: t('User Roles'), href: route('roles.index'), icon: Shield });
+        }
+        if (hasPermission(permissions, 'manage-shipping')) {
+            settingsChildren.push({ title: t('Shipping'), href: route('shipping.index'), icon: Truck });
+        }
+        if (hasPermission(permissions, 'manage-tax')) {
+            settingsChildren.push({ title: t('Tax'), href: route('tax.index'), icon: Receipt });
         }
         if (hasPermission(permissions, 'view-plans')) {
             settingsChildren.push({ title: t('Billing'), href: route('plans.index'), icon: CreditCard });
+        }
+        if (hasPermission(permissions, 'manage-referral')) {
+            settingsChildren.push({ title: t('Referral Program'), href: route('referral.index'), icon: Star });
         }
 
         if (settingsChildren.length > 0) {

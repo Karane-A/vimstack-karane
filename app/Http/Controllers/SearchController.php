@@ -143,7 +143,7 @@ class SearchController extends Controller
 
         // Search Stores (superadmin only)
         if ($user->isSuperAdmin()) {
-            $results['companies'] = Store::where('name', 'LIKE', "%{$query}%")
+            $results['companies'] = Company::where('name', 'LIKE', "%{$query}%")
                 ->orWhere('email', 'LIKE', "%{$query}%")
                 ->select('id', 'name', 'email', 'slug')
                 ->limit(5)
