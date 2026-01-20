@@ -44,6 +44,11 @@ php artisan view:cache
 echo "🗄️ Running database migrations..."
 php artisan migrate --force
 
+# 6. Restart Web Server (Critical for changes to take effect)
+echo "🔄 Restarting web server..."
+systemctl restart lsws || echo "⚠️ Could not restart lsws, you may need to restart manually"
+
 echo "------------------------------------------"
 echo "✅ Live Sync Complete!"
+echo "💡 If changes don't appear, hard refresh browser (Ctrl+Shift+R)"
 echo "------------------------------------------"
