@@ -2,10 +2,13 @@ import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
+import { useSidebar } from './ui/sidebar';
 
 export function NavMain({ items = [], position }: { items: NavItem[]; position: 'left' | 'right' }) {
     const page = usePage();
     const [expandedItems, setExpandedItems] = useState<string[]>([]);
+    const { state, isMobile } = useSidebar();
+    const isCollapsed = state === 'collapsed' && !isMobile;
 
     const toggleExpand = (title: string) => {
         setExpandedItems(prev =>
@@ -51,9 +54,9 @@ export function NavMain({ items = [], position }: { items: NavItem[]; position: 
                     >
                         <div className="flex items-center gap-2">
                             {item.icon && <item.icon size={18} strokeWidth={isParentActive(item) ? 2 : 1.5} />}
-                            <span className={isSubItem ? 'font-medium' : ''}>{item.title}</span>
+                            {!isCollapsed && <span className={isSubItem ? 'font-medium' : ''}>{item.title}</span>}
                         </div>
-                        {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                        {!isCollapsed && (isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />)}
                     </div>
                 ) : (
                     <Link
@@ -61,11 +64,12 @@ export function NavMain({ items = [], position }: { items: NavItem[]; position: 
                         className={`${isSubItem ? 'ds-nav-item-sub py-1.5 px-3 rounded-lg text-sm ml-6 pl-4' : 'ds-nav-item w-full'} ${isActive(item.href) ? 'ds-nav-item-active font-bold bg-primary/10 text-primary' : (isSubItem ? 'text-slate-500 hover:text-primary hover:bg-slate-50' : '')}`}
                     >
                         {item.icon && !isSubItem && <item.icon size={18} strokeWidth={isActive(item.href) ? 2 : 1.5} />}
-                        <span>{item.title}</span>
+                        {!isCollapsed && <span>{item.title}</span>}
+                        {isCollapsed && isSubItem && <span className="sr-only">{item.title}</span>}
                     </Link>
                 )}
 
-                {hasChildren && isExpanded && (
+                {hasChildren && isExpanded && !isCollapsed && (
                     <div className={`flex flex-col gap-1 ${isSubItem ? 'ml-4 border-l border-slate-50' : 'ml-6 pl-4 border-l border-slate-100'}`}>
                         {item.children?.map((child) => renderItem(child, true))}
                     </div>
@@ -73,6 +77,7 @@ export function NavMain({ items = [], position }: { items: NavItem[]; position: 
             </div>
         );
     };
+
 
     if (!items || !Array.isArray(items)) return null;
 
@@ -83,6 +88,19 @@ export function NavMain({ items = [], position }: { items: NavItem[]; position: 
 
                 // Render section label if specified
                 if (item.isLabel) {
+                    if (isCollapsed) {
+                        return (
+                            <div key={item.title} className="my-4 px-2">
+                                <div className="h-px bg-slate-200 w-full" />
+                                {item.children && (
+                                    <div className="flex flex-col gap-1 mt-4">
+                                        {item.children.map((child) => renderItem(child))}
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    }
+
                     return (
                         <div key={item.title} className="mt-6 mb-2 px-3">
                             <div className="flex items-center gap-2 mb-3">

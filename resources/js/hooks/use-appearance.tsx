@@ -17,7 +17,7 @@ const DEFAULT_THEME: ThemeSettings = {
 
 // Preset theme colors
 export const THEME_COLORS = {
-    blue: '#0284c7',
+    blue: '#0e7490',
     green: '#10b981',
     purple: '#8b5cf6',
     orange: '#f97316',

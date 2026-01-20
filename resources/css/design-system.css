@@ -10,9 +10,9 @@
   /* Primary Colors */
   --ds-primary-dark: rgb(3, 2, 19);
   /* Navy/Near-Black for primary elements */
-  --ds-primary-indigo: #0284c7;
+  --ds-primary-indigo: #0e7490;
   /* Brand Blue for active states & accents */
-  --ds-primary-indigo-light: rgba(2, 132, 199, 0.1);
+  --ds-primary-indigo-light: rgba(14, 116, 144, 0.1);
   /* Light brand blue background */
 
   /* Neutrals */
