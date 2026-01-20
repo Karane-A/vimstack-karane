@@ -30,7 +30,8 @@ class AnalyticsController extends BaseController
             'topCustomers' => $this->getTopCustomers($storeId),
             'recentActivity' => $this->getRecentActivity($storeId),
             'revenueChart' => $this->getRevenueChartData($storeId),
-            'salesChart' => $this->getSalesChartData($storeId)
+            'salesChart' => $this->getSalesChartData($storeId),
+            'monthlyRevenueBreakdown' => $this->getMonthlyRevenueBreakdown($storeId)
         ];
         
         // In demo mode, add dummy data for metrics and charts only when they are zero/null
@@ -59,7 +60,15 @@ class AnalyticsController extends BaseController
     {
         $currentMonth = Carbon::now()->startOfMonth();
         $lastMonth = Carbon::now()->subMonth()->startOfMonth();
+        $thirtyDaysAgo = Carbon::now()->subDays(30);
 
+        // Basic totals
+        $totalOrders = Order::where('store_id', $storeId)->count();
+        $totalRevenue = Order::where('store_id', $storeId)->sum('total_amount');
+        $totalCustomers = Customer::where('store_id', $storeId)->count();
+        $totalProducts = Product::where('store_id', $storeId)->count();
+
+        // Current month metrics
         $currentRevenue = Order::where('store_id', $storeId)
             ->where('created_at', '>=', $currentMonth)
             ->sum('total_amount');
@@ -76,25 +85,64 @@ class AnalyticsController extends BaseController
             ->whereBetween('created_at', [$lastMonth, $currentMonth])
             ->count();
 
-        $totalCustomers = Customer::where('store_id', $storeId)->count();
         $newCustomers = Customer::where('store_id', $storeId)
             ->where('created_at', '>=', $currentMonth)
             ->count();
 
+        // Monthly growth percentage
+        $monthlyGrowth = $lastMonthRevenue > 0 
+            ? (($currentRevenue - $lastMonthRevenue) / $lastMonthRevenue) * 100 
+            : 0;
+
+        // Average order value
+        $avgOrderValue = $totalOrders > 0 ? $totalRevenue / $totalOrders : 0;
+
+        // Conversion rate (orders per customer)
+        $conversionRate = $totalCustomers > 0 ? ($totalOrders / $totalCustomers) * 100 : 0;
+
+        // Active products (sold in last 30 days)
+        $activeProducts = DB::table('order_items')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->where('orders.store_id', $storeId)
+            ->where('orders.created_at', '>=', $thirtyDaysAgo)
+            ->distinct('order_items.product_id')
+            ->count('order_items.product_id');
+
+        // Repeat customer rate (customers with 2+ orders)
+        $repeatCustomers = DB::table('orders')
+            ->select('customer_email')
+            ->where('store_id', $storeId)
+            ->groupBy('customer_email')
+            ->havingRaw('COUNT(*) >= 2')
+            ->get()
+            ->count();
+
+        $repeatRate = $totalCustomers > 0 ? ($repeatCustomers / $totalCustomers) * 100 : 0;
+
         return [
             'revenue' => [
+                'total' => $totalRevenue,
                 'current' => $currentRevenue,
-                'change' => $lastMonthRevenue > 0 ? (($currentRevenue - $lastMonthRevenue) / $lastMonthRevenue) * 100 : 0
+                'change' => $lastMonthRevenue > 0 ? (($currentRevenue - $lastMonthRevenue) / $lastMonthRevenue) * 100 : 0,
+                'monthlyGrowth' => round($monthlyGrowth, 2),
+                'avgOrderValue' => $avgOrderValue
             ],
             'orders' => [
+                'total' => $totalOrders,
                 'current' => $currentOrders,
                 'change' => $currentOrders - $lastMonthOrders
             ],
             'customers' => [
                 'total' => $totalCustomers,
-                'new' => $newCustomers
+                'new' => $newCustomers,
+                'repeatRate' => round($repeatRate, 2),
+                'repeatCount' => $repeatCustomers
             ],
-
+            'products' => [
+                'total' => $totalProducts,
+                'active' => $activeProducts
+            ],
+            'conversionRate' => round($conversionRate, 2)
         ];
     }
 
@@ -190,6 +238,25 @@ class AnalyticsController extends BaseController
                 ];
             });
     }
+    
+    private function getMonthlyRevenueBreakdown($storeId)
+    {
+        $monthlyData = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $monthStart = Carbon::now()->subMonths($i)->startOfMonth();
+            $monthEnd = Carbon::now()->subMonths($i)->endOfMonth();
+            
+            $revenue = Order::where('store_id', $storeId)
+                ->whereBetween('created_at', [$monthStart, $monthEnd])
+                ->sum('total_amount');
+            
+            $monthlyData[] = [
+                'month' => $monthStart->format('M Y'),
+                'revenue' => $revenue
+            ];
+        }
+        return $monthlyData;
+    }
 
     private function getEmptyAnalytics()
     {
@@ -254,7 +321,8 @@ class AnalyticsController extends BaseController
             'metrics' => $this->getKeyMetrics($storeId),
             'topProducts' => $this->getTopProducts($storeId),
             'topCustomers' => $this->getTopCustomers($storeId),
-            'revenueChart' => $this->getRevenueChartData($storeId)
+            'revenueChart' => $this->getRevenueChartData($storeId),
+            'monthlyRevenueBreakdown' => $this->getMonthlyRevenueBreakdown($storeId)
         ];
         
         $csvData = [];
@@ -262,13 +330,39 @@ class AnalyticsController extends BaseController
         $csvData[] = ['Generated on: ' . now()->format('Y-m-d H:i:s')];
         $csvData[] = [];
         
-        // Key Metrics
-        $csvData[] = ['KEY METRICS'];
-        $csvData[] = ['Metric', 'Current Value', 'Change'];
-        $csvData[] = ['Revenue', formatStoreCurrency($analytics['metrics']['revenue']['current'], $user->id, $storeId), number_format($analytics['metrics']['revenue']['change'], 1) . '%'];
-        $csvData[] = ['Orders', $analytics['metrics']['orders']['current'], $analytics['metrics']['orders']['change']];
-        $csvData[] = ['Total Customers', $analytics['metrics']['customers']['total'], ''];
-        $csvData[] = ['New Customers', $analytics['metrics']['customers']['new'], ''];
+        // Enhanced Key Metrics
+        $csvData[] = ['KEY PERFORMANCE METRICS'];
+        $csvData[] = ['Metric', 'Current Value', 'Additional Info'];
+        $csvData[] = ['Total Revenue', formatStoreCurrency($analytics['metrics']['revenue']['total'], $user->id, $storeId), ''];
+        $csvData[] = ['Monthly Revenue', formatStoreCurrency($analytics['metrics']['revenue']['current'], $user->id, $storeId), number_format($analytics['metrics']['revenue']['change'], 1) . '% change'];
+        $csvData[] = ['Average Order Value', formatStoreCurrency($analytics['metrics']['revenue']['avgOrderValue'], $user->id, $storeId), ''];
+        $csvData[] = ['Conversion Rate', number_format($analytics['metrics']['conversionRate'], 2) . '%', ''];
+        $csvData[] = [];
+        
+        // Orders & Customers
+        $csvData[] = ['ORDERS & CUSTOMERS'];
+        $csvData[] = ['Metric', 'Value'];
+        $csvData[] = ['Total Orders', $analytics['metrics']['orders']['total']];
+        $csvData[] = ['Current Month Orders', $analytics['metrics']['orders']['current']];
+        $csvData[] = ['Total Customers', $analytics['metrics']['customers']['total']];
+        $csvData[] = ['New Customers', $analytics['metrics']['customers']['new']];
+        $csvData[] = ['Repeat Customer Rate', number_format($analytics['metrics']['customers']['repeatRate'], 2) . '%'];
+        $csvData[] = ['Repeat Customers', $analytics['metrics']['customers']['repeatCount']];
+        $csvData[] = [];
+        
+        // Product Performance
+        $csvData[] = ['PRODUCT PERFORMANCE'];
+        $csvData[] = ['Metric', 'Value'];
+        $csvData[] = ['Total Products', $analytics['metrics']['products']['total']];
+        $csvData[] = ['Active Products (Last 30 Days)', $analytics['metrics']['products']['active']];
+        $csvData[] = [];
+        
+        // Monthly Revenue Breakdown
+        $csvData[] = ['MONTHLY REVENUE BREAKDOWN (Last 6 Months)'];
+        $csvData[] = ['Month', 'Revenue'];
+        foreach ($analytics['monthlyRevenueBreakdown'] as $month) {
+            $csvData[] = [$month['month'], formatStoreCurrency($month['revenue'], $user->id, $storeId)];
+        }
         $csvData[] = [];
         
         // Top Products
@@ -287,7 +381,7 @@ class AnalyticsController extends BaseController
         }
         $csvData[] = [];
         
-        // Revenue Chart Data
+        // Daily Revenue Chart Data
         $csvData[] = ['DAILY REVENUE (Last 30 Days)'];
         $csvData[] = ['Date', 'Revenue'];
         foreach ($analytics['revenueChart'] as $data) {

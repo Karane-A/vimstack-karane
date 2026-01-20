@@ -1,5 +1,5 @@
 import React from 'react';
-import { Download, Users, ShoppingCart, DollarSign, TrendingUp, ArrowUpRight, ArrowDownRight, Package, User } from 'lucide-react';
+import { Download, Users, ShoppingCart, DollarSign, TrendingUp, ArrowUpRight, ArrowDownRight, Package, User, Target, Activity, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart as RechartsBarChart, Bar, AreaChart, Area } from 'recharts';
@@ -19,6 +19,7 @@ interface Props {
     recentActivity: any[];
     revenueChart: any[];
     salesChart: any[];
+    monthlyRevenueBreakdown?: any[];
   };
 }
 
@@ -58,12 +59,18 @@ export default function Analytics({ analytics }: Props) {
         </div>
       </div>
 
-      {/* Metrics Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {/* Enhanced Metrics Grid */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard
           title={t('Total Revenue')}
-          value={formatCurrency(analytics.metrics.revenue.current)}
+          value={formatCurrency(analytics.metrics.revenue.total || analytics.metrics.revenue.current)}
           icon={DollarSign}
+          description={t('Lifetime earnings')}
+        />
+        <MetricCard
+          title={t('Monthly Revenue')}
+          value={formatCurrency(analytics.metrics.revenue.current)}
+          icon={TrendingUp}
           trend={{
             value: `${Math.abs(analytics.metrics.revenue.change).toFixed(1)}%`,
             isUp: analytics.metrics.revenue.change >= 0,
@@ -71,14 +78,36 @@ export default function Analytics({ analytics }: Props) {
           }}
         />
         <MetricCard
-          title={t('Total Orders')}
-          value={analytics.metrics.orders.current.toLocaleString()}
+          title={t('Avg Order Value')}
+          value={formatCurrency(analytics.metrics.revenue.avgOrderValue || 0)}
           icon={ShoppingCart}
+          description={t('Per transaction')}
+        />
+        <MetricCard
+          title={t('Conversion Rate')}
+          value={`${analytics.metrics.conversionRate || 0}%`}
+          icon={Target}
+          description={t('Orders / Customers')}
+        />
+      </div>
+
+      {/* Secondary Metrics Grid */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <MetricCard
+          title={t('Total Orders')}
+          value={(analytics.metrics.orders.total || analytics.metrics.orders.current).toLocaleString()}
+          icon={Package}
           trend={{
             value: `${Math.abs(analytics.metrics.orders.change)}`,
             isUp: analytics.metrics.orders.change >= 0,
             label: 'vs last month'
           }}
+        />
+        <MetricCard
+          title={t('Active Products')}
+          value={(analytics.metrics.products?.active || 0).toLocaleString()}
+          icon={Sparkles}
+          description={t('Sold in last 30 days')}
         />
         <MetricCard
           title={t('Total Customers')}
@@ -89,6 +118,12 @@ export default function Analytics({ analytics }: Props) {
             isUp: true,
             label: 'new this month'
           }}
+        />
+        <MetricCard
+          title={t('Repeat Rate')}
+          value={`${analytics.metrics.customers.repeatRate || 0}%`}
+          icon={Activity}
+          description={t('2+ purchases')}
         />
       </div>
 
@@ -178,97 +213,99 @@ export default function Analytics({ analytics }: Props) {
             </ResponsiveContainer>
           </div>
         </div>
-      </div>
 
-      <div className="grid gap-8 lg:grid-cols-2">
-        {/* Top Products */}
-        <div className="bg-white rounded-[24px] border border-slate-200 overflow-hidden shadow-sm">
-          <div className="p-6 border-b border-slate-50">
-            <h3 className="font-bold text-slate-900">{t('Top Selling Products')}</h3>
-          </div>
-          <div className="p-0">
-            {analytics.topProducts.map((product, index) => (
-              <div key={index} className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
-                    <Package className="w-5 h-5 text-indigo-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-slate-900">{product.name}</p>
-                    <p className="text-xs text-slate-500">{t('{{count}} items sold', { count: product.sales })}</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-bold text-slate-900">
-                    {typeof product.revenue === 'number' ? formatCurrency(product.revenue) : product.revenue}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
 
-        {/* Top Customers */}
-        <div className="bg-white rounded-[24px] border border-slate-200 overflow-hidden shadow-sm">
-          <div className="p-6 border-b border-slate-50">
-            <h3 className="font-bold text-slate-900">{t('Top Customers')}</h3>
-          </div>
-          <div className="p-0">
-            {analytics.topCustomers.map((customer, index) => (
-              <div key={index} className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
-                    <User className="w-5 h-5 text-slate-500" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-slate-900">{customer.name}</p>
-                    <p className="text-xs text-slate-500">{t('{{count}} orders placed', { count: customer.orders })}</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-bold text-emerald-600">
-                    {typeof customer.spent === 'number' ? formatCurrency(customer.spent) : customer.spent}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Recent Activity List */}
-      <div className="bg-white rounded-[24px] border border-slate-200 overflow-hidden shadow-sm">
-        <div className="p-6 border-b border-slate-50">
-          <h3 className="font-bold text-slate-900">{t('Recent Activity')}</h3>
-        </div>
-        <div className="p-0">
-          {analytics.recentActivity.map((activity, index) => (
-            <div key={index} className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0">
-              <div className="flex items-center gap-4">
-                <div className={cn(
-                  "w-10 h-10 rounded-xl flex items-center justify-center",
-                  activity.type === 'Order' ? "bg-emerald-50 text-emerald-600" :
-                    activity.type === 'Customer' ? "bg-indigo-50 text-indigo-600" :
-                      activity.type === 'Product' ? "bg-amber-50 text-amber-600" :
-                        "bg-slate-50 text-slate-600"
-                )}>
-                  {activity.type === 'Order' && <ShoppingCart className="h-5 w-5" />}
-                  {activity.type === 'Customer' && <Users className="h-5 w-5" />}
-                  {activity.type === 'Product' && <Package className="h-5 w-5" />}
-                  {activity.type === 'Payment' && <DollarSign className="h-5 w-5" />}
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-slate-900">{activity.description}</p>
-                  <p className="text-xs text-slate-500">{activity.time}</p>
-                </div>
-              </div>
-              {activity.amount && (
-                <div className="px-3 py-1 bg-slate-50 text-slate-700 rounded-full text-xs font-bold">
-                  {typeof activity.amount === 'number' ? formatCurrency(activity.amount) : activity.amount}
-                </div>
-              )}
+        {/* Top Products and Customers Grid */}
+        <div className="grid gap-8 lg:grid-cols-2">
+          {/* Top Products */}
+          <div className="bg-white rounded-[24px] border border-slate-200 overflow-hidden shadow-sm">
+            <div className="p-6 border-b border-slate-50">
+              <h3 className="font-bold text-slate-900">{t('Top Selling Products')}</h3>
             </div>
-          ))}
+            <div className="p-0">
+              {analytics.topProducts.map((product, index) => (
+                <div key={index} className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
+                      <Package className="w-5 h-5 text-indigo-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-slate-900">{product.name}</p>
+                      <p className="text-xs text-slate-500">{t('{{count}} items sold', { count: product.sales })}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-bold text-slate-900">
+                      {typeof product.revenue === 'number' ? formatCurrency(product.revenue) : product.revenue}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Top Customers */}
+          <div className="bg-white rounded-[24px] border border-slate-200 overflow-hidden shadow-sm">
+            <div className="p-6 border-b border-slate-50">
+              <h3 className="font-bold text-slate-900">{t('Top Customers')}</h3>
+            </div>
+            <div className="p-0">
+              {analytics.topCustomers.map((customer, index) => (
+                <div key={index} className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+                      <User className="w-5 h-5 text-slate-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-slate-900">{customer.name}</p>
+                      <p className="text-xs text-slate-500">{t('{{count}} orders placed', { count: customer.orders })}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-bold text-emerald-600">
+                      {typeof customer.spent === 'number' ? formatCurrency(customer.spent) : customer.spent}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Activity List */}
+        <div className="bg-white rounded-[24px] border border-slate-200 overflow-hidden shadow-sm">
+          <div className="p-6 border-b border-slate-50">
+            <h3 className="font-bold text-slate-900">{t('Recent Activity')}</h3>
+          </div>
+          <div className="p-0">
+            {analytics.recentActivity.map((activity, index) => (
+              <div key={index} className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0">
+                <div className="flex items-center gap-4">
+                  <div className={cn(
+                    "w-10 h-10 rounded-xl flex items-center justify-center",
+                    activity.type === 'Order' ? "bg-emerald-50 text-emerald-600" :
+                      activity.type === 'Customer' ? "bg-indigo-50 text-indigo-600" :
+                        activity.type === 'Product' ? "bg-amber-50 text-amber-600" :
+                          "bg-slate-50 text-slate-600"
+                  )}>
+                    {activity.type === 'Order' && <ShoppingCart className="h-5 w-5" />}
+                    {activity.type === 'Customer' && <Users className="h-5 w-5" />}
+                    {activity.type === 'Product' && <Package className="h-5 w-5" />}
+                    {activity.type === 'Payment' && <DollarSign className="h-5 w-5" />}
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-slate-900">{activity.description}</p>
+                    <p className="text-xs text-slate-500">{activity.time}</p>
+                  </div>
+                </div>
+                {activity.amount && (
+                  <div className="px-3 py-1 bg-slate-50 text-slate-700 rounded-full text-xs font-bold">
+                    {typeof activity.amount === 'number' ? formatCurrency(activity.amount) : activity.amount}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

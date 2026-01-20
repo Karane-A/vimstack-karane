@@ -521,27 +521,63 @@ class DashboardController extends Controller
         $csvData[] = ['Generated on: ' . now()->format('Y-m-d H:i:s')];
         $csvData[] = [];
         
-        // Metrics
-        $csvData[] = ['METRICS'];
-        $csvData[] = ['Total Orders', $dashboardData['metrics']['orders']];
-        $csvData[] = ['Total Products', $dashboardData['metrics']['products']];
-        $csvData[] = ['Total Customers', $dashboardData['metrics']['customers']];
+        // Enhanced Key Performance Metrics
+        $csvData[] = ['KEY PERFORMANCE METRICS'];
+        $csvData[] = ['Metric', 'Value'];
         $csvData[] = ['Total Revenue', formatStoreCurrency($dashboardData['metrics']['revenue'], $user->id, $storeId)];
+        $csvData[] = ['Monthly Revenue', formatStoreCurrency($dashboardData['metrics']['monthlyRevenue'], $user->id, $storeId)];
+        $csvData[] = ['Monthly Growth', number_format($dashboardData['metrics']['monthlyGrowth'], 2) . '%'];
+        $csvData[] = ['Average Order Value', formatStoreCurrency($dashboardData['metrics']['avgOrderValue'], $user->id, $storeId)];
+        $csvData[] = ['Conversion Rate', number_format($dashboardData['metrics']['conversionRate'], 2) . '%'];
+        $csvData[] = [];
+        
+        // Orders & Customers
+        $csvData[] = ['ORDERS & CUSTOMERS'];
+        $csvData[] = ['Metric', 'Value'];
+        $csvData[] = ['Total Orders', $dashboardData['metrics']['orders']];
+        $csvData[] = ['Total Customers', $dashboardData['metrics']['customers']];
+        $csvData[] = ['Repeat Customer Rate', number_format($dashboardData['metrics']['repeatRate'], 2) . '%'];
+        $csvData[] = [];
+        
+        // Product Performance
+        $csvData[] = ['PRODUCT PERFORMANCE'];
+        $csvData[] = ['Metric', 'Value'];
+        $csvData[] = ['Total Products', $dashboardData['metrics']['products']];
+        $csvData[] = ['Active Products (Last 30 Days)', $dashboardData['metrics']['activeProducts']];
+        $csvData[] = [];
+        
+        // Monthly Revenue Breakdown
+        $csvData[] = ['MONTHLY REVENUE BREAKDOWN (Last 6 Months)'];
+        $csvData[] = ['Month', 'Revenue'];
+        foreach ($dashboardData['monthlyRevenueBreakdown'] as $month) {
+            $csvData[] = [$month['month'], formatStoreCurrency($month['revenue'], $user->id, $storeId)];
+        }
+        $csvData[] = [];
+        
+        // Top Products (Enhanced with Revenue)
+        $csvData[] = ['TOP PRODUCTS'];
+        $csvData[] = ['Product Name', 'Units Sold', 'Total Revenue', 'Unit Price'];
+        foreach ($dashboardData['topProducts'] as $product) {
+            $csvData[] = [
+                $product['name'], 
+                $product['sold'], 
+                formatStoreCurrency($product['revenue'] ?? 0, $user->id, $storeId),
+                formatStoreCurrency($product['price'], $user->id, $storeId)
+            ];
+        }
         $csvData[] = [];
         
         // Recent Orders
         $csvData[] = ['RECENT ORDERS'];
-        $csvData[] = ['Order Number', 'Customer', 'Amount', 'Status'];
+        $csvData[] = ['Order Number', 'Customer', 'Amount', 'Status', 'Date'];
         foreach ($dashboardData['recentOrders'] as $order) {
-            $csvData[] = [$order['order_number'], $order['customer'], formatStoreCurrency($order['amount'], $user->id, $storeId), $order['status']];
-        }
-        $csvData[] = [];
-        
-        // Top Products
-        $csvData[] = ['TOP PRODUCTS'];
-        $csvData[] = ['Product Name', 'Units Sold', 'Price'];
-        foreach ($dashboardData['topProducts'] as $product) {
-            $csvData[] = [$product['name'], $product['sold'], formatStoreCurrency($product['price'], $user->id, $storeId)];
+            $csvData[] = [
+                $order['order_number'], 
+                $order['customer'], 
+                formatStoreCurrency($order['amount'], $user->id, $storeId), 
+                $order['status'],
+                $order['date']
+            ];
         }
         
         $filename = 'dashboard-export-' . $store->slug . '-' . now()->format('Y-m-d') . '.csv';

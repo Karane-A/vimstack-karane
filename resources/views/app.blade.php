@@ -48,10 +48,10 @@
 
         {{-- Favicon --}}
         @php
-            $favicon = getSetting('favicon', '/images/logos/vimstack-favicon.png');
-            $faviconUrl = $favicon ? (str_starts_with($favicon, 'http') ? $favicon : asset($favicon)) : asset('/images/logos/vimstack-favicon.png');
+            $favicon = getSetting('favicon', '/images/logos/vimstack-favicon.jpg');
+            $faviconUrl = $favicon ? (str_starts_with($favicon, 'http') ? $favicon : asset($favicon)) : asset('/images/logos/vimstack-favicon.jpg');
         @endphp
-        <link rel="icon" type="image/png" href="{{ $faviconUrl }}">
+        <link rel="icon" type="image/jpeg" href="{{ $faviconUrl }}">
         <link rel="apple-touch-icon" href="{{ $faviconUrl }}">
 
         <link rel="preconnect" href="https://fonts.bunny.net">
