@@ -16,6 +16,7 @@ use App\Models\PlanRequest;
 use App\Models\Coupon;
 use App\Models\Ticket;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 function formatStoreCurrency($amount, $userId, $storeId) {
     $settings = settings($userId, $storeId);
     $defaultCurrency = $settings['defaultCurrency'] ?? 'USD';
@@ -174,12 +175,70 @@ class DashboardController extends Controller
     {
         $currentMonth = Carbon::now()->startOfMonth();
         $lastMonth = Carbon::now()->subMonth()->startOfMonth();
+        $thirtyDaysAgo = Carbon::now()->subDays(30);
         
+        // Basic metrics
         $totalOrders = Order::where('store_id', $storeId)->count();
         $totalProducts = Product::where('store_id', $storeId)->count();
         $totalCustomers = Customer::where('store_id', $storeId)->count();
         $totalRevenue = Order::where('store_id', $storeId)->sum('total_amount');
         
+        // Monthly revenue and growth
+        $monthlyRevenue = Order::where('store_id', $storeId)
+            ->where('created_at', '>=', $currentMonth)
+            ->sum('total_amount');
+        
+        $lastMonthRevenue = Order::where('store_id', $storeId)
+            ->whereBetween('created_at', [$lastMonth, $currentMonth])
+            ->sum('total_amount');
+        
+        $monthlyGrowth = $lastMonthRevenue > 0 
+            ? (($monthlyRevenue - $lastMonthRevenue) / $lastMonthRevenue) * 100 
+            : 0;
+        
+        // Average order value
+        $avgOrderValue = $totalOrders > 0 ? $totalRevenue / $totalOrders : 0;
+        
+        // Conversion rate (orders per customer)
+        $conversionRate = $totalCustomers > 0 ? ($totalOrders / $totalCustomers) * 100 : 0;
+        
+        // Active products (products sold in last 30 days)
+        $activeProducts = DB::table('order_items')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->where('orders.store_id', $storeId)
+            ->where('orders.created_at', '>=', $thirtyDaysAgo)
+            ->distinct('order_items.product_id')
+            ->count('order_items.product_id');
+        
+        // Repeat customer rate (customers with 2+ orders)
+        $repeatCustomers = DB::table('orders')
+            ->select('customer_email')
+            ->where('store_id', $storeId)
+            ->groupBy('customer_email')
+            ->havingRaw('COUNT(*) >= 2')
+            ->get()
+            ->count();
+        
+        $repeatRate = $totalCustomers > 0 ? ($repeatCustomers / $totalCustomers) * 100 : 0;
+        
+        // Monthly revenue breakdown (last 6 months)
+        $monthlyRevenueData = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $monthStart = Carbon::now()->subMonths($i)->startOfMonth();
+            $monthEnd = Carbon::now()->subMonths($i)->endOfMonth();
+            
+            $revenue = Order::where('store_id', $storeId)
+                ->whereBetween('created_at', [$monthStart, $monthEnd])
+                ->sum('total_amount');
+            
+            $monthlyRevenueData[] = [
+                'month' => $monthStart->format('M'),
+                'revenue' => $revenue,
+                'monthIndex' => 5 - $i
+            ];
+        }
+        
+        // Recent orders
         $recentOrders = Order::where('store_id', $storeId)
             ->orderBy('created_at', 'desc')
             ->limit(5)
@@ -195,13 +254,14 @@ class DashboardController extends Controller
                 ];
             });
             
+        // Top products
         $topProducts = OrderItem::select('product_id', 'product_name')
-            ->selectRaw('SUM(quantity) as total_sold')
+            ->selectRaw('SUM(quantity) as total_sold, SUM(unit_price * quantity) as total_revenue')
             ->whereHas('order', function($query) use ($storeId) {
                 $query->where('store_id', $storeId);
             })
             ->groupBy('product_id', 'product_name')
-            ->orderBy('total_sold', 'desc')
+            ->orderBy('total_revenue', 'desc')
             ->limit(5)
             ->get()
             ->map(function($item) {
@@ -210,17 +270,25 @@ class DashboardController extends Controller
                     'id' => $item->product_id,
                     'name' => $item->product_name,
                     'sold' => $item->total_sold,
+                    'revenue' => $item->total_revenue,
                     'price' => $product ? $product->price : 0
                 ];
             });
         
         return [
             'metrics' => [
+                'revenue' => $totalRevenue,
+                'monthlyRevenue' => $monthlyRevenue,
+                'monthlyGrowth' => round($monthlyGrowth, 2),
+                'avgOrderValue' => $avgOrderValue,
+                'conversionRate' => round($conversionRate, 2),
                 'orders' => $totalOrders,
-                'products' => $totalProducts,
+                'activeProducts' => $activeProducts,
                 'customers' => $totalCustomers,
-                'revenue' => $totalRevenue
+                'repeatRate' => round($repeatRate, 2),
+                'products' => $totalProducts
             ],
+            'monthlyRevenueBreakdown' => $monthlyRevenueData,
             'recentOrders' => $recentOrders,
             'topProducts' => $topProducts
         ];

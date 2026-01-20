@@ -31,7 +31,8 @@ import {
   Check,
   PlusCircle,
   Tag,
-  LifeBuoy
+  LifeBuoy,
+  Target
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -430,16 +431,49 @@ export default function Dashboard({ dashboardData, currentStore, storeUrl, isSup
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Primary Metrics */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <MetricCard
           title={t('Total Revenue')}
           value={formatCurrency(metrics.revenue || 0)}
           icon={DollarSign}
+          description={t('Lifetime earnings')}
         />
+        <MetricCard
+          title={t('Monthly Revenue')}
+          value={formatCurrency(metrics.monthlyRevenue || 0)}
+          icon={TrendingUp}
+          trend={{
+            value: `${metrics.monthlyGrowth || 0}%`,
+            isUp: (metrics.monthlyGrowth || 0) >= 0
+          }}
+        />
+        <MetricCard
+          title={t('Avg Order Value')}
+          value={formatCurrency(metrics.avgOrderValue || 0)}
+          icon={ShoppingCart}
+          description={t('Per transaction')}
+        />
+        <MetricCard
+          title={t('Conversion Rate')}
+          value={`${metrics.conversionRate || 0}%`}
+          icon={Target}
+          description={t('Orders / Customers')}
+        />
+      </div>
+
+      {/* Secondary Metrics */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <MetricCard
           title={t('Total Orders')}
           value={(metrics.orders || 0).toLocaleString()}
-          icon={ShoppingCart}
+          icon={Package}
+        />
+        <MetricCard
+          title={t('Active Products')}
+          value={(metrics.activeProducts || 0).toLocaleString()}
+          icon={Sparkles}
+          description={t('Sold in last 30 days')}
         />
         <MetricCard
           title={t('Total Customers')}
@@ -447,24 +481,44 @@ export default function Dashboard({ dashboardData, currentStore, storeUrl, isSup
           icon={Users}
         />
         <MetricCard
-          title={t('Total Products')}
-          value={(metrics.products || 0).toLocaleString()}
-          icon={Package}
+          title={t('Repeat Rate')}
+          value={`${metrics.repeatRate || 0}%`}
+          icon={Activity}
+          description={t('2+ purchases')}
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 bg-white rounded-[32px] border border-slate-100 p-8 shadow-sm">
-          <div className="flex items-center justify-between mb-8">
-            <h3 className="text-lg font-bold text-slate-900">{t('Sales Overview')}</h3>
+        {/* Revenue Trend Chart */}
+        <Card className="lg:col-span-2 rounded-2xl border-slate-100 shadow-sm bg-white overflow-hidden">
+          <CardHeader className="p-6 border-b border-slate-50">
+            <CardTitle className="text-lg font-bold text-slate-900">{t('Revenue Trend')}</CardTitle>
+            <CardDescription className="text-xs">{t('Last 6 months performance')}</CardDescription>
+          </CardHeader>
+          <CardContent className="p-6 md:p-8 flex-1 flex items-end gap-2 justify-between pt-10 min-h-[300px]">
+            {(() => {
+              const revenueData = dashboardData.monthlyRevenueBreakdown || [];
+              const maxRevenue = Math.max(...revenueData.map((m: any) => m.revenue), 1);
+
+              return revenueData.map((monthData: any, i: number) => {
+                const heightPercent = maxRevenue > 0 ? (monthData.revenue / maxRevenue) * 100 : 0;
+
+                return (
+                  <div key={i} className="flex-1 bg-primary/80 rounded-t-sm group relative hover:bg-primary transition-colors" style={{ height: `${Math.max(heightPercent, 2)}%` }}>
+                    <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 shadow-xl">
+                      {monthData.month}: {formatCurrency(monthData.revenue)}
+                    </div>
+                  </div>
+                );
+              });
+            })()}
+          </CardContent>
+          <div className="px-6 pb-6 mt-auto flex justify-between border-t border-slate-50 pt-4">
+            {(dashboardData.monthlyRevenueBreakdown || []).map((m: any, idx: number) => (
+              <span key={idx} className="text-[10px] font-bold text-slate-300">{m.month.toUpperCase()}</span>
+            ))}
           </div>
-          <div className="h-[300px] w-full bg-slate-50/50 rounded-[20px] border border-dashed border-slate-200 flex flex-col items-center justify-center p-6 text-center">
-            <div className="w-16 h-16 rounded-full bg-indigo-50 flex items-center justify-center mb-4">
-              <TrendingUp className="text-indigo-400 h-8 w-8" />
-            </div>
-            <p className="text-slate-500 font-medium text-sm">{t('Sales visualization will appear here.')}</p>
-          </div>
-        </div>
+        </Card>
 
         <Card className="rounded-[32px] border-slate-100 shadow-sm bg-white overflow-hidden">
           <CardHeader className="p-8 border-b border-slate-50">
@@ -537,45 +591,50 @@ export default function Dashboard({ dashboardData, currentStore, storeUrl, isSup
         />
       </div>
 
-      {/* QR Code Section */}
-      <div className="bg-slate-900 rounded-[40px] p-10 flex flex-col md:flex-row items-center gap-10 text-white relative overflow-hidden shadow-xl">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
-        <div className="flex-1 z-10 space-y-6">
-          <h3 className="text-3xl font-bold tracking-tight">{t('Expand Your Reach')}</h3>
-          <p className="text-slate-400 font-medium max-w-sm">
-            {t('Deploy your store URL anywhere. Professional, responsive, and ready for high-volume commerce.')}
-          </p>
-          <div className="flex flex-col sm:flex-row items-center gap-4">
-            <Button onClick={copyToClipboard} className="bg-primary hover:bg-primary/90 text-white font-bold px-8 rounded-2xl h-12 w-full sm:w-auto gap-2">
-              {copied ? <Check size={18} /> : <Copy size={18} />}
-              {copied ? t('Copied') : t('Copy Store Link')}
-            </Button>
-            <Button variant="outline" onClick={downloadQRCode} className="bg-white/10 hover:bg-white/20 text-white border-white/20 font-bold px-8 rounded-2xl h-12 w-full sm:w-auto gap-2">
-              <Download size={18} />
-              {t('Download QR')}
-            </Button>
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-3xl shadow-2xl z-10 relative">
-          <QRCode id="qr-code-svg" value={currentStore?.qr_code_url || storeUrl || ''} size={140} fgColor="#0F172A" />
-        </div>
-      </div>
-      <div className="bg-indigo-900 rounded-[40px] p-10 text-white relative overflow-hidden shadow-2xl shadow-indigo-900/20">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-primary/20 rounded-full blur-[100px] -mr-40 -mt-40"></div>
-        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="space-y-4 text-center md:text-left">
-            <h2 className="text-3xl font-black tracking-tight">{t('Need Expert Advice?')}</h2>
-            <p className="text-indigo-200 font-medium max-w-md">
-              {t('Our dedicated support team is here to help you grow your business. Submit a ticket for any technical or billing issues.')}
+      {/* QR Code & Support Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* QR Code Section */}
+        <div className="bg-slate-900 rounded-[40px] p-10 flex flex-col md:flex-row items-center gap-10 text-white relative overflow-hidden shadow-xl">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
+          <div className="flex-1 z-10 space-y-6">
+            <h3 className="text-3xl font-bold tracking-tight">{t('Expand Your Reach')}</h3>
+            <p className="text-slate-400 font-medium max-w-sm">
+              {t('Deploy your store URL anywhere. Professional, responsive, and ready for high-volume commerce.')}
             </p>
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <Button onClick={copyToClipboard} className="bg-primary hover:bg-primary/90 text-white font-bold px-8 rounded-2xl h-12 w-full sm:w-auto gap-2">
+                {copied ? <Check size={18} /> : <Copy size={18} />}
+                {copied ? t('Copied') : t('Copy Store Link')}
+              </Button>
+              <Button variant="outline" onClick={downloadQRCode} className="bg-white/10 hover:bg-white/20 text-white border-white/20 font-bold px-8 rounded-2xl h-12 w-full sm:w-auto gap-2">
+                <Download size={18} />
+                {t('Download QR')}
+              </Button>
+            </div>
           </div>
-          <Button
-            onClick={() => router.visit(route('support.index'))}
-            className="bg-white text-indigo-900 hover:bg-slate-100 rounded-2xl h-14 px-10 font-black shadow-xl transition-all hover:scale-105"
-          >
-            <LifeBuoy className="mr-3" size={24} />
-            {t('Contact Support')}
-          </Button>
+          <div className="bg-white p-6 rounded-3xl shadow-2xl z-10 relative">
+            <QRCode id="qr-code-svg" value={currentStore?.qr_code_url || storeUrl || ''} size={140} fgColor="#0F172A" />
+          </div>
+        </div>
+
+        {/* Support Section */}
+        <div className="bg-indigo-900 rounded-[40px] p-10 text-white relative overflow-hidden shadow-2xl shadow-indigo-900/20">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-primary/20 rounded-full blur-[100px] -mr-40 -mt-40"></div>
+          <div className="relative z-10 flex flex-col items-center justify-center gap-8 h-full text-center">
+            <div className="space-y-4">
+              <h2 className="text-3xl font-black tracking-tight">{t('Need Expert Advice?')}</h2>
+              <p className="text-indigo-200 font-medium max-w-md mx-auto">
+                {t('Our dedicated support team is here to help you grow your business. Submit a ticket for any technical or billing issues.')}
+              </p>
+            </div>
+            <Button
+              onClick={() => router.visit(route('support.index'))}
+              className="bg-white text-indigo-900 hover:bg-slate-100 rounded-2xl h-14 px-10 font-black shadow-xl transition-all hover:scale-105"
+            >
+              <LifeBuoy className="mr-3" size={24} />
+              {t('Contact Support')}
+            </Button>
+          </div>
         </div>
       </div>
     </div>
