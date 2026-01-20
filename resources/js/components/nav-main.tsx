@@ -46,7 +46,7 @@ export function NavMain({ items = [], position }: { items: NavItem[]; position: 
         const isExpanded = expandedItems.includes(item.title) || isParentActive(item);
 
         return (
-            <div key={item.title} className="flex flex-col gap-1 w-full">
+            <div key={item.title} className="flex flex-col w-full">
                 {hasChildren ? (
                     <div
                         onClick={() => toggleExpand(item.title)}
@@ -63,14 +63,14 @@ export function NavMain({ items = [], position }: { items: NavItem[]; position: 
                         href={item.href || '#'}
                         className={`${isSubItem ? 'ds-nav-item-sub py-1.5 px-3 rounded-lg text-sm ml-6 pl-4' : 'ds-nav-item w-full'} ${isActive(item.href) ? 'ds-nav-item-active font-bold bg-primary/10 text-primary' : (isSubItem ? 'text-slate-500 hover:text-primary hover:bg-slate-50' : '')}`}
                     >
-                        {item.icon && !isSubItem && <item.icon size={18} strokeWidth={isActive(item.href) ? 2 : 1.5} />}
+                        {item.icon && <item.icon size={isSubItem ? 16 : 18} strokeWidth={isActive(item.href) ? 2 : 1.5} />}
                         {!isCollapsed && <span>{item.title}</span>}
-                        {isCollapsed && isSubItem && <span className="sr-only">{item.title}</span>}
+                        {isCollapsed && <span className="sr-only">{item.title}</span>}
                     </Link>
                 )}
 
                 {hasChildren && isExpanded && !isCollapsed && (
-                    <div className={`flex flex-col gap-1 ${isSubItem ? 'ml-4 border-l border-slate-50' : 'ml-6 pl-4 border-l border-slate-100'}`}>
+                    <div className={`flex flex-col ${isSubItem ? 'ml-4 border-l border-slate-50' : 'ml-6 pl-4 border-l border-slate-100'}`}>
                         {item.children?.map((child) => renderItem(child, true))}
                     </div>
                 )}
@@ -82,35 +82,25 @@ export function NavMain({ items = [], position }: { items: NavItem[]; position: 
     if (!items || !Array.isArray(items)) return null;
 
     return (
-        <div className="flex flex-col gap-1 w-full">
-            {items.map((item: NavItem) => {
+        <div className="flex flex-col w-full">
+            {items.map((item: NavItem, index: number) => {
                 if (!item) return null;
 
-                // Render section label if specified
-                if (item.isLabel) {
-                    if (isCollapsed) {
-                        return (
-                            <div key={item.title} className="my-4 px-2">
-                                <div className="h-px bg-slate-200 w-full" />
-                                {item.children && (
-                                    <div className="flex flex-col gap-1 mt-4">
-                                        {item.children.map((child) => renderItem(child))}
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    }
-
+                // Render Shopify-style divider (legacy support)
+                if (item.isDivider) {
                     return (
-                        <div key={item.title} className="mt-6 mb-2 px-3">
-                            <div className="flex items-center gap-2 mb-3">
-                                {item.icon && <item.icon size={14} className="text-slate-400" />}
-                                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em]">
-                                    {item.title}
-                                </h3>
-                            </div>
+                        <div key={item.title} className="my-2 mx-3">
+                            <div className="h-px bg-slate-200" />
+                        </div>
+                    );
+                }
+
+                // Render section label if specified (legacy support)
+                if (item.isLabel) {
+                    return (
+                        <div key={item.title} className="mt-4 mb-1">
                             {item.children && (
-                                <div className="flex flex-col gap-1">
+                                <div className="flex flex-col gap-0.5">
                                     {item.children.map((child) => renderItem(child))}
                                 </div>
                             )}
@@ -118,7 +108,7 @@ export function NavMain({ items = [], position }: { items: NavItem[]; position: 
                     );
                 }
 
-                return renderItem(item);
+                return <div key={item.title || index}>{renderItem(item)}</div>;
             })}
         </div>
     );

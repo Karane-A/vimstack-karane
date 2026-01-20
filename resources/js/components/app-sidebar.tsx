@@ -28,11 +28,11 @@ export function AppSidebar() {
         <Sidebar
             side={position}
             collapsible="icon"
-            className="ds-sidebar border-r border-slate-200 bg-[#F9FAFB]"
+            className="border-r border-slate-200 bg-white"
         >
             <div className="flex flex-col h-full">
-                {/* Logo Area */}
-                <div className="px-6 py-8">
+                {/* Logo Area - Shopify style */}
+                <div className="px-4 py-5 border-b border-slate-200">
                     <Link href={getFirstAvailableHref()} className="flex items-center gap-2">
                         <div className="h-8 flex items-center justify-center">
                             <img src={appLogoPath} alt="Vimstack" className="h-full object-contain" />
@@ -40,18 +40,18 @@ export function AppSidebar() {
                     </Link>
                 </div>
 
-                {/* Sidebar Navigation */}
-                <SidebarContent className="flex-1 bg-transparent px-2">
+                {/* Sidebar Navigation - Shopify style with padding */}
+                <SidebarContent className="flex-1 bg-transparent px-2 py-4">
                     <NavMain items={filteredNavItems} position={position} />
                 </SidebarContent>
 
-                {/* Bottom Footer - Logout */}
-                <SidebarFooter className="p-4 bg-transparent border-t border-slate-100 flex flex-col gap-2">
+                {/* Bottom Footer - Shopify style */}
+                <SidebarFooter className="p-2 bg-transparent border-t border-slate-200">
                     <Link
                         href={route('logout')}
                         method="post"
                         as="button"
-                        className="ds-nav-item w-full flex items-center gap-2 text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors"
+                        className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
                     >
                         <LogOut size={18} />
                         <span>{t('Log out')}</span>

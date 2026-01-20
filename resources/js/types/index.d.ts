@@ -7,6 +7,7 @@ export interface NavItem {
   icon?: LucideIcon;
   permission?: string;
   isLabel?: boolean;
+  isDivider?: boolean;
   children?: NavItem[];
 }
 

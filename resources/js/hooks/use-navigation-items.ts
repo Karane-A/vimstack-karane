@@ -74,143 +74,114 @@ export function useNavigationItems() {
     const getCompanyNavItems = (): NavItem[] => {
         const items: NavItem[] = [];
 
-        // --- CORE SECTION ---
-        // 1. Home
+        // Home - Always visible at top
         if (userRole === 'company' || hasPermission(permissions, 'manage-dashboard')) {
             items.push({ title: t('Home'), href: route('dashboard'), icon: Home });
         }
 
-        // 2. Orders
+        // Sales Group
+        const salesChildren = [];
         if (hasPermission(permissions, 'manage-orders')) {
-            items.push({ title: t('Orders'), href: route('orders.index'), icon: ShoppingCart });
+            salesChildren.push({ title: t('Orders'), href: route('orders.index'), icon: ShoppingCart });
+        }
+        if (hasPermission(permissions, 'manage-products')) {
+            salesChildren.push({ title: t('Products'), href: route('products.index'), icon: Tag });
+        }
+        if (hasPermission(permissions, 'view-categories')) {
+            salesChildren.push({ title: t('Categories'), href: route('categories.index'), icon: Boxes });
+        }
+        if (hasPermission(permissions, 'manage-customers')) {
+            salesChildren.push({ title: t('Customers'), href: route('customers.index'), icon: Users });
         }
 
-        // 3. Products
-        if (hasPermission(permissions, 'manage-products')) {
+        if (salesChildren.length > 0) {
             items.push({
-                title: t('Products'),
-                icon: Tag,
-                href: route('products.index'),
+                title: t('Sales'),
+                icon: ShoppingCart,
+                children: salesChildren
             });
         }
 
-        // 4. Customers
-        if (hasPermission(permissions, 'manage-customers')) {
-            items.push({ title: t('Customers'), href: route('customers.index'), icon: Users });
-        }
-
-        // 5. Analytics
-        if (hasPermission(permissions, 'view-analytics') || hasPermission(permissions, 'manage-analytics')) {
-            items.push({ title: t('Analytics'), href: route('analytics.index'), icon: BarChart3 });
-        }
-
-        // --- TOOLS SECTION ---
-        const toolItems: NavItem[] = [];
-
-        // Marketing Dropdown
+        // Marketing Group
         const marketingChildren = [];
         if (hasPermission(permissions, 'manage-coupon-system')) {
-            marketingChildren.push({ title: t('Coupons'), href: route('coupon-system.index'), icon: Percent });
-        }
-        if (hasPermission(permissions, 'manage-newsletter-subscribers')) {
-            marketingChildren.push({ title: t('Newsletter'), href: route('newsletter-subscribers.index'), icon: Mail });
+            marketingChildren.push({ title: t('Discounts'), href: route('coupon-system.index'), icon: Percent });
         }
         if (hasPermission(permissions, 'manage-reviews')) {
             marketingChildren.push({ title: t('Reviews'), href: route('reviews.index'), icon: Star });
         }
+        if (hasPermission(permissions, 'manage-newsletter-subscribers')) {
+            marketingChildren.push({ title: t('Newsletter'), href: route('newsletter-subscribers.index'), icon: Mail });
+        }
 
-        if (marketingChildren.length > 0 || hasPermission(permissions, 'view-referral')) {
-            toolItems.push({
+        if (marketingChildren.length > 0) {
+            items.push({
                 title: t('Marketing'),
                 icon: Megaphone,
-                children: marketingChildren.length > 0 ? marketingChildren : undefined,
-                href: marketingChildren.length === 0 ? route('referral.index') : undefined
+                children: marketingChildren
             });
         }
 
-        // Flattened Sales Channels
-        if (hasPermission(permissions, 'manage-pos')) {
-            toolItems.push({ title: t('Point of Sale'), href: route('pos.index'), icon: Smartphone });
+        // Analytics - Standalone
+        if (hasPermission(permissions, 'view-analytics') || hasPermission(permissions, 'manage-analytics')) {
+            items.push({ title: t('Analytics'), href: route('analytics.index'), icon: BarChart3 });
         }
+
+        // Sales Channels Group
+        const channelsChildren = [];
         if (userRole === 'company' || hasPermission(permissions, 'manage-stores') || hasPermission(permissions, 'view-stores')) {
-            toolItems.push({ title: t('Online Store'), href: route('stores.index'), icon: Globe2 });
+            channelsChildren.push({ title: t('Online Store'), href: route('stores.index'), icon: Globe2 });
+        }
+        if (hasPermission(permissions, 'manage-pos')) {
+            channelsChildren.push({ title: t('Point of Sale'), href: route('pos.index'), icon: Smartphone });
         }
 
-        if (toolItems.length > 0) {
+        if (channelsChildren.length > 0) {
             items.push({
-                title: t('Tools'),
-                isLabel: true,
-                children: toolItems
+                title: t('Sales Channels'),
+                icon: LayoutGrid,
+                children: channelsChildren
             });
         }
 
-        // --- MANAGE SECTION ---
-        const manageItems: NavItem[] = [];
-
-        // Staff Dropdown
-        const staffChildren = [];
-        if (hasPermission(permissions, 'manage-users')) {
-            staffChildren.push({ title: t('Team Members'), href: route('users.index') });
-        }
-        if (hasPermission(permissions, 'view-roles')) {
-            staffChildren.push({ title: t('User Roles'), href: route('roles.index') });
-        }
-        if (staffChildren.length > 0) {
-            manageItems.push({
-                title: t('Staff'),
-                icon: ShieldCheck,
-                children: staffChildren
-            });
-        }
-
-        // Combined Shipping & Tax
-        if (hasPermission(permissions, 'manage-shipping') || hasPermission(permissions, 'manage-tax')) {
-            manageItems.push({
-                title: t('Shipping & Tax'),
-                href: hasPermission(permissions, 'manage-shipping') ? route('shipping.index') : route('tax.index'),
-                icon: Truck
-            });
-        }
-
-        // Flattened Billing
-        if (hasPermission(permissions, 'view-plans')) {
-            manageItems.push({ title: t('Billing'), href: route('plans.index'), icon: CreditCard });
-        }
-
-        if (manageItems.length > 0) {
-            items.push({
-                title: t('Manage'),
-                isLabel: true,
-                children: manageItems
-            });
-        }
-
-        // --- CONTENT SECTION ---
-        const contentItems: NavItem[] = [];
-
-        // Store Content
+        // Content Group
+        const contentChildren = [];
         if (userRole === 'company' || hasPermission(permissions, 'view-store-content')) {
-            contentItems.push({ title: t('Store Content'), href: route('stores.content.index'), icon: LayoutGrid });
+            contentChildren.push({ title: t('Store Pages'), href: route('stores.content.index'), icon: FileText });
         }
-
-        // Blog Posts
         if (hasPermission(permissions, 'manage-blog') && hasFeatureAccess('blog')) {
-            contentItems.push({ title: t('Blog Posts'), href: route('blog.index'), icon: FileText });
+            contentChildren.push({ title: t('Blog'), href: route('blog.index'), icon: FileText });
         }
 
-        // Product Categories (Moved here)
-        if (hasPermission(permissions, 'view-categories')) {
-            contentItems.push({ title: t('Product Categories'), href: route('categories.index'), icon: Tag });
-        }
-
-        // Email Templates
-        contentItems.push({ title: t('Email Templates'), href: route('email-templates.index'), icon: Mail });
-
-        if (contentItems.length > 0) {
+        if (contentChildren.length > 0) {
             items.push({
                 title: t('Content'),
-                isLabel: true,
-                children: contentItems
+                icon: FileText,
+                children: contentChildren
+            });
+        }
+
+        // Settings Group
+        const settingsChildren = [];
+        if (hasPermission(permissions, 'manage-users')) {
+            settingsChildren.push({ title: t('Staff'), href: route('users.index'), icon: UserPlus });
+        }
+        if (hasPermission(permissions, 'manage-shipping') || hasPermission(permissions, 'manage-tax')) {
+            settingsChildren.push({ 
+                title: t('Shipping & Tax'), 
+                href: hasPermission(permissions, 'manage-shipping') ? route('shipping.index') : route('tax.index'), 
+                icon: Truck 
+            });
+        }
+        if (hasPermission(permissions, 'view-plans')) {
+            settingsChildren.push({ title: t('Billing'), href: route('plans.index'), icon: CreditCard });
+        }
+
+        if (settingsChildren.length > 0) {
+            items.push({
+                title: t('Settings'),
+                icon: SettingsIcon,
+                children: settingsChildren
             });
         }
 

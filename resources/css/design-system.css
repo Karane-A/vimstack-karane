@@ -20,8 +20,8 @@
   /* Very light gray page background */
   --ds-surface: #FFFFFF;
   /* Pure white surfaces (cards, header) */
-  --ds-sidebar-bg: rgb(249, 250, 251);
-  /* Sidebar background */
+  --ds-sidebar-bg: #FFFFFF;
+  /* Sidebar background - Shopify style */
   --ds-border: rgba(0, 0, 0, 0.1);
   /* Thin border used in design (0.8px) */
   --ds-border-light: rgba(0, 0, 0, 0.05);
@@ -63,7 +63,8 @@
 
   /* ===== Spacing & Sizing ===== */
 
-  --ds-sidebar-width: 256px;
+  --ds-sidebar-width: 240px;
+  /* Shopify-style compact sidebar */
   --ds-header-height: 64px;
 
   --ds-gap-sm: 16px;
@@ -139,34 +140,43 @@ body {
   color: var(--ds-status-error-text);
 }
 
-/* Sidebar Customization */
+/* Sidebar Customization - Shopify Style */
 .ds-sidebar {
   width: var(--ds-sidebar-width);
   background-color: var(--ds-sidebar-bg);
-  border-right: 1px solid var(--ds-border);
-  padding: 24px 16px;
+  border-right: 1px solid rgb(226, 232, 240);
 }
 
 .ds-nav-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 12px;
+  padding: 8px 12px;
   border-radius: 8px;
-  color: var(--ds-text-body);
-  font-size: var(--ds-text-sm);
-  font-weight: var(--ds-font-medium);
+  color: rgb(74, 85, 104);
+  font-size: 14px;
+  font-weight: 500;
   text-decoration: none;
-  transition: all 0.2s;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  margin: 0 4px;
+  cursor: pointer;
 }
 
 .ds-nav-item:hover {
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: rgb(247, 248, 250);
+  color: rgb(33, 43, 54);
 }
 
 .ds-nav-item-active {
   background-color: var(--ds-primary-indigo-light);
   color: var(--ds-primary-indigo);
+  font-weight: 600;
+}
+
+.ds-nav-item-sub {
+  color: rgb(100, 116, 139);
+  font-size: 13px;
+  font-weight: 500;
 }
 
 /* Buttons */
