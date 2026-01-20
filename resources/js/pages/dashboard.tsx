@@ -203,6 +203,34 @@ export default function Dashboard({ dashboardData, currentStore, storeUrl, isSup
           />
         </div>
 
+        {/* --- Secondary Metrics Grid (Support & Requests) --- */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+          <div onClick={() => router.visit(route('support.index'))} className="cursor-pointer">
+            <MetricCard
+              title={t('Support Tickets')}
+              value={(dashboardData.pendingSupportTickets || 0).toLocaleString()}
+              icon={LifeBuoy}
+              description={t('Open tickets')}
+            />
+          </div>
+          <div onClick={() => router.visit(route('support.index'))} className="cursor-pointer">
+            <MetricCard
+              title={t('Critical Tickets')}
+              value={(dashboardData.criticalSupportTickets?.length || 0).toLocaleString()}
+              icon={AlertCircle}
+              description={t('High priority')}
+            />
+          </div>
+          <div onClick={() => router.visit(route('plan-orders.index'))} className="cursor-pointer">
+            <MetricCard
+              title={t('Plan Requests')}
+              value={(metrics.approvalQueue || 0).toLocaleString()}
+              icon={Package}
+              description={t('Pending approval')}
+            />
+          </div>
+        </div>
+
         {/* --- Secondary Grid: Chart + Platform Pulse --- */}
         <div className="grid grid-cols-12 gap-6">
           {/* Revenue Performance (Tesla-style styled bars) */}
