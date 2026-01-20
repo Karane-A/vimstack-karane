@@ -12,7 +12,7 @@ import {
     Megaphone, FileText, Image,
     Truck, Landmark, Mail, Star,
     ShieldCheck, UserPlus, CreditCard,
-    Boxes, Shield, Receipt
+    Boxes, Shield, Receipt, Activity, LifeBuoy
 } from 'lucide-react';
 
 export function useNavigationItems() {
@@ -39,6 +39,7 @@ export function useNavigationItems() {
 
     const getSuperAdminNavItems = (): NavItem[] => [
         { title: t('Dashboard'), href: route('dashboard'), icon: LayoutGrid },
+        { title: t('Metrics'), href: route('superadmin.metrics'), icon: Activity },
         { title: t('Companies'), href: route('companies.index'), icon: Building2 },
         {
             title: t('E-commerce'),
@@ -69,6 +70,7 @@ export function useNavigationItems() {
                 { title: t('Referral Program'), href: route('referral.index') },
             ]
         },
+        { title: t('Support'), href: route('support.index'), icon: LifeBuoy },
     ];
 
     const getCompanyNavItems = (): NavItem[] => {
@@ -196,6 +198,9 @@ export function useNavigationItems() {
                 children: settingsChildren
             });
         }
+
+        // Support - Always at the bottom
+        items.push({ title: t('Support'), href: route('support.index'), icon: LifeBuoy });
 
         return items;
     };

@@ -14,7 +14,15 @@ use App\Models\Plan;
 use App\Models\PlanOrder;
 use App\Models\PlanRequest;
 use App\Models\Coupon;
+use App\Models\Ticket;
 use Carbon\Carbon;
+function formatStoreCurrency($amount, $userId, $storeId) {
+    $settings = settings($userId, $storeId);
+    $defaultCurrency = $settings['defaultCurrency'] ?? 'USD';
+    $currency = \App\Models\Currency::where('code', $defaultCurrency)->first();
+    $symbol = $currency ? $currency->symbol : '$';
+    return $symbol . number_format($amount, 2);
+}
 
 class DashboardController extends Controller
 {
@@ -315,7 +323,8 @@ class DashboardController extends Controller
                 'approvedOrders' => $approvedOrders,
                 'totalOrders' => $totalOrders,
                 'activeCoupons' => $activeCoupons,
-                'totalCoupons' => $totalCoupons
+                'totalCoupons' => $totalCoupons,
+                'approvalQueue' => $pendingOrders + $pendingRequests,
             ],
             'recentOrders' => $recentOrders,
             'topPlans' => $topPlans,
@@ -323,8 +332,88 @@ class DashboardController extends Controller
                 'totalUsers' => User::count(),
                 'activeUsers' => User::where('is_enable_login', 1)->count(),
                 'totalStores' => \App\Models\Store::count(),
-                'activeStores' => \App\Models\Store::where('is_active', true)->count()
-            ]
+                'activeStores' => \App\Models\Store::where('is_active', true)->count(),
+                'avgMerchantsPerStore' => $totalCompanies > 0 ? round(\App\Models\Store::count() / $totalCompanies, 1) : 0,
+                'planUtilization' => $totalPlans > 0 ? round(($activePlans / $totalPlans) * 100, 1) : 0,
+            ],
+            'pendingSupportTickets' => Ticket::where('status', 'open')->count(),
+            'criticalSupportTickets' => Ticket::with('user')
+                ->where('status', 'open')
+                ->where('priority', 'critical')
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get()
+                ->map(function($ticket) {
+                    return [
+                        'id' => $ticket->id,
+                        'ticket_number' => $ticket->ticket_number,
+                        'subject' => $ticket->subject,
+                        'company' => $ticket->user->name,
+                        'date' => $ticket->created_at->diffForHumans(),
+                    ];
+                }),
+        ];
+        
+        // Calculate monthly revenue for the last 12 months
+        $monthlyRevenueData = [];
+        for ($i = 11; $i >= 0; $i--) {
+            $monthStart = Carbon::now()->subMonths($i)->startOfMonth();
+            $monthEnd = Carbon::now()->subMonths($i)->endOfMonth();
+            
+            $revenue = PlanOrder::where('status', 'approved')
+                ->whereBetween('created_at', [$monthStart, $monthEnd])
+                ->sum('final_price');
+            
+            $monthlyRevenueData[] = [
+                'month' => $monthStart->format('M'),
+                'revenue' => $revenue,
+                'monthIndex' => 11 - $i
+            ];
+        }
+        
+        return [
+            'metrics' => [
+                'totalCompanies' => $totalCompanies,
+                'totalPlans' => $totalPlans,
+                'activePlans' => $activePlans,
+                'totalRevenue' => $totalRevenue,
+                'monthlyRevenue' => $monthlyRevenue,
+                'monthlyGrowth' => round($monthlyGrowth, 2),
+                'pendingRequests' => $pendingRequests,
+                'pendingOrders' => $pendingOrders,
+                'approvedOrders' => $approvedOrders,
+                'totalOrders' => $totalOrders,
+                'activeCoupons' => $activeCoupons,
+                'totalCoupons' => $totalCoupons,
+                'approvalQueue' => $pendingOrders + $pendingRequests,
+            ],
+            'recentOrders' => $recentOrders,
+            'topPlans' => $topPlans,
+            'monthlyRevenueBreakdown' => $monthlyRevenueData,
+            'systemStats' => [
+                'totalUsers' => User::count(),
+                'activeUsers' => User::where('is_enable_login', 1)->count(),
+                'totalStores' => \App\Models\Store::count(),
+                'activeStores' => \App\Models\Store::where('is_active', true)->count(),
+                'avgMerchantsPerStore' => $totalCompanies > 0 ? round(\App\Models\Store::count() / $totalCompanies, 1) : 0,
+                'planUtilization' => $totalPlans > 0 ? round(($activePlans / $totalPlans) * 100, 1) : 0,
+            ],
+            'pendingSupportTickets' => Ticket::where('status', 'open')->count(),
+            'criticalSupportTickets' => Ticket::with('user')
+                ->where('status', 'open')
+                ->where('priority', 'critical')
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get()
+                ->map(function($ticket) {
+                    return [
+                        'id' => $ticket->id,
+                        'ticket_number' => $ticket->ticket_number,
+                        'subject' => $ticket->subject,
+                        'company' => $ticket->user->name,
+                        'date' => $ticket->created_at->diffForHumans(),
+                    ];
+                }),
         ];
     }
     

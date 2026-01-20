@@ -177,6 +177,37 @@ body {
   color: rgb(107, 114, 128);
   font-size: 13px;
   font-weight: 400;
+
+  /* Dashboard Command Center Utilities */
+  .ds-glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  }
+
+  .dark .ds-glass-card {
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .ds-dashboard-zone {
+    @apply flex flex-col gap-6;
+  }
+
+  .ds-stat-pill {
+    @apply px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider;
+  }
+
+  .ds-quick-action-btn {
+    @apply flex flex-col items-center justify-center p-4 rounded-2xl bg-white border border-slate-100 hover:border-primary/30 hover:shadow-md transition-all gap-2 text-center;
+  }
+
+  .ds-gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-600;
+  }
+
   transition: all 0.15s ease;
 }
 

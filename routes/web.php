@@ -187,6 +187,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Plan Requests and Orders - accessible without plan check since users need these to manage plans
     Route::get('plan-requests', [PlanRequestController::class, 'index'])->middleware('role_or_permission:superadmin|manage-plan-requests|view-plan-requests')->name('plan-requests.index');
     Route::get('plan-orders', [PlanOrderController::class, 'index'])->middleware('role_or_permission:superadmin|manage-plan-orders|view-plan-orders')->name('plan-orders.index');
+    Route::get('metrics', [\App\Http\Controllers\MetricsController::class, 'index'])->middleware('role_or_permission:superadmin')->name('superadmin.metrics');
+
+    // Support Desk
+    Route::get('support', [\App\Http\Controllers\SupportController::class, 'index'])->name('support.index');
+    Route::get('support/{id}', [\App\Http\Controllers\SupportController::class, 'show'])->name('support.show');
+    Route::post('support', [\App\Http\Controllers\SupportController::class, 'store'])->name('support.store');
+    Route::post('support/{id}/reply', [\App\Http\Controllers\SupportController::class, 'reply'])->name('support.reply');
+    Route::post('support/{id}/status', [\App\Http\Controllers\SupportController::class, 'updateStatus'])->name('support.update-status');
+    Route::post('support/{id}/metadata', [\App\Http\Controllers\SupportController::class, 'updateMetadata'])->name('support.update-metadata');
     
     // All other routes require plan access check
     Route::middleware('plan.access')->group(function () {
