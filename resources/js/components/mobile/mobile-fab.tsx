@@ -1,25 +1,35 @@
-import { ActionSheet, FloatingBubble } from 'antd-mobile';
-import { Action } from 'antd-mobile/es/components/action-sheet';
-import { AddOutline } from 'antd-mobile-icons';
 import { router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import { Plus, X } from 'lucide-react';
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface MobileFABProps {
     className?: string;
 }
 
+interface FABAction {
+    text: string;
+    key: string;
+    onClick: () => void;
+    icon?: any;
+}
+
 export function MobileFAB({ className }: MobileFABProps) {
+    const { t } = useTranslation();
     const { url } = usePage();
     const [visible, setVisible] = useState(false);
 
     // Determine available actions based on current page
-    const getActions = (): Action[] => {
+    const getActions = (): FABAction[] => {
         const path = url.split('?')[0];
 
         if (path.startsWith('/products')) {
             return [
                 {
-                    text: 'Add New Product',
+                    text: t('Add New Product'),
                     key: 'add-product',
                     onClick: () => {
                         router.visit('/products/create');
@@ -27,7 +37,7 @@ export function MobileFAB({ className }: MobileFABProps) {
                     },
                 },
                 {
-                    text: 'Import Products',
+                    text: t('Import Products'),
                     key: 'import-products',
                     onClick: () => {
                         router.visit('/products/import');
@@ -35,10 +45,9 @@ export function MobileFAB({ className }: MobileFABProps) {
                     },
                 },
                 {
-                    text: 'Scan Barcode',
+                    text: t('Scan Barcode'),
                     key: 'scan-barcode',
                     onClick: () => {
-                        // TODO: Implement barcode scanning
                         console.log('Scan barcode');
                         setVisible(false);
                     },
@@ -49,7 +58,7 @@ export function MobileFAB({ className }: MobileFABProps) {
         if (path.startsWith('/orders')) {
             return [
                 {
-                    text: 'Create New Order',
+                    text: t('Create New Order'),
                     key: 'create-order',
                     onClick: () => {
                         router.visit('/pos');
@@ -57,10 +66,9 @@ export function MobileFAB({ className }: MobileFABProps) {
                     },
                 },
                 {
-                    text: 'Quick Order',
+                    text: t('Quick Order'),
                     key: 'quick-order',
                     onClick: () => {
-                        // TODO: Implement quick order form
                         console.log('Quick order');
                         setVisible(false);
                     },
@@ -71,7 +79,7 @@ export function MobileFAB({ className }: MobileFABProps) {
         if (path.startsWith('/customers')) {
             return [
                 {
-                    text: 'Add New Customer',
+                    text: t('Add New Customer'),
                     key: 'add-customer',
                     onClick: () => {
                         router.visit('/customers/create');
@@ -79,7 +87,7 @@ export function MobileFAB({ className }: MobileFABProps) {
                     },
                 },
                 {
-                    text: 'Import Customers',
+                    text: t('Import Customers'),
                     key: 'import-customers',
                     onClick: () => {
                         router.visit('/customers/import');
@@ -92,7 +100,7 @@ export function MobileFAB({ className }: MobileFABProps) {
         if (path.startsWith('/coupons')) {
             return [
                 {
-                    text: 'Create Coupon',
+                    text: t('Create Coupon'),
                     key: 'create-coupon',
                     onClick: () => {
                         router.visit('/coupons/create');
@@ -105,7 +113,7 @@ export function MobileFAB({ className }: MobileFABProps) {
         if (path.startsWith('/blog')) {
             return [
                 {
-                    text: 'New Blog Post',
+                    text: t('New Blog Post'),
                     key: 'create-post',
                     onClick: () => {
                         router.visit('/blog/create');
@@ -115,10 +123,10 @@ export function MobileFAB({ className }: MobileFABProps) {
             ];
         }
 
-        // Default actions for dashboard or other pages
+        // Default actions
         return [
             {
-                text: 'Add Product',
+                text: t('Add Product'),
                 key: 'add-product',
                 onClick: () => {
                     router.visit('/products/create');
@@ -126,7 +134,7 @@ export function MobileFAB({ className }: MobileFABProps) {
                 },
             },
             {
-                text: 'Create Order',
+                text: t('Create Order'),
                 key: 'create-order',
                 onClick: () => {
                     router.visit('/pos');
@@ -134,7 +142,7 @@ export function MobileFAB({ className }: MobileFABProps) {
                 },
             },
             {
-                text: 'Add Customer',
+                text: t('Add Customer'),
                 key: 'add-customer',
                 onClick: () => {
                     router.visit('/customers/create');
@@ -146,32 +154,54 @@ export function MobileFAB({ className }: MobileFABProps) {
 
     const actions = getActions();
 
-    // Don't show FAB if there are no actions
     if (actions.length === 0) {
         return null;
     }
 
     return (
         <>
-            <FloatingBubble
-                className={className}
-                style={{
-                    '--initial-position-right': '16px',
-                    '--initial-position-bottom': '80px',
-                    '--edge-distance': '16px',
-                    '--background': 'var(--theme-color, #1677ff)',
-                }}
+            {/* Custom Floating Button */}
+            <button
                 onClick={() => setVisible(true)}
+                className={cn(
+                    "fixed right-4 bottom-20 z-40 w-14 h-14 rounded-2xl bg-slate-900 text-white shadow-2xl shadow-slate-900/20 flex items-center justify-center transition-all active:scale-90 touch-manipulation",
+                    className
+                )}
             >
-                <AddOutline fontSize={32} color="white" />
-            </FloatingBubble>
+                <Plus size={32} strokeWidth={2.5} />
+            </button>
 
-            <ActionSheet
-                visible={visible}
-                actions={actions}
-                onClose={() => setVisible(false)}
-                cancelText="Cancel"
-            />
+            {/* Actions Sheet */}
+            <Sheet open={visible} onOpenChange={setVisible}>
+                <SheetContent side="bottom" className="rounded-t-[32px] p-0 border-none">
+                    <div className="p-6 pb-4">
+                        <div className="w-12 h-1.5 bg-slate-100 rounded-full mx-auto mb-6" />
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-xl font-black text-slate-900">{t('Quick Actions')}</h2>
+                            <button
+                                onClick={() => setVisible(false)}
+                                className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+                        <div className="space-y-2 pb-8">
+                            {actions.map((action) => (
+                                <button
+                                    key={action.key}
+                                    onClick={action.onClick}
+                                    className="w-full p-5 rounded-2xl text-left font-bold text-slate-700 bg-slate-50 active:bg-slate-100 active:scale-[0.98] transition-all flex items-center justify-between"
+                                >
+                                    <span>{action.text}</span>
+                                    <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm">
+                                        <Plus size={16} className="text-slate-400" />
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </SheetContent>
+            </Sheet>
         </>
     );
 }

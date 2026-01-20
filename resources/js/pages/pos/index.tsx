@@ -17,7 +17,8 @@ import { formatCurrency } from '@/utils/helpers';
 import { Permission } from '@/components/Permission';
 import { usePermissions } from '@/hooks/usePermissions';
 import { cn } from '@/lib/utils';
-import { Popup } from 'antd-mobile';
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function POS() {
   const { t } = useTranslation();
@@ -70,9 +71,9 @@ export default function POS() {
     }
   }, []);
 
-  const handleCustomerChange = (customerId: any) => {
+  const handleCustomerChange = (customerId: string) => {
     setSelectedCustomer(customerId);
-    const customer = customers.find(c => c.id === customerId);
+    const customer = customers.find((c: any) => c.id === customerId);
     if (customer) {
       localStorage.setItem('pos_customer', JSON.stringify(customer));
     } else {
@@ -136,7 +137,7 @@ export default function POS() {
     if (!item) return;
 
     // Find the product to check stock
-    const product = products.find(p => p.id === item.productId);
+    const product = products.find((p: any) => p.id === item.productId);
     if (product && quantity > product.stock) {
       alert(t('Only {{count}} items available in stock', { count: product.stock }));
       return;
@@ -206,10 +207,10 @@ export default function POS() {
     return calculateSubtotal() + calculateTax();
   };
 
-  const selectedCustomerData = customers.find(c => c.id === selectedCustomer);
+  const selectedCustomerData = customers.find((c: any) => c.id === selectedCustomer);
 
   const filteredProducts = products
-    .filter(product => {
+    .filter((product: any) => {
       // Filter by category
       const categoryMatch = activeCategory === 'all' || product.category === activeCategory;
 
@@ -255,7 +256,7 @@ export default function POS() {
                     <SelectValue placeholder={t('Select customer')} />
                   </SelectTrigger>
                   <SelectContent className="rounded-2xl">
-                    {customers.map((customer) => (
+                    {customers.map((customer: any) => (
                       <SelectItem key={customer.id} value={customer.id} className="rounded-xl">
                         {customer.name}
                       </SelectItem>
@@ -287,7 +288,7 @@ export default function POS() {
                   </DialogHeader>
                   <div className="flex-1 overflow-y-auto mt-4 px-1">
                     <div className="space-y-3">
-                      {products.map((product) => (
+                      {products.map((product: any) => (
                         <div key={product.id} className="flex items-center justify-between p-4 border border-slate-100 rounded-2xl bg-slate-50/50">
                           <div className="flex-1">
                             <p className="font-bold text-slate-900">{product.name}</p>
@@ -344,7 +345,7 @@ export default function POS() {
             >
               {t('All Items')}
             </Button>
-            {categories.map(category => (
+            {categories.map((category: any) => (
               <Button
                 key={category.id}
                 variant={activeCategory === category.id ? "default" : "outline"}
@@ -361,7 +362,7 @@ export default function POS() {
 
           <div className="lg:hidden flex items-center justify-between bg-white/50 p-2 rounded-2xl border border-slate-100">
             <span className="text-sm font-bold text-slate-600 ml-2">
-              {t('Category')}: <span className="text-primary">{activeCategory === 'all' ? t('All Items') : categories.find(c => c.id === activeCategory)?.name}</span>
+              {t('Category')}: <span className="text-primary">{activeCategory === 'all' ? t('All Items') : categories.find((c: any) => c.id === activeCategory)?.name}</span>
             </span>
             <Button variant="ghost" size="sm" className="text-primary font-bold" onClick={() => setIsFilterOpen(true)}>
               {t('Change')}
@@ -370,7 +371,7 @@ export default function POS() {
 
           {/* Product Grid - 2 columns on mobile */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-            {filteredProducts.map(product => (
+            {filteredProducts.map((product: any) => (
               <Card
                 key={product.id}
                 className={cn(
@@ -570,77 +571,72 @@ export default function POS() {
         </button>
       </div>
 
-      {/* Mobile Cart Drawer */}
-      <Popup
-        visible={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
-        position='bottom'
-        bodyStyle={{
-          height: '85vh',
-          borderRadius: '32px 32px 0 0',
-          overflow: 'hidden'
-        }}
-      >
-        <div className="flex flex-col h-full bg-white">
-          <div className="p-6 pb-2">
-            <div className="w-12 h-1.5 bg-slate-100 rounded-full mx-auto mb-6" />
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-black text-slate-900">{t('Your Cart')}</h2>
-              <Button variant="ghost" size="sm" className="text-rose-500 font-bold" onClick={clearCart}>
-                {t('Clear All')}
+      {/* Mobile Cart Sheet */}
+      <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
+        <SheetContent side="bottom" className="h-[85vh] rounded-t-[32px] p-0 border-none overflow-hidden">
+          <div className="flex flex-col h-full bg-white">
+            <div className="p-6 pb-2">
+              <div className="w-12 h-1.5 bg-slate-100 rounded-full mx-auto mb-6" />
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-black text-slate-900">{t('Your Cart')}</h2>
+                <Button variant="ghost" size="sm" className="text-rose-500 font-bold" onClick={clearCart}>
+                  {t('Clear All')}
+                </Button>
+              </div>
+            </div>
+
+            <ScrollArea className="flex-1 px-6">
+              <div className="space-y-4 pb-6">
+                {cart.map(item => (
+                  <div key={item.id} className="flex items-center gap-4 p-4 rounded-3xl border border-slate-50 bg-slate-50/30">
+                    <div className="w-16 h-16 rounded-2xl overflow-hidden border border-slate-100 flex-shrink-0">
+                      <img src={getImageUrl(item.image)} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-slate-900 text-base truncate">{item.name}</p>
+                      <p className="text-primary font-black text-base mt-0.5">{formatCurrency(item.price)}</p>
+                    </div>
+                    <div className="flex items-center bg-white rounded-2xl p-1 border border-slate-100 shadow-sm">
+                      <button className="w-10 h-10 flex items-center justify-center text-slate-400" onClick={() => updateQuantity(item.id, item.quantity - 1)}>
+                        <Minus className="h-4 w-4" />
+                      </button>
+                      <span className="w-8 text-center text-sm font-black text-slate-900">{item.quantity}</span>
+                      <button className="w-10 h-10 flex items-center justify-center text-primary" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
+                        <Plus className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+
+            <div className="p-6 bg-slate-50/50 border-t border-slate-100 space-y-4">
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-500 font-medium">{t('Subtotal')}</span>
+                  <span className="text-slate-900 font-bold">{formatCurrency(calculateSubtotal())}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-500 font-medium">{t('Tax')}</span>
+                  <span className="text-slate-900 font-bold">{formatCurrency(calculateTax())}</span>
+                </div>
+                <div className="flex justify-between items-end pt-2">
+                  <span className="text-slate-900 font-black text-xl leading-none">{t('Total')}</span>
+                  <span className="text-primary font-black text-3xl leading-none">{formatCurrency(calculateTotal())}</span>
+                </div>
+              </div>
+
+              <Button
+                className="w-full h-16 rounded-[24px] bg-slate-900 text-white font-black text-lg shadow-xl"
+                onClick={() => router.visit(route('pos.checkout'))}
+              >
+                <CreditCard className="mr-3 h-6 w-6" />
+                {t('Proceed to Payment')}
               </Button>
             </div>
           </div>
-
-          <div className="flex-1 overflow-y-auto px-6 space-y-4">
-            {cart.map(item => (
-              <div key={item.id} className="flex items-center gap-4 p-4 rounded-3xl border border-slate-50 bg-slate-50/30">
-                <div className="w-16 h-16 rounded-2xl overflow-hidden border border-slate-100 flex-shrink-0">
-                  <img src={getImageUrl(item.image)} className="w-full h-full object-cover" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-bold text-slate-900 text-base truncate">{item.name}</p>
-                  <p className="text-primary font-black text-base mt-0.5">{formatCurrency(item.price)}</p>
-                </div>
-                <div className="flex items-center bg-white rounded-2xl p-1 border border-slate-100 shadow-sm">
-                  <button className="w-10 h-10 flex items-center justify-center text-slate-400" onClick={() => updateQuantity(item.id, item.quantity - 1)}>
-                    <Minus className="h-4 w-4" />
-                  </button>
-                  <span className="w-8 text-center text-sm font-black text-slate-900">{item.quantity}</span>
-                  <button className="w-10 h-10 flex items-center justify-center text-primary" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
-                    <Plus className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="p-6 bg-slate-50/50 border-t border-slate-100 space-y-4">
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-500 font-medium">{t('Subtotal')}</span>
-                <span className="text-slate-900 font-bold">{formatCurrency(calculateSubtotal())}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-500 font-medium">{t('Tax')}</span>
-                <span className="text-slate-900 font-bold">{formatCurrency(calculateTax())}</span>
-              </div>
-              <div className="flex justify-between items-end pt-2">
-                <span className="text-slate-900 font-black text-xl leading-none">{t('Total')}</span>
-                <span className="text-primary font-black text-3xl leading-none">{formatCurrency(calculateTotal())}</span>
-              </div>
-            </div>
-
-            <Button
-              className="w-full h-16 rounded-[24px] bg-slate-900 text-white font-black text-lg shadow-xl"
-              onClick={() => router.visit(route('pos.checkout'))}
-            >
-              <CreditCard className="mr-3 h-6 w-6" />
-              {t('Proceed to Payment')}
-            </Button>
-          </div>
-        </div>
-      </Popup>
+        </SheetContent>
+      </Sheet>
 
       <VariantSelector
         product={selectedProduct}
@@ -652,50 +648,46 @@ export default function POS() {
         }}
       />
 
-      {/* Mobile Category Selection Popup */}
-      <Popup
-        visible={isFilterOpen}
-        onClose={() => setIsFilterOpen(false)}
-        position='bottom'
-        bodyStyle={{
-          height: '60vh',
-          borderRadius: '32px 32px 0 0',
-        }}
-      >
-        <div className="p-6 h-full flex flex-col">
-          <div className="w-12 h-1.5 bg-slate-100 rounded-full mx-auto mb-6" />
-          <h2 className="text-xl font-black text-slate-900 mb-4">{t('Select Category')}</h2>
-          <div className="flex-1 overflow-y-auto space-y-2">
-            <button
-              className={cn(
-                "w-full p-4 rounded-2xl text-left font-bold transition-all",
-                activeCategory === 'all' ? "bg-primary text-white" : "bg-slate-50 text-slate-600"
-              )}
-              onClick={() => {
-                setActiveCategory('all');
-                setIsFilterOpen(false);
-              }}
-            >
-              {t('All Items')}
-            </button>
-            {categories.map(category => (
-              <button
-                key={category.id}
-                className={cn(
-                  "w-full p-4 rounded-2xl text-left font-bold transition-all",
-                  activeCategory === category.id ? "bg-primary text-white" : "bg-slate-50 text-slate-600"
-                )}
-                onClick={() => {
-                  setActiveCategory(category.id);
-                  setIsFilterOpen(false);
-                }}
-              >
-                {category.name}
-              </button>
-            ))}
+      {/* Mobile Category Selection Sheet */}
+      <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+        <SheetContent side="bottom" className="h-[60vh] rounded-t-[32px] p-0 border-none">
+          <div className="p-6 h-full flex flex-col">
+            <div className="w-12 h-1.5 bg-slate-100 rounded-full mx-auto mb-6" />
+            <h2 className="text-xl font-black text-slate-900 mb-4">{t('Select Category')}</h2>
+            <ScrollArea className="flex-1">
+              <div className="space-y-2 pr-1">
+                <button
+                  className={cn(
+                    "w-full p-4 rounded-2xl text-left font-bold transition-all",
+                    activeCategory === 'all' ? "bg-primary text-white shadow-lg shadow-primary/20 scale-[1.02]" : "bg-slate-50 text-slate-600"
+                  )}
+                  onClick={() => {
+                    setActiveCategory('all');
+                    setIsFilterOpen(false);
+                  }}
+                >
+                  {t('All Items')}
+                </button>
+                {categories.map((category: any) => (
+                  <button
+                    key={category.id}
+                    className={cn(
+                      "w-full p-4 rounded-2xl text-left font-bold transition-all",
+                      activeCategory === category.id ? "bg-primary text-white shadow-lg shadow-primary/20 scale-[1.02]" : "bg-slate-50 text-slate-600"
+                    )}
+                    onClick={() => {
+                      setActiveCategory(category.id);
+                      setIsFilterOpen(false);
+                    }}
+                  >
+                    {category.name}
+                  </button>
+                ))}
+              </div>
+            </ScrollArea>
           </div>
-        </div>
-      </Popup>
+        </SheetContent>
+      </Sheet>
     </PageTemplate>
   );
 }

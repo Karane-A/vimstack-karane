@@ -1,5 +1,4 @@
 import { ReactNode } from 'react';
-import { SafeArea } from 'antd-mobile';
 import { BottomNavigation } from '@/components/mobile/bottom-navigation';
 import { MobileFAB } from '@/components/mobile/mobile-fab';
 import { MobileHeader } from '@/components/mobile/mobile-header';
@@ -55,30 +54,25 @@ export function MobileLayout({
     const title = breadcrumbs.length > 0 ? breadcrumbs[breadcrumbs.length - 1].title : '';
 
     return (
-        <SafeArea position="bottom">
-            <div
-                className={`mobile-app-container min-h-screen bg-background ${className}`}
-                style={{
-                    paddingBottom: showBottomNav ? '60px' : '0',
-                }}
-            >
-                {/* Mobile Header */}
-                {showHeader && (
-                    <MobileHeader 
-                        title={title} 
-                        showBack={breadcrumbs.length > 1}
-                    />
-                )}
+        <div
+            className={`mobile-app-container min-h-screen bg-background pt-[env(safe-area-inset-top)] pb-[calc(env(safe-area-inset-bottom)+${showBottomNav ? '60px' : '0px'})] ${className}`}
+        >
+            {/* Mobile Header */}
+            {showHeader && (
+                <MobileHeader
+                    title={title}
+                    showBack={breadcrumbs.length > 1}
+                />
+            )}
 
-                <div className="mobile-content">{children}</div>
+            <div className="mobile-content">{children}</div>
 
-                {/* Bottom Navigation */}
-                {showBottomNav && <BottomNavigation />}
+            {/* Bottom Navigation */}
+            {showBottomNav && <BottomNavigation />}
 
-                {/* Floating Action Button */}
-                {showFAB && <MobileFAB />}
-            </div>
-        </SafeArea>
+            {/* Floating Action Button */}
+            {showFAB && <MobileFAB />}
+        </div>
     );
 }
 
@@ -98,11 +92,9 @@ export function SimpleMobileLayout({
     useBrandTheme();
 
     return (
-        <SafeArea position="top">
-            <div className={`mobile-simple-container min-h-screen bg-background ${className}`}>
-                {children}
-            </div>
-        </SafeArea>
+        <div className={`mobile-simple-container min-h-screen bg-background pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] ${className}`}>
+            {children}
+        </div>
     );
 }
 

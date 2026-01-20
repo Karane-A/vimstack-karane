@@ -1,24 +1,31 @@
-import { Popup, List, Avatar, Divider, Space } from 'antd-mobile';
-import {
-    SetOutline,
-    UserOutline,
-    LogoutOutline,
-    GlobalOutline,
-    BankcardOutline,
-    FileOutline,
-    StarOutline,
-    GiftOutline,
-    EnvironmentOutline,
-    HistogramOutline,
-} from 'antd-mobile-icons';
 import { router, usePage } from '@inertiajs/react';
+import {
+    Settings,
+    User,
+    LogOut,
+    Globe,
+    CreditCard,
+    FileText,
+    Star,
+    Gift,
+    MapPin,
+    BarChart3,
+    ChevronRight,
+} from 'lucide-react';
+import {
+    Sheet,
+    SheetContent,
+} from "@/components/ui/sheet";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface MobileDrawerProps {
     visible: boolean;
     onClose: () => void;
 }
 
-interface PageProps {
+interface PageProps extends Record<string, any> {
     auth?: {
         user?: {
             name: string;
@@ -28,10 +35,6 @@ interface PageProps {
     };
 }
 
-/**
- * Mobile drawer menu for secondary navigation
- * Includes user profile, settings, and additional menu items
- */
 export function MobileDrawer({ visible, onClose }: MobileDrawerProps) {
     const { props } = usePage<PageProps>();
     const user = props.auth?.user;
@@ -46,134 +49,94 @@ export function MobileDrawer({ visible, onClose }: MobileDrawerProps) {
         onClose();
     };
 
+    const menuGroups = [
+        {
+            items: [
+                { label: 'My Profile', icon: User, path: '/profile' },
+                { label: 'Analytics', icon: BarChart3, path: '/analytics' },
+                { label: 'Reviews', icon: Star, path: '/reviews' },
+                { label: 'Coupons', icon: Gift, path: '/coupons' },
+                { label: 'Shipping', icon: MapPin, path: '/shipping' },
+                { label: 'Blog', icon: FileText, path: '/blog' },
+            ]
+        },
+        {
+            items: [
+                { label: 'Billing & Plans', icon: CreditCard, path: '/billing' },
+                { label: 'Switch Store', icon: Globe, path: '/store-switcher' },
+                { label: 'Settings', icon: Settings, path: '/settings' },
+            ]
+        }
+    ];
+
     return (
-        <Popup
-            visible={visible}
-            onMaskClick={onClose}
-            position="left"
-            bodyStyle={{
-                width: '80vw',
-                maxWidth: '320px',
-                minHeight: '100vh',
-            }}
-        >
-            <div className="mobile-drawer">
-                {/* User Profile Header */}
-                {user && (
-                    <>
-                        <div className="p-4">
-                            <Space direction="vertical" style={{ '--gap': '8px' }}>
-                                <Avatar
-                                    src={user.avatar}
-                                    style={{
-                                        '--size': '64px',
-                                        '--border-radius': '50%',
-                                    }}
-                                >
-                                    {!user.avatar && user.name?.[0]?.toUpperCase()}
+        <Sheet open={visible} onOpenChange={(open) => !open && onClose()}>
+            <SheetContent side="left" className="w-[85vw] max-w-[320px] p-0 border-r-0">
+                <ScrollArea className="h-full">
+                    <div className="flex flex-col h-full bg-white">
+                        {/* User Profile Header */}
+                        {user && (
+                            <div className="p-6 bg-teal-600">
+                                <Avatar className="h-16 w-16 border-2 border-white/20 mb-4">
+                                    <AvatarImage src={user.avatar} />
+                                    <AvatarFallback className="bg-teal-500 text-white text-xl font-bold">
+                                        {user.name?.[0]?.toUpperCase()}
+                                    </AvatarFallback>
                                 </Avatar>
-                                <div>
-                                    <div className="font-semibold text-base">
+                                <div className="space-y-0.5">
+                                    <div className="font-bold text-lg text-white truncate">
                                         {user.name}
                                     </div>
-                                    <div className="text-sm text-gray-500">
+                                    <div className="text-sm text-teal-100 truncate">
                                         {user.email}
                                     </div>
                                 </div>
-                            </Space>
+                            </div>
+                        )}
+
+                        <div className="px-3 py-4">
+                            {menuGroups.map((group, groupIndex) => (
+                                <div key={groupIndex}>
+                                    <div className="space-y-1">
+                                        {group.items.map((item) => (
+                                            <button
+                                                key={item.label}
+                                                onClick={() => handleNavigate(item.path)}
+                                                className="w-full flex items-center justify-between p-3 rounded-xl active:bg-gray-100 transition-colors"
+                                            >
+                                                <div className="flex items-center space-x-3">
+                                                    <div className="p-2 bg-gray-50 rounded-lg">
+                                                        <item.icon className="h-5 w-5 text-gray-600" />
+                                                    </div>
+                                                    <span className="text-sm font-semibold text-gray-700">{item.label}</span>
+                                                </div>
+                                                <ChevronRight className="h-4 w-4 text-gray-300" />
+                                            </button>
+                                        ))}
+                                    </div>
+                                    {groupIndex < menuGroups.length - 1 && (
+                                        <Separator className="my-4 mx-3 opacity-50" />
+                                    )}
+                                </div>
+                            ))}
+
+                            <Separator className="my-4 mx-3 opacity-50" />
+
+                            {/* Logout */}
+                            <button
+                                onClick={handleLogout}
+                                className="w-full flex items-center space-x-3 p-3 rounded-xl active:bg-red-50 text-red-600 transition-colors"
+                            >
+                                <div className="p-2 bg-red-50 rounded-lg">
+                                    <LogOut className="h-5 w-5" />
+                                </div>
+                                <span className="text-sm font-bold">Logout</span>
+                            </button>
                         </div>
-                        <Divider style={{ margin: 0 }} />
-                    </>
-                )}
-
-                {/* Main Navigation Items */}
-                <List>
-                    <List.Item
-                        prefix={<UserOutline />}
-                        onClick={() => handleNavigate('/profile')}
-                        arrow
-                    >
-                        My Profile
-                    </List.Item>
-                    <List.Item
-                        prefix={<HistogramOutline />}
-                        onClick={() => handleNavigate('/analytics')}
-                        arrow
-                    >
-                        Analytics
-                    </List.Item>
-                    <List.Item
-                        prefix={<StarOutline />}
-                        onClick={() => handleNavigate('/reviews')}
-                        arrow
-                    >
-                        Reviews
-                    </List.Item>
-                    <List.Item
-                        prefix={<GiftOutline />}
-                        onClick={() => handleNavigate('/coupons')}
-                        arrow
-                    >
-                        Coupons
-                    </List.Item>
-                    <List.Item
-                        prefix={<EnvironmentOutline />}
-                        onClick={() => handleNavigate('/shipping')}
-                        arrow
-                    >
-                        Shipping
-                    </List.Item>
-                    <List.Item
-                        prefix={<FileOutline />}
-                        onClick={() => handleNavigate('/blog')}
-                        arrow
-                    >
-                        Blog
-                    </List.Item>
-                </List>
-
-                <Divider style={{ margin: '8px 0' }} />
-
-                {/* Settings & System */}
-                <List>
-                    <List.Item
-                        prefix={<BankcardOutline />}
-                        onClick={() => handleNavigate('/billing')}
-                        arrow
-                    >
-                        Billing & Plans
-                    </List.Item>
-                    <List.Item
-                        prefix={<GlobalOutline />}
-                        onClick={() => handleNavigate('/store-switcher')}
-                        arrow
-                    >
-                        Switch Store
-                    </List.Item>
-                    <List.Item
-                        prefix={<SetOutline />}
-                        onClick={() => handleNavigate('/settings')}
-                        arrow
-                    >
-                        Settings
-                    </List.Item>
-                </List>
-
-                <Divider style={{ margin: '8px 0' }} />
-
-                {/* Logout */}
-                <List>
-                    <List.Item
-                        prefix={<LogoutOutline />}
-                        onClick={handleLogout}
-                        arrow={false}
-                        style={{ color: 'var(--adm-color-danger)' }}
-                    >
-                        Logout
-                    </List.Item>
-                </List>
-            </div>
-        </Popup>
+                    </div>
+                </ScrollArea>
+            </SheetContent>
+        </Sheet>
     );
 }
 

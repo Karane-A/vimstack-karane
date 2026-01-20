@@ -1,51 +1,17 @@
-import { NavBar } from 'antd-mobile';
 import { router } from '@inertiajs/react';
 import { ReactNode } from 'react';
+import { ChevronLeft } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface MobileHeaderProps {
-    /**
-     * Title to display in the header
-     */
     title?: string;
-    /**
-     * Whether to show the back button
-     * @default true
-     */
     showBack?: boolean;
-    /**
-     * Custom back handler
-     */
     onBack?: () => void;
-    /**
-     * Right side content (actions, menu, etc.)
-     */
     right?: ReactNode;
-    /**
-     * Additional class name
-     */
     className?: string;
-    /**
-     * Whether the header should be sticky
-     * @default true
-     */
     sticky?: boolean;
 }
 
-/**
- * Mobile header component with back navigation
- *
- * Features:
- * - Back button navigation
- * - Title display
- * - Right side actions
- * - Sticky positioning
- *
- * Usage:
- * <MobileHeader
- *   title="Products"
- *   right={<Button>Add</Button>}
- * />
- */
 export function MobileHeader({
     title = '',
     showBack = true,
@@ -58,31 +24,40 @@ export function MobileHeader({
         if (onBack) {
             onBack();
         } else {
-            // Default back behavior using Inertia router
             router.visit(window.history.state?.previousUrl || '/dashboard');
         }
     };
 
     return (
-        <div
-            className={className}
-            style={{
-                position: sticky ? 'sticky' : 'relative',
-                top: 0,
-                zIndex: 100,
-                backgroundColor: 'var(--adm-color-background)',
-            }}
+        <header
+            className={cn(
+                "w-full h-14 flex items-center px-4 bg-white border-b border-gray-100",
+                sticky && "sticky top-0 z-50",
+                className
+            )}
         >
-            <NavBar
-                onBack={showBack ? handleBack : undefined}
-                right={right}
-                style={{
-                    borderBottom: '1px solid var(--adm-color-border)',
-                }}
-            >
-                {title}
-            </NavBar>
-        </div>
+            <div className="flex-1 flex items-center">
+                {showBack && (
+                    <button
+                        onClick={handleBack}
+                        className="p-2 -ml-2 rounded-full active:bg-gray-100 transition-colors"
+                        aria-label="Back"
+                    >
+                        <ChevronLeft className="h-6 w-6 text-gray-700" />
+                    </button>
+                )}
+            </div>
+
+            <div className="flex-auto text-center overflow-hidden">
+                <h1 className="text-sm font-bold text-gray-900 truncate px-2">
+                    {title}
+                </h1>
+            </div>
+
+            <div className="flex-1 flex items-center justify-end">
+                {right}
+            </div>
+        </header>
     );
 }
 

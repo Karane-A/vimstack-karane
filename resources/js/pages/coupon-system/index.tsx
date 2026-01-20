@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { PageTemplate } from '@/components/page-template';
+import React, { useState } from 'react';
+import { PageTemplate, type PageAction } from '@/components/page-template';
 import { Plus, RefreshCw, Download, Percent, Eye, Edit, Trash2, Copy, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,40 +14,29 @@ import { usePermissions } from '@/hooks/usePermissions';
 import { toast } from '@/components/custom-toast';
 
 import { ResponsiveWrapper } from '@/components/mobile/responsive-wrapper';
-import { 
-  PullToRefresh, 
-  List as MobileList, 
-  SwipeAction, 
-  Tag as MobileTag,
-  Dialog as MobileDialog,
-  Toast,
-  ProgressBar,
-  Space as MobileSpace
-} from 'antd-mobile';
+import { MobileHeader } from '@/components/mobile/mobile-header';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function CouponSystem() {
   const { t } = useTranslation();
-  const { coupons = { data: [] }, stats = { total: 0, active: 0, percentage: 0, flat: 0 }, flash } = usePage().props as any;
+  const { coupons = { data: [] }, stats = { total: 0, active: 0, percentage: 0, flat: 0 } } = usePage().props as any;
   const [couponToDelete, setCouponToDelete] = useState<number | null>(null);
 
   const { hasPermission } = usePermissions();
-  
+
   const handleDelete = () => {
     if (couponToDelete) {
       router.delete(route('store-coupons.destroy', couponToDelete), {
         onSuccess: () => {
           setCouponToDelete(null);
-          Toast.show({
-            icon: 'success',
-            content: t('Coupon deleted successfully'),
-          });
+          toast.success(t('Coupon deleted successfully'));
         }
       });
     }
   };
 
-  const pageActions = [];
-  
+  const pageActions: PageAction[] = [];
+
   if (hasPermission('export-coupon-system')) {
     pageActions.push({
       label: t('Export'),
@@ -56,7 +45,7 @@ export default function CouponSystem() {
       onClick: () => window.open(route('coupon-system.export'), '_blank')
     });
   }
-  
+
   if (hasPermission('create-coupon-system')) {
     pageActions.push({
       label: t('Create Coupon'),
@@ -67,89 +56,163 @@ export default function CouponSystem() {
   }
 
   const renderMobileCoupons = () => (
-    <div className="flex flex-col h-full bg-gray-50">
-      <PullToRefresh onRefresh={async () => {
-        await router.reload({ only: ['coupons', 'stats'] });
-      }}>
-        <MobileList header={t('Store Coupons')}>
+    <div className="flex flex-col h-screen bg-transparent">
+      <MobileHeader
+        title={t('Store Coupons')}
+        right={
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-full w-8 h-8"
+            onClick={() => router.reload({ only: ['coupons', 'stats'] })}
+          >
+            <RefreshCw className="h-4 w-4 text-gray-500" />
+          </Button>
+        }
+      />
+
+      <ScrollArea className="flex-1">
+        {/* Mobile Stats Bar */}
+        <div className="bg-white border-b px-4 py-4 sticky top-0 z-10 overflow-hidden">
+          <div className="flex overflow-x-auto pb-1 space-x-3 no-scrollbar">
+            <div className="flex-shrink-0 bg-teal-50 px-4 py-2.5 rounded-2xl border border-teal-100 min-w-[120px]">
+              <div className="text-[10px] text-teal-600 font-bold uppercase tracking-wider mb-0.5">{t('Total')}</div>
+              <div className="text-xl font-black text-teal-900 leading-none">{stats.total || 0}</div>
+            </div>
+            <div className="flex-shrink-0 bg-green-50 px-4 py-2.5 rounded-2xl border border-green-100 min-w-[120px]">
+              <div className="text-[10px] text-green-600 font-bold uppercase tracking-wider mb-0.5">{t('Active')}</div>
+              <div className="text-xl font-black text-green-900 leading-none">{stats.active || 0}</div>
+            </div>
+            <div className="flex-shrink-0 bg-blue-50 px-4 py-2.5 rounded-2xl border border-blue-100 min-w-[120px]">
+              <div className="text-[10px] text-blue-600 font-bold uppercase tracking-wider mb-0.5">{t('Percentage')}</div>
+              <div className="text-xl font-black text-blue-900 leading-none">{stats.percentage || 0}</div>
+            </div>
+            <div className="flex-shrink-0 bg-purple-50 px-4 py-2.5 rounded-2xl border border-purple-100 min-w-[120px]">
+              <div className="text-[10px] text-purple-600 font-bold uppercase tracking-wider mb-0.5">{t('Flat')}</div>
+              <div className="text-xl font-black text-purple-900 leading-none">{stats.flat || 0}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="px-4 py-6 space-y-4 pb-24 bg-gray-50/50">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex flex-col">
+              <h2 className="text-lg font-black text-gray-900 tracking-tight">{t('All Coupons')}</h2>
+              <p className="text-[10px] text-gray-400 uppercase font-bold">{t('Manage your active discounts')}</p>
+            </div>
+            {hasPermission('create-coupon-system') && (
+              <Button
+                size="sm"
+                className="h-9 px-4 rounded-full bg-teal-600 hover:bg-teal-700 shadow-md shadow-teal-600/20 font-bold text-xs"
+                onClick={() => router.visit(route('coupon-system.create'))}
+              >
+                <Plus className="h-4 w-4 mr-1.5" />
+                {t('New')}
+              </Button>
+            )}
+          </div>
+
           {!coupons || !coupons.data || coupons.data.length === 0 ? (
-            <div className="py-12 text-center text-gray-500">
-              <Percent className="h-12 w-12 mx-auto mb-2 opacity-20" />
-              {t('No coupons found')}
+            <div className="py-20 text-center bg-white rounded-[2rem] border border-dashed border-gray-200">
+              <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Percent className="h-10 w-10 text-gray-200" />
+              </div>
+              <h3 className="text-gray-900 font-bold mb-1">{t('No coupons yet')}</h3>
+              <p className="text-gray-500 text-xs px-12 leading-relaxed">{t('Create your first discount coupon to boost your product sales.')}</p>
             </div>
           ) : (
             coupons.data.map((coupon: any) => {
               const hasLimit = coupon.use_limit_per_coupon && coupon.use_limit_per_coupon > 0;
               const usedCount = coupon.used_count || 0;
               const usagePercentage = hasLimit ? (usedCount / coupon.use_limit_per_coupon) * 100 : 0;
-              
+
               return (
-                <SwipeAction
+                <div
                   key={coupon.id}
-                  rightActions={[
-                    {
-                      key: 'edit',
-                      text: t('Edit'),
-                      color: 'primary',
-                      onClick: () => router.visit(route('coupon-system.edit', coupon.id))
-                    },
-                    {
-                      key: 'delete',
-                      text: t('Delete'),
-                      color: 'danger',
-                      onClick: () => {
-                        MobileDialog.confirm({
-                          content: t('Are you sure you want to delete this coupon?'),
-                          onConfirm: () => {
-                            setCouponToDelete(coupon.id);
-                            handleDelete();
-                          }
-                        });
-                      }
-                    }
-                  ]}
+                  className="bg-white rounded-3xl border border-gray-100 p-5 shadow-sm active:scale-[0.98] transition-all"
                 >
-                  <MobileList.Item
-                    onClick={() => router.visit(route('store-coupons.show', coupon.id))}
-                    description={
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <code className="text-xs bg-gray-100 px-2 py-0.5 rounded font-mono">{coupon.code}</code>
-                          <MobileTag color={coupon.status ? 'success' : 'default'} fill="outline">
-                            {coupon.status ? t('Active') : t('Inactive')}
-                          </MobileTag>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-bold text-primary">
-                            {coupon.type === 'percentage' ? `${coupon.discount_amount}%` : formatCurrency(coupon.discount_amount)}
-                          </span>
-                          <span className="text-xs text-gray-400">
-                            {t('Used')}: {usedCount}{hasLimit ? ` / ${coupon.use_limit_per_coupon}` : ''}
-                          </span>
-                        </div>
-                        {hasLimit && (
-                          <ProgressBar 
-                            percent={usagePercentage} 
-                            style={{ '--track-width': '4px' }}
-                          />
-                        )}
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="space-y-1.5">
+                      <h3 className="font-bold text-gray-900 line-clamp-1">{coupon.name}</h3>
+                      <div className="flex items-center space-x-2">
+                        <span className="bg-gray-100 text-gray-600 px-2.5 py-1 rounded-lg text-[10px] font-mono font-black uppercase tracking-widest">
+                          {coupon.code}
+                        </span>
+                        <button
+                          className="text-gray-400 hover:text-teal-600 p-1 active:bg-teal-50 rounded-md transition-colors"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigator.clipboard.writeText(coupon.code);
+                            toast.success(t('Code copied to clipboard!'));
+                          }}
+                        >
+                          <Copy className="h-3.5 w-3.5" />
+                        </button>
                       </div>
-                    }
-                  >
-                    <span className="font-semibold text-gray-900">{coupon.name}</span>
-                  </MobileList.Item>
-                </SwipeAction>
+                    </div>
+                    <Badge className={`rounded-lg px-2 text-[10px] font-bold uppercase transition-colors ${coupon.status
+                      ? 'bg-green-100 text-green-700 hover:bg-green-200 border-green-200'
+                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                      }`} variant="outline">
+                      {coupon.status ? t('Active') : t('Inactive')}
+                    </Badge>
+                  </div>
+
+                  <div className="flex items-end justify-between mb-4 border-t border-gray-50 pt-4">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">
+                        {coupon.type === 'percentage' ? t('Percentage Off') : t('Fixed Discount')}
+                      </span>
+                      <span className="text-2xl font-black text-teal-600 leading-none">
+                        {coupon.type === 'percentage' ? `${coupon.discount_amount}%` : formatCurrency(coupon.discount_amount)}
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9 rounded-xl bg-gray-50 hover:bg-teal-50 hover:text-teal-600"
+                        onClick={() => router.visit(route('coupon-system.edit', coupon.id))}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9 rounded-xl bg-gray-50 hover:bg-red-50 text-red-500"
+                        onClick={() => setCouponToDelete(coupon.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  {hasLimit && (
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-[10px] font-black text-gray-400 uppercase tracking-tighter">
+                        <span>{t('Usability')} ({usedCount} / {coupon.use_limit_per_coupon})</span>
+                        <span className={usagePercentage > 90 ? 'text-red-500' : 'text-gray-500'}>{Math.round(usagePercentage)}%</span>
+                      </div>
+                      <Progress
+                        value={usagePercentage}
+                        className={`h-2 rounded-full overflow-hidden [&>div]:transition-all ${usagePercentage > 90 ? '[&>div]:bg-red-500' : '[&>div]:bg-teal-500'
+                          }`}
+                      />
+                    </div>
+                  )}
+                </div>
               );
             })
           )}
-        </MobileList>
-      </PullToRefresh>
+        </div>
+      </ScrollArea>
     </div>
   );
 
   const renderDesktopCoupons = () => (
-    <PageTemplate 
+    <PageTemplate
       title={t('Coupon System')}
+      description={t('Manage and track your store discount coupons')}
       url="/coupon-system"
       actions={pageActions}
       breadcrumbs={[
@@ -170,7 +233,7 @@ export default function CouponSystem() {
               <p className="text-xs text-muted-foreground">{t('All coupons')}</p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">{t('Active Coupons')}</CardTitle>
@@ -183,7 +246,7 @@ export default function CouponSystem() {
               </p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">{t('Percentage Coupons')}</CardTitle>
@@ -194,7 +257,7 @@ export default function CouponSystem() {
               <p className="text-xs text-muted-foreground">{t('Discount percentage')}</p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">{t('Fixed Amount Coupons')}</CardTitle>
@@ -219,9 +282,9 @@ export default function CouponSystem() {
                   <Percent className="h-12 w-12 mx-auto text-muted-foreground opacity-50" />
                   <p className="mt-2 text-muted-foreground">{t('No coupons found')}</p>
                   <Permission permission="create-coupon-system">
-                    <Button 
-                      variant="outline" 
-                      className="mt-4" 
+                    <Button
+                      variant="outline"
+                      className="mt-4"
                       onClick={() => router.visit(route('coupon-system.create'))}
                     >
                       <Plus className="h-4 w-4 mr-2" />
@@ -238,7 +301,7 @@ export default function CouponSystem() {
                   const isExpired = coupon.expiry_date && new Date(coupon.expiry_date) < new Date();
                   const isNearLimit = hasLimit && remaining !== null && remaining <= 5 && remaining > 0;
                   const isAtLimit = hasLimit && remaining === 0;
-                  
+
                   return (
                     <div key={coupon.id} className="flex items-center justify-between p-4 border rounded-lg hover:shadow-sm transition-shadow">
                       <div className="flex items-center space-x-4 flex-1">
@@ -270,7 +333,7 @@ export default function CouponSystem() {
                           <div className="flex items-center space-x-4 text-xs text-muted-foreground mb-2">
                             <span className="flex items-center">
                               <TrendingUp className="h-3 w-3 mr-1" />
-                              {coupon.type === 'percentage' ? t('Percentage') : t('Fixed')}: 
+                              {coupon.type === 'percentage' ? t('Percentage') : t('Fixed')}:
                               <span className="font-semibold ml-1">
                                 {coupon.type === 'percentage' ? `${coupon.discount_amount}%` : formatCurrency(coupon.discount_amount)}
                               </span>
@@ -281,7 +344,7 @@ export default function CouponSystem() {
                               </span>
                             )}
                           </div>
-                          
+
                           {/* Usage Progress */}
                           <div className="space-y-1">
                             <div className="flex items-center justify-between text-xs">
@@ -290,18 +353,17 @@ export default function CouponSystem() {
                                 {hasLimit ? ` / ${coupon.use_limit_per_coupon}` : ` (${t('Unlimited')})`}
                               </span>
                               {hasLimit && remaining !== null && (
-                                <span className={`font-semibold ${
-                                  isAtLimit ? 'text-red-600' : 
-                                  isNearLimit ? 'text-orange-600' : 
-                                  'text-green-600'
-                                }`}>
+                                <span className={`font-semibold ${isAtLimit ? 'text-red-600' :
+                                  isNearLimit ? 'text-orange-600' :
+                                    'text-green-600'
+                                  }`}>
                                   {remaining > 0 ? `${remaining} ${t('remaining')}` : t('No uses left')}
                                 </span>
                               )}
                             </div>
                             {hasLimit && (
-                              <Progress 
-                                value={usagePercentage} 
+                              <Progress
+                                value={usagePercentage}
                                 className="h-2"
                               />
                             )}
@@ -320,9 +382,9 @@ export default function CouponSystem() {
                           </Button>
                         </Permission>
                         <Permission permission="toggle-status-coupon-system">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             onClick={() => {
                               router.post(route('store-coupons.toggle-status', coupon.id), {}, {
                                 preserveScroll: true
@@ -333,9 +395,9 @@ export default function CouponSystem() {
                           </Button>
                         </Permission>
                         <Permission permission="delete-coupon-system">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             onClick={() => setCouponToDelete(coupon.id)}
                           >
                             <Trash2 className="h-4 w-4" />

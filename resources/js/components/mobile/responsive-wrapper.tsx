@@ -20,7 +20,7 @@ export function useResponsive() {
 }
 
 interface ResponsiveWrapperProps {
-    children: ReactNode;
+    children?: ReactNode;
     mobileComponent?: ReactNode;
     desktopComponent?: ReactNode;
     /**

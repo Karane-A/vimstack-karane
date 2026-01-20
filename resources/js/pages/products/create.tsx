@@ -3,7 +3,8 @@ import {
   ArrowLeft, Save, Plus, Trash2, Upload, ChevronLeft, Package,
   DollarSign, Info, Layers, ListChecks, Zap, Image as ImageIcon, Filter
 } from 'lucide-react';
-import { Popup } from 'antd-mobile';
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -533,38 +534,34 @@ export default function CreateProduct() {
           </Button>
         </div>
       </div>
-      {/* Category Selection Popup for Mobile */}
-      <Popup
-        visible={isCategoryPopupOpen}
-        onClose={() => setIsCategoryPopupOpen(false)}
-        position='bottom'
-        bodyStyle={{
-          height: '60vh',
-          borderRadius: '32px 32px 0 0',
-        }}
-      >
-        <div className="p-6 h-full flex flex-col">
-          <div className="w-12 h-1.5 bg-slate-100 rounded-full mx-auto mb-6" />
-          <h2 className="text-xl font-bold text-slate-900 mb-4">{t('Select Category')}</h2>
-          <div className="flex-1 overflow-y-auto space-y-2">
-            {categories?.map((category: any) => (
-              <button
-                key={category.id}
-                className={cn(
-                  "w-full p-4 rounded-2xl text-left font-bold transition-all",
-                  formData.category_id === String(category.id) ? "bg-primary text-white" : "bg-slate-50 text-slate-600"
-                )}
-                onClick={() => {
-                  handleSelectChange('category_id', String(category.id));
-                  setIsCategoryPopupOpen(false);
-                }}
-              >
-                {category.name}
-              </button>
-            ))}
+      {/* Category Selection Sheet for Mobile */}
+      <Sheet open={isCategoryPopupOpen} onOpenChange={setIsCategoryPopupOpen}>
+        <SheetContent side="bottom" className="h-[60vh] rounded-t-[32px] p-0 border-none">
+          <div className="p-6 h-full flex flex-col">
+            <div className="w-12 h-1.5 bg-slate-100 rounded-full mx-auto mb-6" />
+            <h2 className="text-xl font-bold text-slate-900 mb-4">{t('Select Category')}</h2>
+            <ScrollArea className="flex-1">
+              <div className="space-y-2 pr-1">
+                {categories?.map((category: any) => (
+                  <button
+                    key={category.id}
+                    className={cn(
+                      "w-full p-4 rounded-2xl text-left font-bold transition-all",
+                      formData.category_id === String(category.id) ? "bg-primary text-white shadow-lg shadow-primary/20 scale-[1.02]" : "bg-slate-50 text-slate-600"
+                    )}
+                    onClick={() => {
+                      handleSelectChange('category_id', String(category.id));
+                      setIsCategoryPopupOpen(false);
+                    }}
+                  >
+                    {category.name}
+                  </button>
+                ))}
+              </div>
+            </ScrollArea>
           </div>
-        </div>
-      </Popup>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
