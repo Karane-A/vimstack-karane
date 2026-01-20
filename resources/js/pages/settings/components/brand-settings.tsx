@@ -50,7 +50,7 @@ export const getBrandSettings = (userSettings?: Record<string, string>): BrandSe
   // If we have settings from the backend, use those
   if (userSettings) {
     const baseUrl = (typeof window !== 'undefined' ? (window.appSettings?.baseUrl || window.location.origin) : '');
-    
+
     const getFullUrl = (path: string, defaultPath: string) => {
       if (!path) return baseUrl + defaultPath;
       if (path.startsWith('http://') || path.startsWith('https://')) return path;
@@ -110,7 +110,7 @@ export default function BrandSettings({ userSettings }: BrandSettingsProps) {
   // Load settings when globalSettings change (but not while saving)
   useEffect(() => {
     if (isSaving) return; // Don't reset form while saving
-    
+
     const brandSettings = getBrandSettings(currentGlobalSettings || userSettings);
     setSettings(brandSettings);
 
@@ -168,7 +168,7 @@ export default function BrandSettings({ userSettings }: BrandSettingsProps) {
 
     // Get base URL
     const baseUrl = window.appSettings?.baseUrl || window.location.origin;
-    
+
     // If it's a relative path, convert to full URL
     if (path.startsWith('/')) {
       return `${baseUrl}${path}`;
@@ -270,13 +270,13 @@ export default function BrandSettings({ userSettings }: BrandSettingsProps) {
       preserveScroll: false,
       onSuccess: () => {
         toast.success(t('Brand settings updated successfully'));
-        
+
         // Force update brand context with full URLs for immediate display
         updateBrandSettings({
           logoLight: getDisplayUrl(settings.logoLight),
           favicon: getDisplayUrl(settings.favicon)
         });
-        
+
         // Reload the page after a short delay to ensure sidebar updates
         setTimeout(() => {
           window.location.reload();
@@ -364,7 +364,7 @@ export default function BrandSettings({ userSettings }: BrandSettingsProps) {
                           </div>
                         )}
                       </div>
-                      
+
                       {/* Browse Button */}
                       <MediaPicker
                         label=""
@@ -373,7 +373,7 @@ export default function BrandSettings({ userSettings }: BrandSettingsProps) {
                         placeholder=""
                         showPreview={false}
                       />
-                      
+
                       {settings.logoLight && (
                         <p className="text-xs text-muted-foreground text-center">
                           {t("Logo uploaded successfully")}
@@ -409,7 +409,7 @@ export default function BrandSettings({ userSettings }: BrandSettingsProps) {
                           </div>
                         )}
                       </div>
-                      
+
                       {/* Browse Button */}
                       <MediaPicker
                         label=""
@@ -418,7 +418,7 @@ export default function BrandSettings({ userSettings }: BrandSettingsProps) {
                         placeholder=""
                         showPreview={false}
                       />
-                      
+
                       {settings.favicon && (
                         <p className="text-xs text-muted-foreground text-center">
                           {t("Favicon uploaded successfully")}
@@ -482,7 +482,7 @@ export default function BrandSettings({ userSettings }: BrandSettingsProps) {
                   <Separator className="my-2" />
 
                   <div className="grid grid-cols-6 gap-2">
-                    {Object.entries({ blue: '#3b82f6', green: '#10b981', purple: '#8b5cf6', orange: '#f97316', red: '#ef4444' }).map(([color, hex]) => (
+                    {Object.entries({ blue: '#0284c7', green: '#10b981', purple: '#8b5cf6', orange: '#f97316', red: '#ef4444' }).map(([color, hex]) => (
                       <Button
                         key={color}
                         type="button"

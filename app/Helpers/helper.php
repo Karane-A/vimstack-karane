@@ -1345,6 +1345,12 @@ if (! function_exists('getStoreUrl')) {
         }
         
         $path = ltrim($path, '/');
+        $configAppUrl = config('app.url');
+        
+        // Use current request host if config is localhost to be more resilient
+        $currentHost = request()->getSchemeAndHttpHost();
+        $isLocalhost = str_contains($configAppUrl, 'localhost');
+        $baseUrlToUse = ($isLocalhost && !app()->runningInConsole()) ? $currentHost : rtrim($configAppUrl, '/');
         
         // Check for custom domain first
         if ($store->enable_custom_domain && $store->custom_domain) {
@@ -1356,13 +1362,13 @@ if (! function_exists('getStoreUrl')) {
         // Check for custom subdomain
         if ($store->enable_custom_subdomain && $store->custom_subdomain) {
             $protocol = request()->isSecure() ? 'https://' : 'http://';
-            $mainDomain = parse_url(config('app.url'), PHP_URL_HOST);
+            $mainDomain = parse_url($baseUrlToUse, PHP_URL_HOST);
             $baseUrl = $protocol . $store->custom_subdomain . '.' . $mainDomain;
             return $path ? $baseUrl . '/' . $path : $baseUrl;
         }
         
         // Default to regular store route
-        $baseUrl = rtrim(config('app.url'), '/') . '/store/' . $store->slug;
+        $baseUrl = $baseUrlToUse . '/store/' . $store->slug;
         return $path ? $baseUrl . '/' . $path : $baseUrl;
     }
 }

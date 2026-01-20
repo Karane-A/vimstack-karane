@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Search, Settings as SettingsIcon, LogOut, User, Crown } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { StoreSwitcher } from '@/components/store-switcher';
+import { GlobalSearch } from '@/components/global-search';
 import { useLayout } from '@/contexts/LayoutContext';
 import { cn } from '@/lib/utils';
 import {
@@ -28,39 +29,32 @@ export function AppSidebarHeader() {
 
     return (
         <header className="flex h-16 shrink-0 items-center justify-between border-b bg-white px-8 transition-all sticky top-0 z-20">
-            <div className="flex items-center gap-4">
-                {/* Sidebar trigger removed as we use mobile bottom nav */}
-                {/* <SidebarTrigger className="-ml-1 md:hidden" /> */}
-
-                {/* Mobile Logo */}
-                <div className="md:hidden">
+            <div className="flex items-center w-full">
+                {/* Brand / Logo - Only visible on mobile/tablet as sidebar shows it on desktop */}
+                <div className="flex items-center gap-4 lg:hidden">
                     <Link href={route('dashboard')} className="flex items-center gap-2">
-                        <img src="/images/logos/app-logo.png" alt="Vimstack" className="h-3.5 w-auto object-contain" />
+                        <img src="/images/logos/app-logo.png" alt="Vimstack" className="h-4 w-auto object-contain" />
                     </Link>
                 </div>
 
-                {/* Store Switcher for non-superadmins */}
-                {user?.type !== 'superadmin' && user?.type !== 'super admin' && !isImpersonating && (
-                    <StoreSwitcher
-                        items={stores || []}
-                        currentStore={currentStore}
-                    />
-                )}
-            </div>
+                {/* Vertical Separator - Only visible on mobile/tablet */}
+                <div className="h-6 w-[1px] bg-slate-200 mx-4 lg:hidden" />
 
-            <div className="flex items-center gap-6">
-                {/* Global Search */}
-                <div className="relative hidden lg:block">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" />
-                    <input
-                        type="text"
-                        placeholder={t('Search everything...')}
-                        className="pl-10 pr-4 py-2 bg-slate-50 border-none rounded-full text-sm w-72 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all"
-                    />
-                </div>
+                {/* Header Utility Group - Pushed to the right */}
+                <div className="flex items-center gap-2 ml-auto">
+                    {/* Store Switcher - Icon Only mode for header */}
+                    {user?.type !== 'superadmin' && user?.type !== 'super admin' && !isImpersonating && (
+                        <StoreSwitcher
+                            items={stores || []}
+                            currentStore={currentStore}
+                            isIconOnly={true}
+                        />
+                    )}
 
-                <div className="flex items-center gap-3">
-                    {/* Impersonation Exit Button - Only visible when impersonating */}
+                    {/* Global Search - Handles its own responsiveness */}
+                    <GlobalSearch />
+
+                    {/* Impersonation Exit Button */}
                     {isImpersonating && (
                         <TooltipProvider>
                             <Tooltip>
@@ -69,7 +63,7 @@ export function AppSidebarHeader() {
                                         onClick={() => {
                                             router.post(route('impersonate.leave'));
                                         }}
-                                        className="flex h-9 w-9 items-center justify-center rounded-xl transition-all bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-200 ring-2 ring-indigo-500/20"
+                                        className="h-9 w-9 flex items-center justify-center rounded-xl bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20 ring-2 ring-primary/20 transition-all"
                                     >
                                         <Crown size={18} strokeWidth={2.5} />
                                     </button>
@@ -81,12 +75,13 @@ export function AppSidebarHeader() {
                         </TooltipProvider>
                     )}
 
+                    {/* User Avatar Dropdown */}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <div className="flex items-center gap-3 pl-1 cursor-pointer group">
-                                <Avatar className="h-9 w-9 border-2 border-transparent group-hover:border-indigo-500 transition-all shadow-sm">
+                            <div className="nav-icon cursor-pointer group p-0 relative">
+                                <Avatar className="h-9 w-9 border-2 border-transparent group-hover:border-primary transition-all shadow-sm">
                                     <AvatarImage src={user?.avatar} />
-                                    <AvatarFallback className="bg-indigo-600 text-white font-bold text-xs">
+                                    <AvatarFallback className="bg-primary text-white font-bold text-xs uppercase">
                                         {userInitials}
                                     </AvatarFallback>
                                 </Avatar>

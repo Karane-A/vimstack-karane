@@ -272,7 +272,7 @@ export default function Dashboard({ dashboardData, currentStore, storeUrl, isSup
       {/* QR Code Section (Only if vendor view) */}
       {!isSuperAdmin && (
         <div className="bg-slate-900 rounded-3xl p-10 flex flex-col md:flex-row items-center gap-10 text-white relative overflow-hidden shadow-xl">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl"></div>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
           <div className="flex-1 z-10 space-y-6">
             <h3 className="text-3xl font-bold tracking-tight">
               {t('Expand Your Reach')}
@@ -284,7 +284,7 @@ export default function Dashboard({ dashboardData, currentStore, storeUrl, isSup
               <Button
                 variant="default"
                 onClick={copyToClipboard}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white border-none font-bold px-8 rounded-xl h-12 w-full sm:w-auto gap-2"
+                className="bg-primary hover:bg-primary/90 text-white border-none font-bold px-8 rounded-xl h-12 w-full sm:w-auto gap-2"
               >
                 {copied ? <Check size={18} /> : <Copy size={18} />}
                 {copied ? t('Copied') : t('Copy Store Link')}

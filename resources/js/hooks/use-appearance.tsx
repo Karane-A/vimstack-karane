@@ -17,7 +17,7 @@ const DEFAULT_THEME: ThemeSettings = {
 
 // Preset theme colors
 export const THEME_COLORS = {
-    blue: '#3b82f6',
+    blue: '#0284c7',
     green: '#10b981',
     purple: '#8b5cf6',
     orange: '#f97316',
@@ -50,23 +50,23 @@ const applyTheme = (settings: ThemeSettings) => {
     if (typeof document === 'undefined') {
         return;
     }
-    
+
     const { themeColor, customColor } = settings;
-    
+
     // Always remove dark class - light mode only
     document.documentElement.classList.remove('dark');
     document.body.classList.remove('dark');
-    
+
     // Apply theme color
     const color = themeColor === 'custom' ? customColor : THEME_COLORS[themeColor];
     document.documentElement.style.setProperty('--theme-color', color);
     document.documentElement.style.setProperty('--primary', color);
     document.documentElement.style.setProperty('--chart-1', color);
-    
+
     // Generate darker variant for hover states (light mode only)
     const adjustedColor = darkenColor(color, 10);
     document.documentElement.style.setProperty('--theme-color-hover', adjustedColor);
-    
+
     // Force a small repaint to ensure colors are applied
     const tempClass = 'theme-color-updating';
     document.documentElement.classList.add(tempClass);
@@ -81,12 +81,12 @@ const lightenColor = (hex: string, percent: number): string => {
     let r = parseInt(hex.substring(1, 3), 16);
     let g = parseInt(hex.substring(3, 5), 16);
     let b = parseInt(hex.substring(5, 7), 16);
-    
+
     // Lighten
     r = Math.min(255, Math.floor(r * (1 + percent / 100)));
     g = Math.min(255, Math.floor(g * (1 + percent / 100)));
     b = Math.min(255, Math.floor(b * (1 + percent / 100)));
-    
+
     // Convert back to hex
     return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
 };
@@ -97,12 +97,12 @@ const darkenColor = (hex: string, percent: number): string => {
     let r = parseInt(hex.substring(1, 3), 16);
     let g = parseInt(hex.substring(3, 5), 16);
     let b = parseInt(hex.substring(5, 7), 16);
-    
+
     // Darken
     r = Math.max(0, Math.floor(r * (1 - percent / 100)));
     g = Math.max(0, Math.floor(g * (1 - percent / 100)));
     b = Math.max(0, Math.floor(b * (1 - percent / 100)));
-    
+
     // Convert back to hex
     return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
 };
@@ -128,7 +128,7 @@ const getThemeSettings = (brandSettings?: any): ThemeSettings => {
             customColor: brandSettings.customColor || DEFAULT_THEME.customColor,
         } : DEFAULT_THEME;
     }
-    
+
     try {
         const savedTheme = localStorage.getItem('themeSettings');
         if (savedTheme) {
@@ -138,7 +138,7 @@ const getThemeSettings = (brandSettings?: any): ThemeSettings => {
                 appearance: parsed.appearance === 'system' ? 'light' : (parsed.appearance || 'light')
             };
         }
-        
+
         if (brandSettings) {
             return {
                 appearance: brandSettings.themeMode === 'system' ? 'light' : (brandSettings.themeMode || 'light'),
@@ -146,7 +146,7 @@ const getThemeSettings = (brandSettings?: any): ThemeSettings => {
                 customColor: brandSettings.customColor || DEFAULT_THEME.customColor,
             };
         }
-        
+
         return DEFAULT_THEME;
     } catch (error) {
         return DEFAULT_THEME;
@@ -167,41 +167,41 @@ export function useAppearance() {
     const updateAppearance = useCallback((mode: Appearance) => {
         setThemeSettings(prev => {
             const newSettings = { ...prev, appearance: mode };
-            
+
             // Store in localStorage for client-side persistence...
             localStorage.setItem('themeSettings', JSON.stringify(newSettings));
-            
+
             // Store in cookie for SSR...
             setCookie('appearance', mode);
-            
+
             applyTheme(newSettings);
             return newSettings;
         });
     }, []);
-    
+
     const updateThemeColor = useCallback((color: ThemeColor) => {
         setThemeSettings(prev => {
             const newSettings = { ...prev, themeColor: color };
-            
+
             // Store in localStorage
             localStorage.setItem('themeSettings', JSON.stringify(newSettings));
-            
+
             applyTheme(newSettings);
             return newSettings;
         });
     }, []);
-    
+
     const updateCustomColor = useCallback((hexColor: string, setAsActive = false) => {
         setThemeSettings(prev => {
-            const newSettings = { 
-                ...prev, 
+            const newSettings = {
+                ...prev,
                 customColor: hexColor,
                 ...(setAsActive && { themeColor: 'custom' })
             };
-            
+
             // Store in localStorage
             localStorage.setItem('themeSettings', JSON.stringify(newSettings));
-            
+
             applyTheme(newSettings);
             return newSettings;
         });
@@ -214,7 +214,7 @@ export function useAppearance() {
 
         return () => mediaQuery()?.removeEventListener('change', handleSystemThemeChange);
     }, []);
-    
+
     // Method to initialize theme with brand settings
     const initializeWithBrandSettings = (brandSettings: any) => {
         const themeSettings = getThemeSettings(brandSettings);
@@ -222,8 +222,8 @@ export function useAppearance() {
         applyTheme(themeSettings);
     };
 
-    return { 
-        appearance: themeSettings.appearance, 
+    return {
+        appearance: themeSettings.appearance,
         themeColor: themeSettings.themeColor,
         customColor: themeSettings.customColor,
         updateAppearance,

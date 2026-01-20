@@ -21,12 +21,14 @@ interface StoreSwitcherProps extends PopoverTriggerProps {
     id: string;
     name: string;
   };
+  isIconOnly?: boolean;
 }
 
-export function StoreSwitcher({ 
-  className, 
-  items = [], 
-  currentStore 
+export function StoreSwitcher({
+  className,
+  items = [],
+  currentStore,
+  isIconOnly = false
 }: StoreSwitcherProps) {
   const { t } = useTranslation();
   const { auth } = usePage().props as any;
@@ -40,7 +42,7 @@ export function StoreSwitcher({
   }));
 
   const currentStoreItem = currentStore || formattedItems[0];
-  
+
   // Check if user has permission to switch stores
   const canSwitchStores = auth.user.type === 'company' || (auth.permissions && auth.permissions.includes('switch-stores'));
 
@@ -59,10 +61,10 @@ export function StoreSwitcher({
       setOpen(false);
       return;
     }
-    
+
     setIsLoading(true);
     setOpen(false);
-    
+
     // Use Inertia.js router to submit the form
     router.post(route('switch-store'), {
       store_id: store.id
@@ -78,8 +80,8 @@ export function StoreSwitcher({
 
   // Filter stores based on search query
   const filteredItems = searchQuery
-    ? formattedItems.filter(store => 
-        store.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    ? formattedItems.filter(store =>
+      store.name.toLowerCase().includes(searchQuery.toLowerCase()))
     : formattedItems;
 
   return (
@@ -90,16 +92,23 @@ export function StoreSwitcher({
           role="combobox"
           aria-expanded={open}
           aria-label={t('Select a store')}
-          className={cn("w-[180px] justify-between font-medium", className)}
+          className={cn(
+            isIconOnly ? "h-9 w-9 p-0 rounded-xl" : "w-[180px] justify-between font-medium",
+            className
+          )}
           disabled={isLoading}
         >
           {isLoading ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <Loader2 className={cn("h-4 w-4 animate-spin", !isIconOnly && "mr-2")} />
           ) : (
-            <Store className="mr-2 h-4 w-4" />
+            <Store className={cn("h-4 w-4", !isIconOnly && "mr-2")} />
           )}
-          <span className="truncate">{currentStoreItem?.name || t('Select store')}</span>
-          <ChevronsUpDown className="ml-auto h-4 w-4 shrink-0 opacity-50" />
+          {!isIconOnly && (
+            <>
+              <span className="truncate">{currentStoreItem?.name || t('Select store')}</span>
+              <ChevronsUpDown className="ml-auto h-4 w-4 shrink-0 opacity-50" />
+            </>
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[250px] p-2 shadow-lg border-gray-200" align="end">
@@ -114,7 +123,7 @@ export function StoreSwitcher({
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        
+
         {/* Store list */}
         <div className="max-h-[300px] overflow-y-auto">
           {filteredItems.length === 0 ? (
@@ -141,13 +150,13 @@ export function StoreSwitcher({
             </>
           )}
         </div>
-        
+
         {/* Create new store link */}
         {(auth.user.type === 'company' || (auth.permissions && auth.permissions.includes('create-stores'))) && (
           <div className="border-t border-gray-200 dark:border-gray-700 mt-2 pt-2">
-            <Link 
-              href={route('stores.create')} 
-              className="flex w-full items-center px-2 py-2 text-sm cursor-pointer rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-blue-600 dark:text-blue-400"
+            <Link
+              href={route('stores.create')}
+              className="flex w-full items-center px-2 py-2 text-sm cursor-pointer rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-primary dark:text-primary/80"
             >
               <PlusCircle className="mr-2 h-4 w-4" />
               {t('Create New Store')}

@@ -542,6 +542,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('currencies/{currency}', [CurrencyController::class, 'destroy'])->middleware('permission:delete-currencies')->name('currencies.destroy');
     });
     
+    // Global Search API
+    Route::get('api/search', [\App\Http\Controllers\SearchController::class, 'search'])->name('api.search');
+    
     // Blog categories API
     Route::get('api/blog-categories', function (Request $request) {
         $user = Auth::user();

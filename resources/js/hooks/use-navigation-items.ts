@@ -4,10 +4,15 @@ import { hasPermission } from '@/utils/authorization';
 import { type NavItem } from '@/types';
 import { useLayout } from '@/contexts/LayoutContext';
 import {
-    LayoutGrid, Building2, ShoppingCart, CreditCard, FileType,
-    DollarSign, Globe2, Image, Mail, Gift, Briefcase, Package,
-    Zap, Users, BarChart3, BookOpen, Smartphone, Star, Megaphone,
-    TrendingUp, Tag, Settings as SettingsIcon
+    LayoutGrid, Building2, ShoppingCart,
+    Globe2, Users, BarChart3,
+    Monitor, Percent,
+    PlusCircle, Home, Tag, Smartphone,
+    Settings as SettingsIcon,
+    Megaphone, FileText, Image,
+    Truck, Landmark, Mail, Star,
+    ShieldCheck, UserPlus, CreditCard,
+    Boxes
 } from 'lucide-react';
 
 export function useNavigationItems() {
@@ -69,65 +74,130 @@ export function useNavigationItems() {
     const getCompanyNavItems = (): NavItem[] => {
         const items: NavItem[] = [];
 
+        // 1. Home
         if (userRole === 'company' || hasPermission(permissions, 'manage-dashboard')) {
-            items.push({ title: t('Dashboard'), href: route('dashboard'), icon: LayoutGrid });
+            items.push({ title: t('Home'), href: route('dashboard'), icon: Home });
         }
 
-        const storeAndProductChildren: NavItem[] = [];
-        if (userRole === 'company' || hasPermission(permissions, 'manage-stores') || hasPermission(permissions, 'view-stores')) {
-            storeAndProductChildren.push({ title: t('Stores'), href: route('stores.index') });
+        // 2. Orders
+        if (hasPermission(permissions, 'manage-orders')) {
+            items.push({ title: t('Orders'), href: route('orders.index'), icon: ShoppingCart });
         }
-        if (userRole === 'company' || hasPermission(permissions, 'view-store-content')) {
-            storeAndProductChildren.push({ title: t('Store Content'), href: route('stores.content.index') });
-        }
+
+        // 3. Products
         if (hasPermission(permissions, 'manage-products')) {
-            storeAndProductChildren.push({ title: t('Products'), href: route('products.index') });
+            const productChildren = [];
+            if (hasPermission(permissions, 'view-categories')) {
+                productChildren.push({ title: t('Product Categories'), href: route('categories.index') });
+            }
+
+            items.push({
+                title: t('Products'),
+                icon: Tag,
+                href: route('products.index'),
+                children: productChildren.length > 0 ? productChildren : undefined
+            });
         }
-        if (hasPermission(permissions, 'manage-categories')) {
-            storeAndProductChildren.push({ title: t('Categories'), href: route('categories.index') });
+
+        // 4. Customers
+        if (hasPermission(permissions, 'manage-customers')) {
+            items.push({ title: t('Customers'), href: route('customers.index'), icon: Users });
         }
-        if (hasPermission(permissions, 'manage-tax')) {
-            storeAndProductChildren.push({ title: t('Tax'), href: route('tax.index') });
+
+        // 5. Analytics
+        if (hasPermission(permissions, 'view-analytics') || hasPermission(permissions, 'manage-analytics')) {
+            items.push({ title: t('Analytics'), href: route('analytics.index'), icon: BarChart3 });
         }
-        if (hasPermission(permissions, 'manage-blog') && hasFeatureAccess('blog')) {
-            storeAndProductChildren.push({ title: t('Blog'), href: route('blog.index') });
+
+        // 6. Marketing
+        const marketingChildren = [];
+        if (hasPermission(permissions, 'manage-coupon-system')) {
+            marketingChildren.push({ title: t('Coupons'), href: route('coupon-system.index'), icon: Percent });
         }
         if (hasPermission(permissions, 'manage-newsletter-subscribers')) {
-            storeAndProductChildren.push({ title: t('Newsletter'), href: route('newsletter-subscribers.index') });
+            marketingChildren.push({ title: t('Newsletter'), href: route('newsletter-subscribers.index'), icon: Mail });
         }
-        if (hasPermission(permissions, 'manage-custom-pages') && hasFeatureAccess('custom_pages')) {
-            storeAndProductChildren.push({ title: t('Custom Pages'), href: route('custom-pages.index') });
-        }
-
-        if (storeAndProductChildren.length > 0) {
-            items.push({ title: t('Catalog'), icon: Package, children: storeAndProductChildren });
+        if (hasPermission(permissions, 'manage-reviews')) {
+            marketingChildren.push({ title: t('Reviews'), href: route('reviews.index'), icon: Star });
         }
 
-        const opChildren: NavItem[] = [];
-        if (hasPermission(permissions, 'manage-orders')) opChildren.push({ title: t('Orders'), href: route('orders.index') });
-        if (hasPermission(permissions, 'manage-customers')) opChildren.push({ title: t('Customers'), href: route('customers.index') });
-        if (hasPermission(permissions, 'manage-pos')) opChildren.push({ title: t('POS'), href: route('pos.index') });
-        if (hasPermission(permissions, 'view-express-checkout') || hasPermission(permissions, 'manage-express-checkout')) opChildren.push({ title: t('Checkout'), href: route('express-checkout.index') });
-        if (hasPermission(permissions, 'manage-coupon-system')) opChildren.push({ title: t('Coupons'), href: route('coupon-system.index') });
-        if (hasPermission(permissions, 'manage-shipping') && hasFeatureAccess('shipping_method')) opChildren.push({ title: t('Shipping'), href: route('shipping.index') });
-        if (opChildren.length > 0) {
-            items.push({ title: t('Operations'), icon: Zap, children: opChildren });
+        items.push({
+            title: t('Marketing'),
+            icon: Megaphone,
+            children: marketingChildren.length > 0 ? marketingChildren : undefined,
+            href: marketingChildren.length === 0 ? route('referral.index') : undefined
+        });
+
+        // 7. Content
+        const contentChildren = [];
+        if (hasPermission(permissions, 'manage-blog') && hasFeatureAccess('blog')) {
+            contentChildren.push({ title: t('Blog Posts'), href: route('blog.index') });
+        }
+        if (userRole === 'company' || hasPermission(permissions, 'view-store-content')) {
+            contentChildren.push({ title: t('Store Content'), href: route('stores.content.index') });
+        }
+        contentChildren.push({ title: t('Email Templates'), href: route('email-templates.index') });
+
+        if (contentChildren.length > 0) {
+            items.push({
+                title: t('Content'),
+                icon: FileText,
+                children: contentChildren
+            });
         }
 
-        const staffChildren: NavItem[] = [];
-        if (hasPermission(permissions, 'manage-users')) staffChildren.push({ title: t('Users'), href: route('users.index') });
-        if (hasPermission(permissions, 'manage-roles')) staffChildren.push({ title: t('Roles'), href: route('roles.index') });
+        // 8. Sales Channels
+        const channelChildren = [];
+        if (userRole === 'company' || hasPermission(permissions, 'manage-stores') || hasPermission(permissions, 'view-stores')) {
+            channelChildren.push({ title: t('Online Store'), href: route('stores.index'), icon: Globe2 });
+        }
+        if (hasPermission(permissions, 'manage-pos')) {
+            channelChildren.push({ title: t('Point of Sale'), href: route('pos.index'), icon: Smartphone });
+        }
+
+        if (channelChildren.length > 0) {
+            items.push({
+                title: t('Sales Channels'),
+                icon: LayoutGrid,
+                children: channelChildren
+            });
+        }
+
+        // 9. Staff
+        const staffChildren = [];
+        if (hasPermission(permissions, 'manage-users')) {
+            staffChildren.push({ title: t('Team Members'), href: route('users.index') });
+        }
+        if (hasPermission(permissions, 'view-roles')) {
+            staffChildren.push({ title: t('User Roles'), href: route('roles.index') });
+        }
+
         if (staffChildren.length > 0) {
-            items.push({ title: t('Staff'), icon: Users, children: staffChildren });
+            items.push({
+                title: t('Staff'),
+                icon: ShieldCheck,
+                children: staffChildren
+            });
         }
 
-        const growthChildren: NavItem[] = [];
-        if (hasPermission(permissions, 'view-analytics') || hasPermission(permissions, 'manage-analytics')) growthChildren.push({ title: t('Analytics'), href: route('analytics.index') });
-        if (hasPermission(permissions, 'manage-reviews')) growthChildren.push({ title: t('Reviews'), href: route('reviews.index') });
-        if (hasPermission(permissions, 'view-plans') || hasPermission(permissions, 'manage-plans')) growthChildren.push({ title: t('Subscription Plans'), href: route('plans.index') });
-        if (hasPermission(permissions, 'manage-referral')) growthChildren.push({ title: t('Referral Program'), href: route('referral.index') });
-        if (growthChildren.length > 0) {
-            items.push({ title: t('Growth'), icon: TrendingUp, children: growthChildren });
+        // 10. Operations
+        const opsChildren = [];
+        if (hasPermission(permissions, 'manage-tax')) {
+            opsChildren.push({ title: t('Taxes'), href: route('tax.index') });
+        }
+        if (hasPermission(permissions, 'manage-shipping')) {
+            opsChildren.push({ title: t('Shipping'), href: route('shipping.index') });
+        }
+        if (hasPermission(permissions, 'view-plans')) {
+            opsChildren.push({ title: t('Billing'), href: route('plans.index') });
+        }
+
+        if (opsChildren.length > 0) {
+            items.push({
+                title: t('Operations'),
+                icon: Boxes,
+                children: opsChildren
+            });
         }
 
         return items;
